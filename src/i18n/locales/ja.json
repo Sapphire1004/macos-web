@@ -1,0 +1,316 @@
+{
+  "menu": {
+    "apple": {
+      "aboutMac": "このMacについて",
+      "preferences": "システム環境設定...",
+      "appStore": "App Store...",
+      "recentItems": "最近使った項目",
+      "forceQuit": "強制終了...",
+      "sleep": "スリープ",
+      "restart": "再起動...",
+      "shutdown": "システム終了...",
+      "lockScreen": "画面をロック",
+      "logout": "ログアウト..."
+    },
+    "app": {
+      "file": "ファイル",
+      "edit": "編集",
+      "view": "表示",
+      "go": "移動",
+      "window": "ウインドウ",
+      "help": "ヘルプ",
+      "history": "履歴",
+      "bookmarks": "ブックマーク",
+      "account": "アカウント",
+      "shell": "シェル",
+      "store": "ストア",
+      "mailbox": "メールボックス",
+      "message": "メッセージ"
+    },
+    "sub": {
+      "newWindow": "新規ウインドウ",
+      "newTab": "新規タブ",
+      "open": "開く...",
+      "save": "保存",
+      "saveAs": "名前を付けて保存...",
+      "close": "閉じる"
+    }
+  },
+  "dock": {
+    "finder": "Finder",
+    "safari": "Safari",
+    "notes": "メモ",
+    "terminal": "ターミナル",
+    "appStore": "App Store",
+    "mail": "メール",
+    "trash": "ゴミ箱"
+  },
+  "window": {
+    "close": "閉じる",
+    "minimize": "最小化",
+    "maximize": "最大化"
+  },
+  "spotlight": {
+    "placeholder": "Spotlight検索",
+    "noResults": "「{{query}}」の結果はありません。",
+    "categories": {
+      "apps": "アプリケーション",
+      "recent": "最近の項目"
+    },
+    "recentItems": {
+      "todoList": "今日のToDoリスト.txt",
+      "downloads": "ダウンロード"
+    }
+  },
+  "controlCenter": {
+    "wifi": "Wi-Fi",
+    "bluetooth": "Bluetooth",
+    "airdrop": "AirDrop",
+    "focusMode": "集中モード",
+    "doNotDisturb": "おやすみモード",
+    "brightness": "ディスプレイの明るさ",
+    "sound": "サウンド",
+    "nowPlaying": "再生中",
+    "darkMode": "ダークモード",
+    "mirroring": "ミラーリング",
+    "on": "オン",
+    "off": "オフ",
+    "everyone": "すべての人"
+  },
+  "finder": {
+    "sidebar": {
+      "favorites": "よく使う項目",
+      "locations": "場所",
+      "tags": "タグ",
+      "airdrop": "AirDrop",
+      "recent": "最近の項目",
+      "applications": "アプリケーション",
+      "desktop": "デスクトップ",
+      "downloads": "ダウンロード",
+      "photos": "写真",
+      "music": "ミュージック",
+      "videos": "ムービー",
+      "macintoshHD": "Macintosh HD",
+      "network": "ネットワーク"
+    },
+    "tags": {
+      "red": "レッド",
+      "orange": "オレンジ",
+      "yellow": "イエロー",
+      "green": "グリーン",
+      "blue": "ブルー"
+    },
+    "toolbar": {
+      "search": "検索"
+    },
+    "table": {
+      "name": "名前",
+      "modified": "変更日",
+      "size": "サイズ"
+    },
+    "path": {
+      "users": "ユーザ",
+      "userFolder": "ユーザフォルダ"
+    },
+    "status": {
+      "items": "{{count}}項目",
+      "free": "256 GB使用可能"
+    },
+    "files": {
+      "photos": "写真",
+      "projects": "プロジェクト",
+      "downloads": "ダウンロード",
+      "documents": "書類",
+      "report": "レポート.pdf",
+      "presentation": "プレゼンテーション.pptx",
+      "note": "ノート.txt",
+      "photo001": "写真_001.jpg",
+      "music": "ミュージック.mp3",
+      "video": "ビデオ.mp4"
+    },
+    "time": {
+      "todayMorning": "今日 午前{{time}}",
+      "yesterday": "昨日",
+      "daysAgo": "{{count}}日前",
+      "lastWeek": "先週",
+      "lastMonth": "先月"
+    }
+  },
+  "safari": {
+    "newTab": "新規タブ",
+    "favorites": "お気に入り",
+    "privacyReport": "プライバシーレポート",
+    "privacyText": "過去30日間でSafariは<strong>{{count}}個</strong>のトラッカーをブロックしました。",
+    "topNews": "トップニュース",
+    "news": {
+      "m4chip": "Apple、新型M4チップを発表 — 史上最強のプロセッサ",
+      "sequoia": "macOS Sequoiaの新機能完全ガイド",
+      "ai": "AIが変える未来の働き方",
+      "macbook": "2026年おすすめMacBook比較＆分析"
+    },
+    "categories": {
+      "tech": "テクノロジー",
+      "software": "ソフトウェア",
+      "ai": "AI",
+      "review": "レビュー"
+    },
+    "time": {
+      "hoursAgo": "{{count}}時間前",
+      "yesterday": "昨日"
+    }
+  },
+  "notes": {
+    "title": "メモ",
+    "search": "検索",
+    "pinned": "ピンで固定",
+    "newNote": "新規メモ",
+    "justNow": "たった今",
+    "placeholder": "メモを入力...",
+    "emptyState": "メモを選択するか、新規メモを作成してください",
+    "sample": {
+      "todo": {
+        "title": "今日のやること",
+        "content": "☐ コードレビューを完了する\n☐ 会議の準備\n☐ ランチの予定を確認\n☑ メールを確認\n☑ 朝の運動"
+      },
+      "ideas": {
+        "title": "アイデアノート",
+        "content": "新プロジェクトのアイデア:\n- macOSスタイルUIライブラリ\n- AIベースのスケジュール管理アプリ\n- クロスプラットフォームノートアプリ"
+      },
+      "meeting": {
+        "title": "議事録 - 2026.04.07",
+        "content": "出席者: 田中太郎、佐藤花子、鈴木一郎\n\n主な議題:\n1. Q2目標の設定\n2. 新機能の優先順位の議論\n3. リリーススケジュールの確認"
+      },
+      "shopping": {
+        "title": "買い物リスト",
+        "content": "- 牛乳\n- 卵\n- パン\n- コーヒー\n- 果物（りんご、バナナ）\n- 野菜"
+      }
+    }
+  },
+  "terminal": {
+    "welcome": "macOS Sequoia 15.4.1 — \"help\"と入力するとヘルプが表示されます。",
+    "help": {
+      "title": "利用可能なコマンド:",
+      "help": "ヘルプを表示",
+      "ls": "ファイル一覧",
+      "pwd": "現在のパス",
+      "whoami": "現在のユーザー",
+      "date": "現在の日時",
+      "clear": "画面をクリア",
+      "echo": "テキストを出力",
+      "uname": "システム情報",
+      "neofetch": "システム情報（ビジュアル）"
+    },
+    "user": "ユーザー"
+  },
+  "mail": {
+    "mailboxes": "メールボックス",
+    "inbox": "受信トレイ",
+    "sent": "送信済み",
+    "starred": "フラグ付き",
+    "trash": "ゴミ箱",
+    "recipient": "宛先: 自分",
+    "reply": "返信",
+    "forward": "転送",
+    "emails": {
+      "apple": {
+        "subject": "新機能が追加されました",
+        "body": "macOS Sequoiaの新機能をご確認ください。"
+      },
+      "github": {
+        "subject": "新しいプルリクエスト: feat/ui-update",
+        "body": "user123さんが新しいプルリクエストを作成しました。"
+      },
+      "slack": {
+        "subject": "デザインチーム · 新着メッセージ3件",
+        "body": "田中: 新しいデザイン案をご確認ください 🎨"
+      },
+      "google": {
+        "subject": "セキュリティ通知: 新しいデバイスからのログイン",
+        "body": "新しいデバイスからGoogleアカウントへのログインが検出されました。"
+      },
+      "netflix": {
+        "subject": "今週の新着コンテンツ",
+        "body": "今週Netflixに追加された新しいコンテンツをチェックしましょう。"
+      }
+    }
+  },
+  "appStore": {
+    "browse": "見つける",
+    "categories": "カテゴリ",
+    "today": "Today",
+    "games": "ゲーム",
+    "apps": "App",
+    "arcade": "Arcade",
+    "devTools": "デベロッパツール",
+    "graphicDesign": "グラフィック＆デザイン",
+    "productivity": "仕事効率化",
+    "utilities": "ユーティリティ",
+    "editorsChoice": "Editor's Choice",
+    "banner": {
+      "year": "2026年",
+      "title": "仕事効率化アプリ集",
+      "subtitle": "ワークフローを変えるアプリ"
+    },
+    "popularFree": "人気の無料App",
+    "get": "入手",
+    "open": "開く",
+    "categoryLabels": {
+      "design": "デザイン",
+      "work": "ビジネス",
+      "productivity": "仕事効率化",
+      "dev": "開発",
+      "music": "ミュージック",
+      "utility": "ユーティリティ"
+    },
+    "free": "無料"
+  },
+  "widgets": {
+    "addWidget": "ウィジェットを追加",
+    "button": "ウィジェット",
+    "clock": {
+      "name": "時計",
+      "desc": "アナログ時計"
+    },
+    "weather": {
+      "name": "天気",
+      "desc": "現在の天気情報",
+      "location": "東京都",
+      "condition": "晴れ",
+      "high": "最高",
+      "low": "最低",
+      "feelsLike": "体感",
+      "now": "現在"
+    },
+    "calendar": {
+      "name": "カレンダー",
+      "desc": "月間カレンダー + 予定",
+      "upcoming": "今後の予定",
+      "today": "今日",
+      "meeting": "会議",
+      "birthday": "誕生日"
+    },
+    "notes": {
+      "name": "メモ",
+      "desc": "クイックメモ",
+      "header": "クイックメモ",
+      "defaultContent": "📌 クイックメモ\n\n- 今日のタスクを整理\n- コードレビュー完了\n- ランチ 11:30"
+    },
+    "system": {
+      "name": "システム",
+      "desc": "CPU / メモリ状態",
+      "title": "システム状態",
+      "memory": "メモリ",
+      "network": "ネットワーク",
+      "disk": "ディスク",
+      "chipset": "チップセット"
+    }
+  },
+  "contextMenu": {
+    "newFolder": "新規フォルダ",
+    "getInfo": "情報を見る",
+    "changeWallpaper": "壁紙を変更...",
+    "addWidget": "ウィジェットを追加",
+    "spotlightSearch": "Spotlight検索",
+    "preferences": "システム環境設定..."
+  }
+}

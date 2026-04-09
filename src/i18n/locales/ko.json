@@ -1,0 +1,316 @@
+{
+  "menu": {
+    "apple": {
+      "aboutMac": "이 Mac에 관하여",
+      "preferences": "시스템 환경설정...",
+      "appStore": "App Store...",
+      "recentItems": "최근 사용 항목",
+      "forceQuit": "강제 종료...",
+      "sleep": "잠자기",
+      "restart": "재시작...",
+      "shutdown": "시스템 종료...",
+      "lockScreen": "화면 잠금",
+      "logout": "이 사용자로 로그아웃..."
+    },
+    "app": {
+      "file": "파일",
+      "edit": "편집",
+      "view": "보기",
+      "go": "이동",
+      "window": "창",
+      "help": "도움말",
+      "history": "방문 기록",
+      "bookmarks": "북마크",
+      "account": "계정",
+      "shell": "쉘",
+      "store": "스토어",
+      "mailbox": "사서함",
+      "message": "메시지"
+    },
+    "sub": {
+      "newWindow": "새 창",
+      "newTab": "새 탭",
+      "open": "열기...",
+      "save": "저장",
+      "saveAs": "다른 이름으로 저장...",
+      "close": "닫기"
+    }
+  },
+  "dock": {
+    "finder": "Finder",
+    "safari": "Safari",
+    "notes": "메모",
+    "terminal": "터미널",
+    "appStore": "App Store",
+    "mail": "Mail",
+    "trash": "휴지통"
+  },
+  "window": {
+    "close": "닫기",
+    "minimize": "최소화",
+    "maximize": "최대화"
+  },
+  "spotlight": {
+    "placeholder": "Spotlight 검색",
+    "noResults": "\"{{query}}\"에 대한 결과가 없습니다.",
+    "categories": {
+      "apps": "응용 프로그램",
+      "recent": "최근 항목"
+    },
+    "recentItems": {
+      "todoList": "오늘의 할 일 목록.txt",
+      "downloads": "다운로드"
+    }
+  },
+  "controlCenter": {
+    "wifi": "Wi-Fi",
+    "bluetooth": "Bluetooth",
+    "airdrop": "AirDrop",
+    "focusMode": "집중 모드",
+    "doNotDisturb": "방해 금지",
+    "brightness": "디스플레이 밝기",
+    "sound": "사운드",
+    "nowPlaying": "지금 재생 중",
+    "darkMode": "다크 모드",
+    "mirroring": "미러링",
+    "on": "켜짐",
+    "off": "꺼짐",
+    "everyone": "모두에게"
+  },
+  "finder": {
+    "sidebar": {
+      "favorites": "즐겨찾기",
+      "locations": "위치",
+      "tags": "태그",
+      "airdrop": "AirDrop",
+      "recent": "최근 항목",
+      "applications": "응용 프로그램",
+      "desktop": "데스크탑",
+      "downloads": "다운로드",
+      "photos": "사진",
+      "music": "음악",
+      "videos": "동영상",
+      "macintoshHD": "Macintosh HD",
+      "network": "네트워크"
+    },
+    "tags": {
+      "red": "빨간색",
+      "orange": "주황색",
+      "yellow": "노란색",
+      "green": "녹색",
+      "blue": "파란색"
+    },
+    "toolbar": {
+      "search": "검색"
+    },
+    "table": {
+      "name": "이름",
+      "modified": "수정일",
+      "size": "크기"
+    },
+    "path": {
+      "users": "사용자",
+      "userFolder": "사용자 폴더"
+    },
+    "status": {
+      "items": "{{count}}개의 항목",
+      "free": "256 GB 여유"
+    },
+    "files": {
+      "photos": "사진",
+      "projects": "프로젝트",
+      "downloads": "다운로드",
+      "documents": "문서",
+      "report": "보고서.pdf",
+      "presentation": "프레젠테이션.pptx",
+      "note": "노트.txt",
+      "photo001": "사진_001.jpg",
+      "music": "음악.mp3",
+      "video": "영상.mp4"
+    },
+    "time": {
+      "todayMorning": "오늘 오전 {{time}}",
+      "yesterday": "어제",
+      "daysAgo": "{{count}}일 전",
+      "lastWeek": "지난주",
+      "lastMonth": "지난달"
+    }
+  },
+  "safari": {
+    "newTab": "새 탭",
+    "favorites": "즐겨찾기",
+    "privacyReport": "개인 정보 보호 리포트",
+    "privacyText": "지난 30일 동안 Safari가 <strong>{{count}}개</strong>의 추적기를 차단했습니다.",
+    "topNews": "주요 기사",
+    "news": {
+      "m4chip": "Apple, 새로운 M4 칩 공개 - 역대 가장 강력한 프로세서",
+      "sequoia": "macOS Sequoia의 새로운 기능들 완전 가이드",
+      "ai": "인공지능이 바꾸는 미래의 업무 방식",
+      "macbook": "2026년 최고의 맥북 추천 및 비교 분석"
+    },
+    "categories": {
+      "tech": "기술",
+      "software": "소프트웨어",
+      "ai": "AI",
+      "review": "리뷰"
+    },
+    "time": {
+      "hoursAgo": "{{count}}시간 전",
+      "yesterday": "어제"
+    }
+  },
+  "notes": {
+    "title": "메모",
+    "search": "검색",
+    "pinned": "고정됨",
+    "newNote": "새 메모",
+    "justNow": "방금",
+    "placeholder": "메모를 입력하세요...",
+    "emptyState": "메모를 선택하거나 새 메모를 작성하세요",
+    "sample": {
+      "todo": {
+        "title": "오늘의 할 일",
+        "content": "☐ 코드 리뷰 완료하기\n☐ 회의 준비\n☐ 점심 약속 확인\n☑ 이메일 확인\n☑ 아침 운동"
+      },
+      "ideas": {
+        "title": "아이디어 노트",
+        "content": "새 프로젝트 아이디어:\n- macOS 스타일 UI 라이브러리\n- AI 기반 일정 관리 앱\n- 크로스 플랫폼 노트 앱"
+      },
+      "meeting": {
+        "title": "회의록 - 2026.04.07",
+        "content": "참석자: 김민준, 이서윤, 박지호\n\n주요 안건:\n1. Q2 목표 설정\n2. 신규 기능 우선순위 논의\n3. 출시 일정 확인"
+      },
+      "shopping": {
+        "title": "쇼핑 목록",
+        "content": "- 우유\n- 달걀\n- 빵\n- 커피\n- 과일 (사과, 바나나)\n- 채소"
+      }
+    }
+  },
+  "terminal": {
+    "welcome": "macOS Sequoia 15.4.1 — \"help\"를 입력하면 도움말을 볼 수 있습니다.",
+    "help": {
+      "title": "사용 가능한 명령어:",
+      "help": "도움말 표시",
+      "ls": "파일 목록",
+      "pwd": "현재 경로",
+      "whoami": "현재 사용자",
+      "date": "현재 날짜/시간",
+      "clear": "화면 지우기",
+      "echo": "텍스트 출력",
+      "uname": "시스템 정보",
+      "neofetch": "시스템 정보 (시각화)"
+    },
+    "user": "사용자"
+  },
+  "mail": {
+    "mailboxes": "사서함",
+    "inbox": "받은 편지함",
+    "sent": "보낸 편지함",
+    "starred": "중요 메일",
+    "trash": "휴지통",
+    "recipient": "받는 사람: 나",
+    "reply": "답장",
+    "forward": "전달",
+    "emails": {
+      "apple": {
+        "subject": "새로운 기능이 추가되었습니다",
+        "body": "macOS Sequoia의 새로운 기능을 확인해보세요."
+      },
+      "github": {
+        "subject": "새 풀 리퀘스트: feat/ui-update",
+        "body": "user123님이 새 풀 리퀘스트를 열었습니다."
+      },
+      "slack": {
+        "subject": "디자인 팀 · 새 메시지 3건",
+        "body": "김민준: 새 디자인 시안 확인해주세요 🎨"
+      },
+      "google": {
+        "subject": "보안 알림: 새 기기 로그인",
+        "body": "새로운 기기에서 귀하의 Google 계정에 로그인이 감지되었습니다."
+      },
+      "netflix": {
+        "subject": "이번 주 새로운 콘텐츠",
+        "body": "이번 주 Netflix에 추가된 새로운 콘텐츠를 확인하세요."
+      }
+    }
+  },
+  "appStore": {
+    "browse": "탐색",
+    "categories": "카테고리",
+    "today": "오늘",
+    "games": "게임",
+    "apps": "앱",
+    "arcade": "아케이드",
+    "devTools": "개발자 도구",
+    "graphicDesign": "그래픽 & 디자인",
+    "productivity": "생산성",
+    "utilities": "유틸리티",
+    "editorsChoice": "Editor's Choice",
+    "banner": {
+      "year": "2026년",
+      "title": "생산성 앱 모음",
+      "subtitle": "당신의 워크플로를 바꿀 앱"
+    },
+    "popularFree": "인기 무료 앱",
+    "get": "받기",
+    "open": "열기",
+    "categoryLabels": {
+      "design": "디자인",
+      "work": "업무",
+      "productivity": "생산성",
+      "dev": "개발",
+      "music": "음악",
+      "utility": "유틸리티"
+    },
+    "free": "무료"
+  },
+  "widgets": {
+    "addWidget": "위젯 추가",
+    "button": "위젯",
+    "clock": {
+      "name": "시계",
+      "desc": "아날로그 시계"
+    },
+    "weather": {
+      "name": "날씨",
+      "desc": "현재 날씨 정보",
+      "location": "서울특별시",
+      "condition": "맑음",
+      "high": "최고",
+      "low": "최저",
+      "feelsLike": "체감",
+      "now": "지금"
+    },
+    "calendar": {
+      "name": "달력",
+      "desc": "월간 달력 + 일정",
+      "upcoming": "다가오는 일정",
+      "today": "오늘",
+      "meeting": "회의",
+      "birthday": "생일"
+    },
+    "notes": {
+      "name": "메모",
+      "desc": "빠른 스티커 메모",
+      "header": "빠른 메모",
+      "defaultContent": "📌 빠른 메모\n\n- 오늘 할 일 정리하기\n- 코드 리뷰 완료\n- 점심 약속 11:30"
+    },
+    "system": {
+      "name": "시스템",
+      "desc": "CPU / 메모리 상태",
+      "title": "시스템 상태",
+      "memory": "메모리",
+      "network": "네트워크",
+      "disk": "디스크",
+      "chipset": "칩셋"
+    }
+  },
+  "contextMenu": {
+    "newFolder": "새 폴더",
+    "getInfo": "정보 가져오기",
+    "changeWallpaper": "배경화면 변경...",
+    "addWidget": "위젯 추가",
+    "spotlightSearch": "Spotlight 검색",
+    "preferences": "시스템 환경설정..."
+  }
+}

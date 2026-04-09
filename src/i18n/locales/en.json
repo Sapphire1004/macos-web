@@ -1,0 +1,316 @@
+{
+  "menu": {
+    "apple": {
+      "aboutMac": "About This Mac",
+      "preferences": "System Preferences...",
+      "appStore": "App Store...",
+      "recentItems": "Recent Items",
+      "forceQuit": "Force Quit...",
+      "sleep": "Sleep",
+      "restart": "Restart...",
+      "shutdown": "Shut Down...",
+      "lockScreen": "Lock Screen",
+      "logout": "Log Out..."
+    },
+    "app": {
+      "file": "File",
+      "edit": "Edit",
+      "view": "View",
+      "go": "Go",
+      "window": "Window",
+      "help": "Help",
+      "history": "History",
+      "bookmarks": "Bookmarks",
+      "account": "Account",
+      "shell": "Shell",
+      "store": "Store",
+      "mailbox": "Mailbox",
+      "message": "Message"
+    },
+    "sub": {
+      "newWindow": "New Window",
+      "newTab": "New Tab",
+      "open": "Open...",
+      "save": "Save",
+      "saveAs": "Save As...",
+      "close": "Close"
+    }
+  },
+  "dock": {
+    "finder": "Finder",
+    "safari": "Safari",
+    "notes": "Notes",
+    "terminal": "Terminal",
+    "appStore": "App Store",
+    "mail": "Mail",
+    "trash": "Trash"
+  },
+  "window": {
+    "close": "Close",
+    "minimize": "Minimize",
+    "maximize": "Maximize"
+  },
+  "spotlight": {
+    "placeholder": "Spotlight Search",
+    "noResults": "No results for \"{{query}}\".",
+    "categories": {
+      "apps": "Applications",
+      "recent": "Recent Items"
+    },
+    "recentItems": {
+      "todoList": "Today's To-Do List.txt",
+      "downloads": "Downloads"
+    }
+  },
+  "controlCenter": {
+    "wifi": "Wi-Fi",
+    "bluetooth": "Bluetooth",
+    "airdrop": "AirDrop",
+    "focusMode": "Focus",
+    "doNotDisturb": "Do Not Disturb",
+    "brightness": "Display Brightness",
+    "sound": "Sound",
+    "nowPlaying": "Now Playing",
+    "darkMode": "Dark Mode",
+    "mirroring": "Mirroring",
+    "on": "On",
+    "off": "Off",
+    "everyone": "Everyone"
+  },
+  "finder": {
+    "sidebar": {
+      "favorites": "Favorites",
+      "locations": "Locations",
+      "tags": "Tags",
+      "airdrop": "AirDrop",
+      "recent": "Recents",
+      "applications": "Applications",
+      "desktop": "Desktop",
+      "downloads": "Downloads",
+      "photos": "Photos",
+      "music": "Music",
+      "videos": "Movies",
+      "macintoshHD": "Macintosh HD",
+      "network": "Network"
+    },
+    "tags": {
+      "red": "Red",
+      "orange": "Orange",
+      "yellow": "Yellow",
+      "green": "Green",
+      "blue": "Blue"
+    },
+    "toolbar": {
+      "search": "Search"
+    },
+    "table": {
+      "name": "Name",
+      "modified": "Date Modified",
+      "size": "Size"
+    },
+    "path": {
+      "users": "Users",
+      "userFolder": "User Folder"
+    },
+    "status": {
+      "items": "{{count}} items",
+      "free": "256 GB available"
+    },
+    "files": {
+      "photos": "Photos",
+      "projects": "Projects",
+      "downloads": "Downloads",
+      "documents": "Documents",
+      "report": "Report.pdf",
+      "presentation": "Presentation.pptx",
+      "note": "Note.txt",
+      "photo001": "Photo_001.jpg",
+      "music": "Music.mp3",
+      "video": "Video.mp4"
+    },
+    "time": {
+      "todayMorning": "Today {{time}} AM",
+      "yesterday": "Yesterday",
+      "daysAgo": "{{count}} days ago",
+      "lastWeek": "Last week",
+      "lastMonth": "Last month"
+    }
+  },
+  "safari": {
+    "newTab": "New Tab",
+    "favorites": "Favorites",
+    "privacyReport": "Privacy Report",
+    "privacyText": "In the past 30 days, Safari has blocked <strong>{{count}}</strong> trackers.",
+    "topNews": "Top Stories",
+    "news": {
+      "m4chip": "Apple Unveils New M4 Chip — Most Powerful Processor Ever",
+      "sequoia": "Complete Guide to macOS Sequoia's New Features",
+      "ai": "How AI Is Changing the Future of Work",
+      "macbook": "Best MacBook Picks & Comparisons for 2026"
+    },
+    "categories": {
+      "tech": "Technology",
+      "software": "Software",
+      "ai": "AI",
+      "review": "Review"
+    },
+    "time": {
+      "hoursAgo": "{{count}}h ago",
+      "yesterday": "Yesterday"
+    }
+  },
+  "notes": {
+    "title": "Notes",
+    "search": "Search",
+    "pinned": "Pinned",
+    "newNote": "New Note",
+    "justNow": "Just now",
+    "placeholder": "Type a note...",
+    "emptyState": "Select a note or create a new one",
+    "sample": {
+      "todo": {
+        "title": "Today's To-Do",
+        "content": "☐ Finish code review\n☐ Prepare for meeting\n☐ Confirm lunch plans\n☑ Check emails\n☑ Morning workout"
+      },
+      "ideas": {
+        "title": "Idea Notes",
+        "content": "New project ideas:\n- macOS-style UI library\n- AI-powered schedule manager\n- Cross-platform notes app"
+      },
+      "meeting": {
+        "title": "Meeting Notes - 2026.04.07",
+        "content": "Attendees: Minjun Kim, Seoyun Lee, Jiho Park\n\nAgenda:\n1. Set Q2 goals\n2. Discuss feature priorities\n3. Confirm release schedule"
+      },
+      "shopping": {
+        "title": "Shopping List",
+        "content": "- Milk\n- Eggs\n- Bread\n- Coffee\n- Fruits (apples, bananas)\n- Vegetables"
+      }
+    }
+  },
+  "terminal": {
+    "welcome": "macOS Sequoia 15.4.1 — Type \"help\" to see available commands.",
+    "help": {
+      "title": "Available commands:",
+      "help": "Show help",
+      "ls": "List files",
+      "pwd": "Current path",
+      "whoami": "Current user",
+      "date": "Current date/time",
+      "clear": "Clear screen",
+      "echo": "Print text",
+      "uname": "System info",
+      "neofetch": "System info (visual)"
+    },
+    "user": "user"
+  },
+  "mail": {
+    "mailboxes": "Mailboxes",
+    "inbox": "Inbox",
+    "sent": "Sent",
+    "starred": "Starred",
+    "trash": "Trash",
+    "recipient": "To: me",
+    "reply": "Reply",
+    "forward": "Forward",
+    "emails": {
+      "apple": {
+        "subject": "New features have been added",
+        "body": "Check out the new features in macOS Sequoia."
+      },
+      "github": {
+        "subject": "New Pull Request: feat/ui-update",
+        "body": "user123 opened a new pull request."
+      },
+      "slack": {
+        "subject": "Design Team · 3 new messages",
+        "body": "Minjun: Please review the new design mockup 🎨"
+      },
+      "google": {
+        "subject": "Security Alert: New device sign-in",
+        "body": "A sign-in to your Google account was detected from a new device."
+      },
+      "netflix": {
+        "subject": "New content this week",
+        "body": "Check out the new content added to Netflix this week."
+      }
+    }
+  },
+  "appStore": {
+    "browse": "Discover",
+    "categories": "Categories",
+    "today": "Today",
+    "games": "Games",
+    "apps": "Apps",
+    "arcade": "Arcade",
+    "devTools": "Developer Tools",
+    "graphicDesign": "Graphics & Design",
+    "productivity": "Productivity",
+    "utilities": "Utilities",
+    "editorsChoice": "Editor's Choice",
+    "banner": {
+      "year": "2026",
+      "title": "Productivity App Collection",
+      "subtitle": "Apps that will transform your workflow"
+    },
+    "popularFree": "Top Free Apps",
+    "get": "Get",
+    "open": "Open",
+    "categoryLabels": {
+      "design": "Design",
+      "work": "Business",
+      "productivity": "Productivity",
+      "dev": "Developer",
+      "music": "Music",
+      "utility": "Utilities"
+    },
+    "free": "Free"
+  },
+  "widgets": {
+    "addWidget": "Add Widget",
+    "button": "Widgets",
+    "clock": {
+      "name": "Clock",
+      "desc": "Analog clock"
+    },
+    "weather": {
+      "name": "Weather",
+      "desc": "Current weather info",
+      "location": "Seoul",
+      "condition": "Clear",
+      "high": "H",
+      "low": "L",
+      "feelsLike": "Feels like",
+      "now": "Now"
+    },
+    "calendar": {
+      "name": "Calendar",
+      "desc": "Monthly calendar + events",
+      "upcoming": "Upcoming Events",
+      "today": "Today",
+      "meeting": "Meeting",
+      "birthday": "Birthday"
+    },
+    "notes": {
+      "name": "Notes",
+      "desc": "Quick sticky note",
+      "header": "Quick Note",
+      "defaultContent": "📌 Quick Note\n\n- Organize today's tasks\n- Finish code review\n- Lunch at 11:30"
+    },
+    "system": {
+      "name": "System",
+      "desc": "CPU / Memory status",
+      "title": "System Status",
+      "memory": "Memory",
+      "network": "Network",
+      "disk": "Disk",
+      "chipset": "Chipset"
+    }
+  },
+  "contextMenu": {
+    "newFolder": "New Folder",
+    "getInfo": "Get Info",
+    "changeWallpaper": "Change Wallpaper...",
+    "addWidget": "Add Widget",
+    "spotlightSearch": "Spotlight Search",
+    "preferences": "System Preferences..."
+  }
+}
