@@ -7,6 +7,7 @@ import {
   Plus,
   Share,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const bookmarks = [
   { name: "Apple", url: "apple.com", icon: "🍎" },
@@ -17,33 +18,6 @@ const bookmarks = [
   { name: "News", url: "news.apple.com", icon: "📰" },
 ];
 
-const news = [
-  {
-    title: "Apple, 새로운 M4 칩 공개 - 역대 가장 강력한 프로세서",
-    category: "기술",
-    time: "2시간 전",
-    image: "🖥️",
-  },
-  {
-    title: "macOS Sequoia의 새로운 기능들 완전 가이드",
-    category: "소프트웨어",
-    time: "4시간 전",
-    image: "📱",
-  },
-  {
-    title: "인공지능이 바꾸는 미래의 업무 방식",
-    category: "AI",
-    time: "6시간 전",
-    image: "🤖",
-  },
-  {
-    title: "2026년 최고의 맥북 추천 및 비교 분석",
-    category: "리뷰",
-    time: "어제",
-    image: "💻",
-  },
-];
-
 export function SafariWindow() {
   const [inputUrl, setInputUrl] = useState("apple.com");
   const [isEditing, setIsEditing] = useState(false);
@@ -51,6 +25,34 @@ export function SafariWindow() {
     { id: 1, title: "Apple", url: "apple.com", active: true },
     { id: 2, title: "GitHub", url: "github.com", active: false },
   ]);
+  const { t } = useTranslation();
+
+  const news = [
+    {
+      title: t("safari.news.m4chip"),
+      category: t("safari.categories.tech"),
+      time: t("safari.time.hoursAgo", { count: 2 }),
+      image: "🖥️",
+    },
+    {
+      title: t("safari.news.sequoia"),
+      category: t("safari.categories.software"),
+      time: t("safari.time.hoursAgo", { count: 4 }),
+      image: "📱",
+    },
+    {
+      title: t("safari.news.ai"),
+      category: t("safari.categories.ai"),
+      time: t("safari.time.hoursAgo", { count: 6 }),
+      image: "🤖",
+    },
+    {
+      title: t("safari.news.macbook"),
+      category: t("safari.categories.review"),
+      time: t("safari.time.yesterday"),
+      image: "💻",
+    },
+  ];
 
   return (
     <div className="flex flex-col h-full" style={{ background: "#f5f5f5" }}>
@@ -94,7 +96,7 @@ export function SafariWindow() {
           onClick={() =>
             setTabs((prev) => [
               ...prev.map((t) => ({ ...t, active: false })),
-              { id: Date.now(), title: "새 탭", url: "", active: true },
+              { id: Date.now(), title: t("safari.newTab"), url: "", active: true },
             ])
           }
         >
@@ -182,7 +184,7 @@ export function SafariWindow() {
           {/* Favorites */}
           <div className="mb-8">
             <h3 className="text-[14px] text-gray-500 mb-3 font-semibold">
-              즐겨찾기
+              {t("safari.favorites")}
             </h3>
             <div className="grid grid-cols-4 sm:grid-cols-6 gap-4">
               {bookmarks.map((bm) => (
@@ -213,20 +215,21 @@ export function SafariWindow() {
             <div className="flex items-center gap-2 mb-1">
               <Lock size={14} className="text-blue-500" />
               <span className="text-[13px] text-blue-600 font-semibold">
-                개인 정보 보호 리포트
+                {t("safari.privacyReport")}
               </span>
             </div>
-            <p className="text-[12px] text-gray-500">
-              지난 30일 동안 Safari가{" "}
-              <strong className="text-gray-700">148개</strong>의 추적기를
-              차단했습니다.
-            </p>
+            <p
+              className="text-[12px] text-gray-500"
+              dangerouslySetInnerHTML={{
+                __html: t("safari.privacyText", { count: 148 }),
+              }}
+            />
           </div>
 
           {/* News */}
           <div>
             <h3 className="text-[14px] text-gray-500 mb-3 font-semibold">
-              주요 기사
+              {t("safari.topNews")}
             </h3>
             <div className="space-y-3">
               {news.map((article) => (

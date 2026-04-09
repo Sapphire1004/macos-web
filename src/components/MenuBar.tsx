@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Wifi, Battery, Volume2, Search } from "lucide-react";
+import { Wifi, Battery, Volume2, Search, Globe } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface MenuBarProps {
   onSpotlight: () => void;
@@ -7,52 +8,13 @@ interface MenuBarProps {
   activeApp: string;
 }
 
-const menuItems: Record<string, string[]> = {
-  Finder: ["파일", "편집", "보기", "이동", "창", "도움말"],
-  Safari: ["파일", "편집", "보기", "방문 기록", "북마크", "창", "도움말"],
-  메모: ["파일", "편집", "보기", "계정", "창", "도움말"],
-  터미널: ["쉘", "편집", "보기", "창", "도움말"],
-  "App Store": ["스토어", "편집", "보기", "창", "도움말"],
-  Mail: ["파일", "편집", "보기", "사서함", "메시지", "창", "도움말"],
-};
 
-const appleMenuItems = [
-  { label: "이 Mac에 관하여", divider: false },
-  { label: null, divider: true },
-  { label: "시스템 환경설정...", divider: false },
-  { label: "App Store...", divider: false },
-  { label: null, divider: true },
-  { label: "최근 사용 항목", divider: false },
-  { label: null, divider: true },
-  { label: "강제 종료...", divider: false },
-  { label: null, divider: true },
-  { label: "잠자기", divider: false },
-  { label: "재시작...", divider: false },
-  { label: "시스템 종료...", divider: false },
-  { label: null, divider: true },
-  { label: "화면 잠금", divider: false },
-  { label: "이 사용자로 로그아웃...", divider: false },
-];
 
-const appSubMenus: (string | null)[] = [
-  "새 창",
-  "새 탭",
-  "열기...",
-  null,
-  "저장",
-  "다른 이름으로 저장...",
-  null,
-  "닫기",
-];
 
-const shortcuts: Record<string, string> = {
-  "새 창": "⌘N",
-  저장: "⌘S",
-  닫기: "⌘W",
-  "열기...": "⌘O",
-};
+
 
 function DropdownMenu({ items }: { items: (string | null)[] }) {
+  
   return (
     <div
       className="absolute top-full left-0 mt-1 w-52 rounded-xl overflow-hidden py-1"
@@ -74,12 +36,7 @@ function DropdownMenu({ items }: { items: (string | null)[] }) {
             className="w-full text-left px-4 py-[5px] text-[13px] text-gray-800 flex items-center justify-between hover:bg-blue-500 hover:text-white rounded-sm mx-auto"
             style={{ width: "calc(100% - 4px)", marginLeft: 2 }}
           >
-            <span>{item}</span>
-            {shortcuts[item] && (
-              <span className="text-gray-400 text-[11px]">
-                {shortcuts[item]}
-              </span>
-            )}
+            {item}
           </button>
         )
       )}
@@ -92,14 +49,51 @@ export function MenuBar({
   onControlCenter,
   activeApp,
 }: MenuBarProps) {
+
+
   const [time, setTime] = useState(new Date());
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [showAppleMenu, setShowAppleMenu] = useState(false);
+  const { t, i18n } = useTranslation();
+  const langs = ["ko", "en", "ja"];
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+    const menuItems: Record<string, string[]> = {
+  Finder: [t("menu.app.file"), t("menu.app.edit"), t("menu.app.view"), t("menu.app.go"), t("menu.app.window"), t("menu.app.help")],
+  };
+
+const appleMenuItems = [
+  { label:  t("menu.apple.aboutMac"), divider: false },
+  { label: null, divider: true },
+  { label: t("menu.apple.preferences"), divider: false },
+  { label: t("menu.apple.appStore"), divider: false },
+  { label: null, divider: true },
+  { label: t("menu.apple.recentItems"), divider: false },
+  { label: null, divider: true },
+  { label: t("menu.apple.forceQuit"), divider: false },
+  { label: null, divider: true },
+  { label: t("menu.apple.sleep"), divider: false },
+  { label: t("menu.apple.restart"), divider: false },
+  { label: t("menu.apple.shutdown"), divider: false },
+  { label: null, divider: true },
+  { label: t("menu.apple.lockScreen"), divider: false },
+  { label: t("menu.apple.logout"), divider: false },
+];
+
+const appSubMenus: (string | null)[] = [
+  t("menu.sub.newWindow"),
+  t("menu.sub.newTab"),
+  t("menu.sub.open"),
+  null,
+  t("menu.sub.save"),
+  t("menu.sub.saveAs"),
+  null,
+  t("menu.sub.close"),
+];
 
   const formatTime = (date: Date) =>
     date.toLocaleTimeString("ko-KR", {
@@ -234,6 +228,20 @@ export function MenuBar({
             <Search size={13} className="text-white" />
           </button>
 
+
+          <button
+            className="hidden sm:flex px-2 h-7 items-center rounded hover:bg-white/20 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              closeAll();
+              const next = langs[(langs.indexOf(i18n.language) + 1) % langs.length];
+              i18n.changeLanguage(next);
+
+            }}
+          >
+            <Globe  size={13} className="text-white" />
+          </button>
+
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -242,6 +250,7 @@ export function MenuBar({
             }}
             className="hidden sm:flex items-center gap-1.5 px-2 h-7 rounded hover:bg-white/20 transition-colors"
           >
+
             <Wifi size={13} className="text-white" />
             <Volume2 size={13} className="text-white" />
             <Battery size={13} className="text-white" />

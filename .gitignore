@@ -24,3 +24,8 @@ Create responsive macOS UI
 *.njsproj
 *.sln
 *.sw?
+
+# Lighthouse reports
+lighthouse-report.*
+lighthouse-*.html
+lighthouse-*.json

@@ -1,30 +1,34 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Line {
   type: "input" | "output" | "error";
   content: string;
 }
 
-const commands: Record<string, string> = {
-  help: `사용 가능한 명령어:
-  help     - 도움말 표시
-  ls       - 파일 목록
-  pwd      - 현재 경로
-  whoami   - 현재 사용자
-  date     - 현재 날짜/시간
-  clear    - 화면 지우기
-  echo     - 텍스트 출력
-  uname    - 시스템 정보
-  neofetch - 시스템 정보 (시각화)`,
-  ls: `Applications    Desktop    Documents    Downloads
+export function TerminalWindow() {
+  const { t } = useTranslation();
+
+  const commands: Record<string, string> = {
+    help: `${t("terminal.help.title")}
+  help     - ${t("terminal.help.help")}
+  ls       - ${t("terminal.help.ls")}
+  pwd      - ${t("terminal.help.pwd")}
+  whoami   - ${t("terminal.help.whoami")}
+  date     - ${t("terminal.help.date")}
+  clear    - ${t("terminal.help.clear")}
+  echo     - ${t("terminal.help.echo")}
+  uname    - ${t("terminal.help.uname")}
+  neofetch - ${t("terminal.help.neofetch")}`,
+    ls: `Applications    Desktop    Documents    Downloads
 Library         Movies     Music        Pictures
 Public`,
-  pwd: "/Users/사용자",
-  whoami: "사용자",
-  date: new Date().toLocaleString("ko-KR"),
-  uname: "Darwin MacBook-Pro.local 24.4.0 Darwin Kernel Version 24.4.0",
-  neofetch: `
-                    'c.          사용자@MacBook-Pro
+    pwd: `/Users/${t("terminal.user")}`,
+    whoami: t("terminal.user"),
+    date: new Date().toLocaleString("ko-KR"),
+    uname: "Darwin MacBook-Pro.local 24.4.0 Darwin Kernel Version 24.4.0",
+    neofetch: `
+                    'c.          ${t("terminal.user")}@MacBook-Pro
                  ,xNMM.          -------------------------
                .OMMMMo           OS: macOS Sequoia 15.4.1
                OMMM0,            Host: MacBook Pro (M4)
@@ -39,9 +43,8 @@ Public`,
    kMMMMMMMMMMMMMMMMMMMMk.       GPU: Apple M4
      xMMMMMMMMMMMMMMMMk.         Memory: 8192MiB / 16384MiB
       oMMMMMMMMMMMMMMo.`,
-};
+  };
 
-export function TerminalWindow() {
   const [lines, setLines] = useState<Line[]>([
     {
       type: "output",
@@ -49,7 +52,7 @@ export function TerminalWindow() {
     },
     {
       type: "output",
-      content: 'macOS Sequoia 15.4.1 — "help"를 입력하면 도움말을 볼 수 있습니다.',
+      content: t("terminal.welcome"),
     },
   ]);
   const [input, setInput] = useState("");
@@ -118,6 +121,8 @@ export function TerminalWindow() {
     }
   };
 
+  const userPrompt = `${t("terminal.user")}@MacBook-Pro`;
+
   return (
     <div
       className="h-full flex flex-col p-4 font-mono text-[13px] cursor-text overflow-y-auto"
@@ -128,7 +133,7 @@ export function TerminalWindow() {
         <div key={i} className="leading-6 whitespace-pre-wrap">
           {line.type === "input" && (
             <span>
-              <span style={{ color: "#50fa7b" }}>사용자@MacBook-Pro</span>
+              <span style={{ color: "#50fa7b" }}>{userPrompt}</span>
               <span style={{ color: "#bd93f9" }}> ~ </span>
               <span style={{ color: "#8be9fd" }}>% </span>
               <span style={{ color: "#f8f8f2" }}>{line.content}</span>
@@ -144,7 +149,7 @@ export function TerminalWindow() {
       ))}
 
       <div className="flex items-center leading-6 mt-1">
-        <span style={{ color: "#50fa7b" }}>사용자@MacBook-Pro</span>
+        <span style={{ color: "#50fa7b" }}>{userPrompt}</span>
         <span style={{ color: "#bd93f9" }}> ~ </span>
         <span style={{ color: "#8be9fd" }}>% </span>
         <input

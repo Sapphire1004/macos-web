@@ -12,142 +12,60 @@ import {
   Film,
   HardDrive,
 } from "lucide-react";
-
-const sidebarItems = [
-  {
-    section: "즐겨찾기",
-    items: [
-      { name: "AirDrop", icon: <span className="text-blue-500">📡</span> },
-      { name: "최근 항목", icon: <span className="text-gray-500">🕐</span> },
-      { name: "응용 프로그램", icon: <span>🗂️</span> },
-      {
-        name: "데스크탑",
-        icon: <Home size={14} className="text-blue-400" />,
-      },
-      {
-        name: "다운로드",
-        icon: <Download size={14} className="text-blue-400" />,
-      },
-      { name: "사진", icon: <Image size={14} className="text-blue-400" /> },
-      { name: "음악", icon: <Music size={14} className="text-blue-400" /> },
-      { name: "동영상", icon: <Film size={14} className="text-blue-400" /> },
-    ],
-  },
-  {
-    section: "위치",
-    items: [
-      {
-        name: "Macintosh HD",
-        icon: <HardDrive size={14} className="text-gray-500" />,
-      },
-      { name: "네트워크", icon: <span className="text-gray-500">🌐</span> },
-    ],
-  },
-  {
-    section: "태그",
-    items: [
-      {
-        name: "빨간색",
-        icon: <div className="w-3 h-3 rounded-full bg-red-500" />,
-      },
-      {
-        name: "주황색",
-        icon: <div className="w-3 h-3 rounded-full bg-orange-400" />,
-      },
-      {
-        name: "노란색",
-        icon: <div className="w-3 h-3 rounded-full bg-yellow-400" />,
-      },
-      {
-        name: "녹색",
-        icon: <div className="w-3 h-3 rounded-full bg-green-500" />,
-      },
-      {
-        name: "파란색",
-        icon: <div className="w-3 h-3 rounded-full bg-blue-500" />,
-      },
-    ],
-  },
-];
-
-const files = [
-  {
-    name: "사진",
-    icon: "📸",
-    type: "folder",
-    modified: "오늘 오전 10:30",
-    size: "-",
-  },
-  {
-    name: "프로젝트",
-    icon: "📁",
-    type: "folder",
-    modified: "어제",
-    size: "-",
-  },
-  {
-    name: "다운로드",
-    icon: "📥",
-    type: "folder",
-    modified: "어제",
-    size: "-",
-  },
-  {
-    name: "문서",
-    icon: "📄",
-    type: "folder",
-    modified: "2일 전",
-    size: "-",
-  },
-  {
-    name: "보고서.pdf",
-    icon: "📕",
-    type: "file",
-    modified: "오늘 오전 9:12",
-    size: "2.4 MB",
-  },
-  {
-    name: "프레젠테이션.pptx",
-    icon: "📊",
-    type: "file",
-    modified: "어제",
-    size: "8.1 MB",
-  },
-  {
-    name: "노트.txt",
-    icon: "📝",
-    type: "file",
-    modified: "3일 전",
-    size: "12 KB",
-  },
-  {
-    name: "사진_001.jpg",
-    icon: "🖼️",
-    type: "file",
-    modified: "지난주",
-    size: "4.2 MB",
-  },
-  {
-    name: "음악.mp3",
-    icon: "🎵",
-    type: "file",
-    modified: "지난주",
-    size: "6.8 MB",
-  },
-  {
-    name: "영상.mp4",
-    icon: "🎬",
-    type: "file",
-    modified: "지난달",
-    size: "256 MB",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export function FinderWindow() {
   const [view, setView] = useState<"grid" | "list">("list");
   const [selected, setSelected] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState("다운로드");
+  const [activeSection, setActiveSection] = useState("downloads");
   const [searchValue, setSearchValue] = useState("");
+  const { t } = useTranslation();
+
+  const sidebarItems = [
+    {
+      section: t("finder.sidebar.favorites"),
+      items: [
+        { key: "airdrop", name: t("finder.sidebar.airdrop"), icon: <span className="text-blue-500">📡</span> },
+        { key: "recent", name: t("finder.sidebar.recent"), icon: <span className="text-gray-500">🕐</span> },
+        { key: "applications", name: t("finder.sidebar.applications"), icon: <span>🗂️</span> },
+        { key: "desktop", name: t("finder.sidebar.desktop"), icon: <Home size={14} className="text-blue-400" /> },
+        { key: "downloads", name: t("finder.sidebar.downloads"), icon: <Download size={14} className="text-blue-400" /> },
+        { key: "photos", name: t("finder.sidebar.photos"), icon: <Image size={14} className="text-blue-400" /> },
+        { key: "music", name: t("finder.sidebar.music"), icon: <Music size={14} className="text-blue-400" /> },
+        { key: "videos", name: t("finder.sidebar.videos"), icon: <Film size={14} className="text-blue-400" /> },
+      ],
+    },
+    {
+      section: t("finder.sidebar.locations"),
+      items: [
+        { key: "macintoshHD", name: t("finder.sidebar.macintoshHD"), icon: <HardDrive size={14} className="text-gray-500" /> },
+        { key: "network", name: t("finder.sidebar.network"), icon: <span className="text-gray-500">🌐</span> },
+      ],
+    },
+    {
+      section: t("finder.sidebar.tags"),
+      items: [
+        { key: "red", name: t("finder.tags.red"), icon: <div className="w-3 h-3 rounded-full bg-red-500" /> },
+        { key: "orange", name: t("finder.tags.orange"), icon: <div className="w-3 h-3 rounded-full bg-orange-400" /> },
+        { key: "yellow", name: t("finder.tags.yellow"), icon: <div className="w-3 h-3 rounded-full bg-yellow-400" /> },
+        { key: "green", name: t("finder.tags.green"), icon: <div className="w-3 h-3 rounded-full bg-green-500" /> },
+        { key: "blue", name: t("finder.tags.blue"), icon: <div className="w-3 h-3 rounded-full bg-blue-500" /> },
+      ],
+    },
+  ];
+
+  const files = [
+    { name: t("finder.files.photos"), icon: "📸", type: "folder", modified: t("finder.time.todayMorning", { time: "10:30" }), size: "-" },
+    { name: t("finder.files.projects"), icon: "📁", type: "folder", modified: t("finder.time.yesterday"), size: "-" },
+    { name: t("finder.files.downloads"), icon: "📥", type: "folder", modified: t("finder.time.yesterday"), size: "-" },
+    { name: t("finder.files.documents"), icon: "📄", type: "folder", modified: t("finder.time.daysAgo", { count: 2 }), size: "-" },
+    { name: t("finder.files.report"), icon: "📕", type: "file", modified: t("finder.time.todayMorning", { time: "9:12" }), size: "2.4 MB" },
+    { name: t("finder.files.presentation"), icon: "📊", type: "file", modified: t("finder.time.yesterday"), size: "8.1 MB" },
+    { name: t("finder.files.note"), icon: "📝", type: "file", modified: t("finder.time.daysAgo", { count: 3 }), size: "12 KB" },
+    { name: t("finder.files.photo001"), icon: "🖼️", type: "file", modified: t("finder.time.lastWeek"), size: "4.2 MB" },
+    { name: t("finder.files.music"), icon: "🎵", type: "file", modified: t("finder.time.lastWeek"), size: "6.8 MB" },
+    { name: t("finder.files.video"), icon: "🎬", type: "file", modified: t("finder.time.lastMonth"), size: "256 MB" },
+  ];
 
   const filtered = searchValue
     ? files.filter((f) =>
@@ -172,18 +90,18 @@ export function FinderWindow() {
             </div>
             {section.items.map((item) => (
               <button
-                key={item.name}
+                key={item.key}
                 className="w-full flex items-center gap-2 px-3 py-1 rounded-md mx-1 transition-colors text-left"
                 style={{
                   width: "calc(100% - 8px)",
                   background:
-                    activeSection === item.name
+                    activeSection === item.key
                       ? "rgba(0,100,255,0.15)"
                       : "transparent",
                   color:
-                    activeSection === item.name ? "#0064ff" : "#3d3d3d",
+                    activeSection === item.key ? "#0064ff" : "#3d3d3d",
                 }}
-                onClick={() => setActiveSection(item.name)}
+                onClick={() => setActiveSection(item.key)}
               >
                 <span className="text-[13px] flex items-center">
                   {item.icon}
@@ -243,7 +161,7 @@ export function FinderWindow() {
             <input
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              placeholder="검색"
+              placeholder={t("finder.toolbar.search")}
               className="bg-transparent outline-none text-[12px] text-gray-700 w-24 placeholder-gray-400"
             />
           </div>
@@ -254,11 +172,11 @@ export function FinderWindow() {
           className="flex items-center gap-1 px-4 py-1.5 text-[11px] text-gray-500"
           style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}
         >
-          <span>Macintosh HD</span>
+          <span>{t("finder.sidebar.macintoshHD")}</span>
           <span>›</span>
-          <span>사용자</span>
+          <span>{t("finder.path.users")}</span>
           <span>›</span>
-          <span className="text-gray-700 font-medium">사용자 폴더</span>
+          <span className="text-gray-700 font-medium">{t("finder.path.userFolder")}</span>
         </div>
 
         {/* Content */}
@@ -270,12 +188,12 @@ export function FinderWindow() {
                   className="text-[11px] text-gray-400"
                   style={{ borderBottom: "1px solid rgba(0,0,0,0.08)" }}
                 >
-                  <th className="text-left pb-1 font-medium pl-1">이름</th>
+                  <th className="text-left pb-1 font-medium pl-1">{t("finder.table.name")}</th>
                   <th className="text-left pb-1 font-medium hidden sm:table-cell">
-                    수정일
+                    {t("finder.table.modified")}
                   </th>
                   <th className="text-left pb-1 font-medium hidden sm:table-cell">
-                    크기
+                    {t("finder.table.size")}
                   </th>
                 </tr>
               </thead>
@@ -343,8 +261,8 @@ export function FinderWindow() {
             background: "rgba(240,240,240,0.5)",
           }}
         >
-          <span>{filtered.length}개의 항목</span>
-          <span>256 GB 여유</span>
+          <span>{t("finder.status.items", { count: filtered.length })}</span>
+          <span>{t("finder.status.free")}</span>
         </div>
       </div>
     </div>

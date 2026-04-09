@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface SpotlightProps {
   isOpen: boolean;
@@ -7,31 +8,32 @@ interface SpotlightProps {
   onOpenApp: (id: string) => void;
 }
 
-const suggestions = [
-  {
-    category: "응용 프로그램",
-    items: [
-      { id: "finder", name: "Finder", icon: "🗂️" },
-      { id: "safari", name: "Safari", icon: "🧭" },
-      { id: "notes", name: "메모", icon: "📝" },
-      { id: "terminal", name: "터미널", icon: "⬛" },
-      { id: "appstore", name: "App Store", icon: "🛍️" },
-      { id: "mail", name: "Mail", icon: "✉️" },
-    ],
-  },
-  {
-    category: "최근 항목",
-    items: [
-      { id: "notes", name: "오늘의 할 일 목록.txt", icon: "📄" },
-      { id: "finder", name: "다운로드", icon: "📁" },
-    ],
-  },
-];
-
 export function Spotlight({ isOpen, onClose, onOpenApp }: SpotlightProps) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
+
+  const suggestions = [
+    {
+      category: t("spotlight.categories.apps"),
+      items: [
+        { id: "finder", name: "Finder", names: ["Finder"], icon: "🗂️" },
+        { id: "safari", name: "Safari", names: ["Safari"], icon: "🧭" },
+        { id: "notes", name: t("dock.notes"), names: ["메모", "Notes", "メモ"], icon: "📝" },
+        { id: "terminal", name: t("dock.terminal"), names: ["터미널", "Terminal", "ターミナル"], icon: "⬛" },
+        { id: "appstore", name: "App Store", names: ["App Store"], icon: "🛍️" },
+        { id: "mail", name: "Mail", names: ["Mail", "메일"], icon: "✉️" },
+      ],
+    },
+    {
+      category: t("spotlight.categories.recent"),
+      items: [
+        { id: "notes", name: t("spotlight.recentItems.todoList"), names: ["오늘의 할 일 목록", "Today's To-Do List", "今日のToDoリスト"], icon: "📄" },
+        { id: "finder", name: t("spotlight.recentItems.downloads"), names: ["다운로드", "Downloads", "ダウンロード"], icon: "📁" },
+      ],
+    },
+  ];
 
   useEffect(() => {
     if (isOpen) {
@@ -44,7 +46,7 @@ export function Spotlight({ isOpen, onClose, onOpenApp }: SpotlightProps) {
   const allItems = suggestions.flatMap((s) => s.items);
   const filtered = query
     ? allItems.filter((item) =>
-        item.name.toLowerCase().includes(query.toLowerCase())
+        item.names.some((n) => n.toLowerCase().includes(query.toLowerCase()))
       )
     : allItems.slice(0, 6);
 
@@ -94,7 +96,7 @@ export function Spotlight({ isOpen, onClose, onOpenApp }: SpotlightProps) {
               setQuery(e.target.value);
               setSelected(0);
             }}
-            placeholder="Spotlight 검색"
+            placeholder={t("spotlight.placeholder")}
             className="flex-1 bg-transparent outline-none text-gray-800 placeholder-gray-400 text-[17px]"
           />
         </div>
@@ -181,7 +183,7 @@ export function Spotlight({ isOpen, onClose, onOpenApp }: SpotlightProps) {
 
         {filtered.length === 0 && query && (
           <div className="py-8 text-center text-gray-500 text-[14px]">
-            "{query}"에 대한 결과가 없습니다.
+            {t("spotlight.noResults", { query })}
           </div>
         )}
       </div>

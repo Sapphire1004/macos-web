@@ -1,42 +1,40 @@
 import { useState } from "react";
 import { Plus, Search, Trash2 } from "lucide-react";
-
-const initialNotes = [
-  {
-    id: 1,
-    title: "오늘의 할 일",
-    content:
-      "☐ 코드 리뷰 완료하기\n☐ 회의 준비\n☐ 점심 약속 확인\n☑ 이메일 확인\n☑ 아침 운동",
-    date: "오늘 오전 10:30",
-    pinned: true,
-  },
-  {
-    id: 2,
-    title: "아이디어 노트",
-    content:
-      "새 프로젝트 아이디어:\n- macOS 스타일 UI 라이브러리\n- AI 기반 일정 관리 앱\n- 크로스 플랫폼 노트 앱",
-    date: "어제",
-    pinned: false,
-  },
-  {
-    id: 3,
-    title: "회의록 - 2026.04.07",
-    content:
-      "참석자: 김민준, 이서윤, 박지호\n\n주요 안건:\n1. Q2 목표 설정\n2. 신규 기능 우선순위 논의\n3. 출시 일정 확인",
-    date: "어제",
-    pinned: false,
-  },
-  {
-    id: 4,
-    title: "쇼핑 목록",
-    content: "- 우유\n- 달걀\n- 빵\n- 커피\n- 과일 (사과, 바나나)\n- 채소",
-    date: "2일 전",
-    pinned: false,
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export function NotesWindow() {
-  const [notes, setNotes] = useState(initialNotes);
+  const { t } = useTranslation();
+
+  const [notes, setNotes] = useState([
+    {
+      id: 1,
+      title: t("notes.sample.todo.title"),
+      content: t("notes.sample.todo.content"),
+      date: t("finder.time.todayMorning", { time: "10:30" }),
+      pinned: true,
+    },
+    {
+      id: 2,
+      title: t("notes.sample.ideas.title"),
+      content: t("notes.sample.ideas.content"),
+      date: t("finder.time.yesterday"),
+      pinned: false,
+    },
+    {
+      id: 3,
+      title: t("notes.sample.meeting.title"),
+      content: t("notes.sample.meeting.content"),
+      date: t("finder.time.yesterday"),
+      pinned: false,
+    },
+    {
+      id: 4,
+      title: t("notes.sample.shopping.title"),
+      content: t("notes.sample.shopping.content"),
+      date: t("finder.time.daysAgo", { count: 2 }),
+      pinned: false,
+    },
+  ]);
   const [selectedId, setSelectedId] = useState(1);
   const [search, setSearch] = useState("");
 
@@ -51,9 +49,9 @@ export function NotesWindow() {
   const addNote = () => {
     const newNote = {
       id: Date.now(),
-      title: "새 메모",
+      title: t("notes.newNote"),
       content: "",
-      date: "방금",
+      date: t("notes.justNow"),
       pinned: false,
     };
     setNotes((prev) => [newNote, ...prev]);
@@ -72,8 +70,8 @@ export function NotesWindow() {
           ? {
               ...n,
               content,
-              title: content.split("\n")[0] || "새 메모",
-              date: "방금",
+              title: content.split("\n")[0] || t("notes.newNote"),
+              date: t("notes.justNow"),
             }
           : n
       )
@@ -94,7 +92,7 @@ export function NotesWindow() {
           className="flex items-center justify-between px-3 py-2"
           style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}
         >
-          <span className="text-[12px] text-gray-500 font-semibold">메모</span>
+          <span className="text-[12px] text-gray-500 font-semibold">{t("notes.title")}</span>
           <button
             onClick={addNote}
             className="p-1 rounded hover:bg-black/10 transition-colors"
@@ -112,7 +110,7 @@ export function NotesWindow() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="검색"
+              placeholder={t("notes.search")}
               className="flex-1 bg-transparent outline-none text-[12px] text-gray-700 placeholder-gray-400"
             />
           </div>
@@ -121,7 +119,7 @@ export function NotesWindow() {
         <div className="flex-1 overflow-y-auto">
           {search === "" && notes.some((n) => n.pinned) && (
             <div className="px-3 py-1 text-[10px] text-gray-400 uppercase font-semibold">
-              고정됨
+              {t("notes.pinned")}
             </div>
           )}
           {filtered
@@ -208,7 +206,7 @@ export function NotesWindow() {
               value={selectedNote.content}
               onChange={(e) => updateContent(e.target.value)}
               className="flex-1 p-5 bg-transparent outline-none resize-none text-[14px] text-gray-800 leading-relaxed"
-              placeholder="메모를 입력하세요..."
+              placeholder={t("notes.placeholder")}
               style={{
                 fontFamily: "system-ui, -apple-system, sans-serif",
               }}
@@ -219,7 +217,7 @@ export function NotesWindow() {
             <div className="text-center">
               <div className="text-4xl mb-2">📝</div>
               <p className="text-[14px] text-gray-400">
-                메모를 선택하거나 새 메모를 작성하세요
+                {t("notes.emptyState")}
               </p>
             </div>
           </div>

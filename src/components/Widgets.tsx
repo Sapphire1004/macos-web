@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { X, Plus, Wind, Droplets, Thermometer, Activity } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // ─── Draggable Widget Shell ───────────────────────────────────────────────────
 interface WidgetShellProps {
@@ -85,6 +86,8 @@ function WidgetShell({
 // ─── Clock Widget ─────────────────────────────────────────────────────────────
 function ClockWidget() {
   const [time, setTime] = useState(new Date());
+  const { i18n } = useTranslation();
+
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
@@ -159,7 +162,7 @@ function ClockWidget() {
         <circle cx="40" cy="40" r="1.5" fill="#ff3b30" />
       </svg>
       <p className="text-white text-[11px] opacity-60">
-        {time.toLocaleDateString("ko-KR", {
+        {time.toLocaleDateString(i18n.language, {
           month: "short",
           day: "numeric",
           weekday: "short",
@@ -171,13 +174,15 @@ function ClockWidget() {
 
 // ─── Weather Widget ───────────────────────────────────────────────────────────
 function WeatherWidget() {
+  const { t } = useTranslation();
+
   const hourly = [
-    { time: "지금", icon: "☀️", temp: 23 },
-    { time: "오후1", icon: "🌤️", temp: 25 },
-    { time: "오후2", icon: "⛅", temp: 24 },
-    { time: "오후3", icon: "🌧️", temp: 19 },
-    { time: "오후4", icon: "🌧️", temp: 17 },
-    { time: "오후5", icon: "🌦️", temp: 18 },
+    { time: t("widgets.weather.now"), icon: "☀️", temp: 23 },
+    { time: "13:00", icon: "🌤️", temp: 25 },
+    { time: "14:00", icon: "⛅", temp: 24 },
+    { time: "15:00", icon: "🌧️", temp: 19 },
+    { time: "16:00", icon: "🌧️", temp: 17 },
+    { time: "17:00", icon: "🌦️", temp: 18 },
   ];
   return (
     <div
@@ -190,12 +195,14 @@ function WeatherWidget() {
     >
       <div className="flex items-start justify-between mb-3">
         <div>
-          <p className="text-white/80 text-[11px] font-medium">서울특별시</p>
+          <p className="text-white/80 text-[11px] font-medium">
+            {t("widgets.weather.location")}
+          </p>
           <span className="text-white text-[52px] leading-none font-thin">
             23°
           </span>
           <p className="text-white text-[13px] opacity-80 mt-0.5">
-            맑음 · 최고 26° 최저 15°
+            {t("widgets.weather.condition")} · {t("widgets.weather.high")} 26° {t("widgets.weather.low")} 15°
           </p>
         </div>
         <div className="text-5xl mt-1">☀️</div>
@@ -214,7 +221,9 @@ function WeatherWidget() {
         </div>
         <div className="flex items-center gap-1">
           <Thermometer size={11} className="text-white/70" />
-          <span className="text-white/80 text-[11px]">체감 21°</span>
+          <span className="text-white/80 text-[11px]">
+            {t("widgets.weather.feelsLike")} 21°
+          </span>
         </div>
       </div>
       <div className="flex gap-2 overflow-x-auto pb-1">
@@ -237,6 +246,8 @@ function WeatherWidget() {
 
 // ─── Calendar Widget ─────────────────────────────────────────────────────────
 function CalendarWidget() {
+  const { t, i18n } = useTranslation();
+
   const today = new Date();
   const year = today.getFullYear();
   const month = today.getMonth();
@@ -250,12 +261,15 @@ function CalendarWidget() {
   });
 
   const events: Record<number, string> = {
-    [date]: "오늘",
-    [date + 2]: "회의",
-    [date + 5]: "생일",
+    [date]: t("widgets.calendar.today"),
+    [date + 2]: t("widgets.calendar.meeting"),
+    [date + 5]: t("widgets.calendar.birthday"),
   };
 
-  const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+  const weekdays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(2024, 0, i); // 2024-01-07 is Sunday
+    return d.toLocaleDateString(i18n.language, { weekday: "narrow" });
+  });
 
   return (
     <div
@@ -268,7 +282,7 @@ function CalendarWidget() {
       <div className="flex items-center justify-between mb-3">
         <div>
           <p className="text-red-400 text-[11px] font-semibold uppercase tracking-wider">
-            {today.toLocaleDateString("ko-KR", { month: "long" })}
+            {today.toLocaleDateString(i18n.language, { month: "long" })}
           </p>
           <p className="text-white text-[28px] font-thin leading-none">
             {date}
@@ -279,7 +293,7 @@ function CalendarWidget() {
       <div className="grid grid-cols-7 gap-0.5 mb-1">
         {weekdays.map((d, i) => (
           <div
-            key={d}
+            key={d + i}
             className="text-center text-[10px] py-0.5"
             style={{
               color: i === 0 ? "#ff3b30" : "rgba(255,255,255,0.4)",
@@ -318,7 +332,9 @@ function CalendarWidget() {
         className="mt-3 pt-3"
         style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
       >
-        <p className="text-white/40 text-[10px] mb-1.5">다가오는 일정</p>
+        <p className="text-white/40 text-[10px] mb-1.5">
+          {t("widgets.calendar.upcoming")}
+        </p>
         {Object.entries(events)
           .filter(([d]) => Number(d) >= date)
           .slice(0, 2)
@@ -326,7 +342,7 @@ function CalendarWidget() {
             <div key={d} className="flex items-center gap-2 mb-1">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
               <span className="text-white/70 text-[11px]">
-                {month + 1}월 {d}일 · {name}
+                {month + 1}/{d} · {name}
               </span>
             </div>
           ))}
@@ -337,9 +353,9 @@ function CalendarWidget() {
 
 // ─── Notes Widget ─────────────────────────────────────────────────────────────
 function NotesWidget() {
-  const [text, setText] = useState(
-    "📌 빠른 메모\n\n- 오늘 할 일 정리하기\n- 코드 리뷰 완료\n- 점심 약속 11:30"
-  );
+  const { t } = useTranslation();
+  const [text, setText] = useState(t("widgets.notes.defaultContent"));
+
   return (
     <div
       className="w-52"
@@ -352,7 +368,9 @@ function NotesWidget() {
         className="px-4 py-2.5"
         style={{ borderBottom: "1px solid rgba(0,0,0,0.08)" }}
       >
-        <p className="text-[12px] font-semibold text-yellow-900">빠른 메모</p>
+        <p className="text-[12px] font-semibold text-yellow-900">
+          {t("widgets.notes.header")}
+        </p>
       </div>
       <textarea
         value={text}
@@ -368,6 +386,7 @@ function NotesWidget() {
 
 // ─── System Stats Widget ──────────────────────────────────────────────────────
 function SystemWidget() {
+  const { t } = useTranslation();
   const [cpu] = useState(34);
   const [mem] = useState(68);
   const [gpu] = useState(22);
@@ -397,13 +416,15 @@ function SystemWidget() {
     >
       <div className="flex items-center gap-2 mb-3">
         <Activity size={13} className="text-green-400" />
-        <p className="text-white text-[12px] font-semibold">시스템 상태</p>
+        <p className="text-white text-[12px] font-semibold">
+          {t("widgets.system.title")}
+        </p>
       </div>
       {[
         { label: "CPU", value: cpu, color: "#30d158", unit: "%" },
-        { label: "메모리", value: mem, color: "#1d7af5", unit: "%" },
+        { label: t("widgets.system.memory"), value: mem, color: "#1d7af5", unit: "%" },
         { label: "GPU", value: gpu, color: "#bf5af2", unit: "%" },
-        { label: "네트워크", value: net, color: "#ff9f0a", unit: "MB/s" },
+        { label: t("widgets.system.network"), value: net, color: "#ff9f0a", unit: "MB/s" },
       ].map((item) => (
         <div key={item.label} className="mb-2.5">
           <div className="flex justify-between mb-1">
@@ -421,15 +442,15 @@ function SystemWidget() {
         style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
       >
         <div className="text-center">
-          <p className="text-white/40 text-[9px]">디스크</p>
+          <p className="text-white/40 text-[9px]">{t("widgets.system.disk")}</p>
           <p className="text-white text-[11px]">256 GB</p>
         </div>
         <div className="text-center">
-          <p className="text-white/40 text-[9px]">칩셋</p>
+          <p className="text-white/40 text-[9px]">{t("widgets.system.chipset")}</p>
           <p className="text-white text-[11px]">M4</p>
         </div>
         <div className="text-center">
-          <p className="text-white/40 text-[9px]">메모리</p>
+          <p className="text-white/40 text-[9px]">{t("widgets.system.memory")}</p>
           <p className="text-white text-[11px]">16 GB</p>
         </div>
       </div>
@@ -445,20 +466,22 @@ interface WidgetPickerProps {
   active: string[];
 }
 
-const WIDGET_DEFS = [
-  { id: "clock", name: "시계", icon: "🕐", desc: "아날로그 시계" },
-  { id: "weather", name: "날씨", icon: "⛅", desc: "현재 날씨 정보" },
-  { id: "calendar", name: "달력", icon: "📅", desc: "월간 달력 + 일정" },
-  { id: "notes", name: "메모", icon: "📝", desc: "빠른 스티커 메모" },
-  { id: "system", name: "시스템", icon: "📊", desc: "CPU / 메모리 상태" },
-];
-
 export function WidgetPicker({
   isOpen,
   onClose,
   onAdd,
   active,
 }: WidgetPickerProps) {
+  const { t } = useTranslation();
+
+  const WIDGET_DEFS = [
+    { id: "clock", name: t("widgets.clock.name"), icon: "🕐", desc: t("widgets.clock.desc") },
+    { id: "weather", name: t("widgets.weather.name"), icon: "⛅", desc: t("widgets.weather.desc") },
+    { id: "calendar", name: t("widgets.calendar.name"), icon: "📅", desc: t("widgets.calendar.desc") },
+    { id: "notes", name: t("widgets.notes.name"), icon: "📝", desc: t("widgets.notes.desc") },
+    { id: "system", name: t("widgets.system.name"), icon: "📊", desc: t("widgets.system.desc") },
+  ];
+
   if (!isOpen) return null;
 
   return (
@@ -475,7 +498,9 @@ export function WidgetPicker({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="text-white text-[14px] font-semibold mb-3">위젯 추가</p>
+        <p className="text-white text-[14px] font-semibold mb-3">
+          {t("widgets.addWidget")}
+        </p>
         <div className="space-y-1.5">
           {WIDGET_DEFS.map((w) => {
             const isActive = active.includes(w.id);

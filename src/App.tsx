@@ -10,6 +10,7 @@ import { SafariWindow } from "./components/SafariWindow";
 import { NotesWindow } from "./components/NotesWindow";
 import { TerminalWindow } from "./components/TerminalWindow";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // ── Dock icon components ────────────────────────────────────────────────────
 function FinderIcon() {
@@ -240,13 +241,14 @@ function TrashIcon() {
 
 // ── App Store Window ────────────────────────────────────────────────────────
 function AppStoreWindow() {
+  const { t } = useTranslation();
   const featured = [
-    { name: "Figma", icon: "🎨", rating: "4.8", category: "디자인", price: "무료", color: "#a259ff" },
-    { name: "Slack", icon: "💬", rating: "4.6", category: "업무", price: "무료", color: "#4a154b" },
-    { name: "Notion", icon: "📋", rating: "4.7", category: "생산성", price: "무료", color: "#000" },
-    { name: "VS Code", icon: "💻", rating: "4.9", category: "개발", price: "무료", color: "#007acc" },
-    { name: "Spotify", icon: "🎵", rating: "4.5", category: "음악", price: "무료", color: "#1db954" },
-    { name: "1Password", icon: "🔐", rating: "4.8", category: "유틸리티", price: "₩14,900", color: "#0076d1" },
+    { name: "Figma", icon: "🎨", rating: "4.8", category: t("appStore.categoryLabels.design"), price: t("appStore.free"), color: "#a259ff" },
+    { name: "Slack", icon: "💬", rating: "4.6", category: t("appStore.categoryLabels.work"), price: t("appStore.free"), color: "#4a154b" },
+    { name: "Notion", icon: "📋", rating: "4.7", category: t("appStore.categoryLabels.productivity"), price: t("appStore.free"), color: "#000" },
+    { name: "VS Code", icon: "💻", rating: "4.9", category: t("appStore.categoryLabels.dev"), price: t("appStore.free"), color: "#007acc" },
+    { name: "Spotify", icon: "🎵", rating: "4.5", category: t("appStore.categoryLabels.music"), price: t("appStore.free"), color: "#1db954" },
+    { name: "1Password", icon: "🔐", rating: "4.8", category: t("appStore.categoryLabels.utility"), price: "₩14,900", color: "#0076d1" },
   ];
   const [installed, setInstalled] = useState<string[]>([]);
 
@@ -260,10 +262,10 @@ function AppStoreWindow() {
         }}
       >
         {[
-          { label: "탐색", items: ["오늘", "게임", "앱", "아케이드"] },
+          { label: t("appStore.browse"), items: [t("appStore.today"), t("appStore.games"), t("appStore.apps"), t("appStore.arcade")] },
           {
-            label: "카테고리",
-            items: ["개발자 도구", "그래픽 & 디자인", "생산성", "유틸리티"],
+            label: t("appStore.categories"),
+            items: [t("appStore.devTools"), t("appStore.graphicDesign"), t("appStore.productivity"), t("appStore.utilities")],
           },
         ].map((sec) => (
           <div key={sec.label} className="mb-2">
@@ -292,22 +294,22 @@ function AppStoreWindow() {
           >
             <div className="text-white">
               <p className="text-[11px] opacity-60 uppercase tracking-wider mb-1">
-                Editor's Choice
+                {t("appStore.editorsChoice")}
               </p>
               <p className="text-[22px] font-semibold leading-tight">
-                2026년
+                {t("appStore.banner.year")}
                 <br />
-                생산성 앱 모음
+                {t("appStore.banner.title")}
               </p>
               <p className="text-[12px] opacity-60 mt-1">
-                당신의 워크플로를 바꿀 앱
+                {t("appStore.banner.subtitle")}
               </p>
             </div>
             <div className="text-6xl">🚀</div>
           </div>
 
           <h3 className="text-[17px] text-gray-800 font-semibold mb-3">
-            인기 무료 앱
+            {t("appStore.popularFree")}
           </h3>
           <div className="grid grid-cols-1 gap-2">
             {featured.map((app, i) => (
@@ -350,9 +352,9 @@ function AppStoreWindow() {
                   }}
                 >
                   {installed.includes(app.name)
-                    ? "열기"
-                    : app.price === "무료"
-                      ? "받기"
+                    ? t("appStore.open")
+                    : app.price === t("appStore.free")
+                      ? t("appStore.get")
                       : app.price}
                 </button>
               </div>
@@ -366,12 +368,13 @@ function AppStoreWindow() {
 
 // ── Mail Window ─────────────────────────────────────────────────────────────
 function MailWindow() {
+  const { t } = useTranslation();
   const emails = [
-    { from: "Apple", subject: "새로운 기능이 추가되었습니다", body: "macOS Sequoia의 새로운 기능을 확인해보세요.", time: "오전 9:30", unread: true, avatar: "🍎" },
-    { from: "GitHub", subject: "새 풀 리퀘스트: feat/ui-update", body: "user123님이 새 풀 리퀘스트를 열었습니다.", time: "오전 8:15", unread: true, avatar: "🐙" },
-    { from: "Slack", subject: "디자인 팀 · 새 메시지 3건", body: "김민준: 새 디자인 시안 확인해주세요 🎨", time: "어제", unread: false, avatar: "💬" },
-    { from: "Google", subject: "보안 알림: 새 기기 로그인", body: "새로운 기기에서 귀하의 Google 계정에 로그인이 감지되었습니다.", time: "어제", unread: false, avatar: "🔍" },
-    { from: "Netflix", subject: "이번 주 새로운 콘텐츠", body: "이번 주 Netflix에 추가된 새로운 콘텐츠를 확인하세요.", time: "2일 전", unread: false, avatar: "🎬" },
+    { from: "Apple", subject: t("mail.emails.apple.subject"), body: t("mail.emails.apple.body"), time: "09:30", unread: true, avatar: "🍎" },
+    { from: "GitHub", subject: t("mail.emails.github.subject"), body: t("mail.emails.github.body"), time: "08:15", unread: true, avatar: "🐙" },
+    { from: "Slack", subject: t("mail.emails.slack.subject"), body: t("mail.emails.slack.body"), time: t("finder.time.yesterday"), unread: false, avatar: "💬" },
+    { from: "Google", subject: t("mail.emails.google.subject"), body: t("mail.emails.google.body"), time: t("finder.time.yesterday"), unread: false, avatar: "🔍" },
+    { from: "Netflix", subject: t("mail.emails.netflix.subject"), body: t("mail.emails.netflix.body"), time: t("finder.time.daysAgo", { count: 2 }), unread: false, avatar: "🎬" },
   ];
   const [selected, setSelected] = useState(0);
 
@@ -386,13 +389,13 @@ function MailWindow() {
       >
         <div className="px-3 pt-3 pb-2">
           <p className="text-[10px] text-gray-400 uppercase font-semibold tracking-wider mb-1">
-            사서함
+            {t("mail.mailboxes")}
           </p>
           {[
-            { name: "받은 편지함", icon: "📥", count: 2 },
-            { name: "보낸 편지함", icon: "📤", count: 0 },
-            { name: "중요 메일", icon: "⭐", count: 1 },
-            { name: "휴지통", icon: "🗑️", count: 0 },
+            { name: t("mail.inbox"), icon: "📥", count: 2 },
+            { name: t("mail.sent"), icon: "📤", count: 0 },
+            { name: t("mail.starred"), icon: "⭐", count: 1 },
+            { name: t("mail.trash"), icon: "🗑️", count: 0 },
           ].map((m) => (
             <button
               key={m.name}
@@ -465,7 +468,7 @@ function MailWindow() {
                     {emails[selected].from}
                   </p>
                   <p className="text-[11px] text-gray-400">
-                    받는 사람: 나 &lt;user@icloud.com&gt;
+                    {t("mail.recipient")} &lt;user@icloud.com&gt;
                   </p>
                 </div>
                 <span className="text-[11px] text-gray-400">
@@ -485,7 +488,7 @@ function MailWindow() {
                   className="px-4 py-2 rounded-lg text-[13px] text-white font-medium"
                   style={{ background: "#1d7af5" }}
                 >
-                  답장
+                  {t("mail.reply")}
                 </button>
               </div>
             </div>
@@ -531,6 +534,7 @@ const WALLPAPER =
 
 // ── Main App ────────────────────────────────────────────────────────────────
 export default function App() {
+  const { t } = useTranslation();
   const [windows, setWindows] = useState<AppWindow[]>([]);
   const zCounter = useRef(100);
   const [spotlightOpen, setSpotlightOpen] = useState(false);
@@ -615,14 +619,14 @@ export default function App() {
     },
     {
       id: "notes",
-      name: "메모",
+      name: t("dock.notes"),
       icon: <NotesIcon />,
       color: "transparent",
       isOpen: isDockOpen("notes"),
     },
     {
       id: "terminal",
-      name: "터미널",
+      name: t("dock.terminal"),
       icon: <TerminalIcon />,
       color: "transparent",
       isOpen: isDockOpen("terminal"),
@@ -645,7 +649,7 @@ export default function App() {
     { id: "sep2", name: "", icon: null, color: "", isSeparator: true },
     {
       id: "trash",
-      name: "휴지통",
+      name: t("dock.trash"),
       icon: <TrashIcon />,
       color: "transparent",
       isOpen: false,
@@ -750,7 +754,7 @@ export default function App() {
         }}
       >
         <Plus size={13} />
-        위젯
+        {t("widgets.button")}
       </button>
 
       {/* Widget Picker */}
@@ -849,15 +853,15 @@ export default function App() {
         >
           {(
             [
-              ["새 폴더", () => {}],
+              [t("contextMenu.newFolder"), () => {}],
               null,
-              ["정보 가져오기", () => {}],
-              ["배경화면 변경...", () => {}],
+              [t("contextMenu.getInfo"), () => {}],
+              [t("contextMenu.changeWallpaper"), () => {}],
               null,
-              ["위젯 추가", () => setWidgetPickerOpen(true)],
-              ["Spotlight 검색", () => setSpotlightOpen(true)],
+              [t("contextMenu.addWidget"), () => setWidgetPickerOpen(true)],
+              [t("contextMenu.spotlightSearch"), () => setSpotlightOpen(true)],
               null,
-              ["시스템 환경설정...", () => {}],
+              [t("contextMenu.preferences"), () => {}],
             ] as ([string, () => void] | null)[]
           ).map((item, i) =>
             item === null ? (

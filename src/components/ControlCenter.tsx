@@ -13,6 +13,7 @@ import {
   SkipForward,
   Pause,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ControlCenterProps {
   isOpen: boolean;
@@ -79,6 +80,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
   const [volume, setVolume] = useState(60);
   const [darkMode, setDarkMode] = useState(false);
   const [playing, setPlaying] = useState(true);
+  const { t } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -123,7 +125,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
                   Wi-Fi
                 </p>
                 <p className="text-[10px] text-gray-500">
-                  {wifi ? "HomeNetwork_5G" : "꺼짐"}
+                  {wifi ? "HomeNetwork_5G" : t("controlCenter.off")}
                 </p>
               </div>
             </button>
@@ -158,7 +160,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
                   Bluetooth
                 </p>
                 <p className="text-[10px] text-gray-500">
-                  {bluetooth ? "켜짐" : "꺼짐"}
+                  {bluetooth ? t("controlCenter.on") : t("controlCenter.off")}
                 </p>
               </div>
             </button>
@@ -188,7 +190,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
                   AirDrop
                 </p>
                 <p className="text-[10px] text-gray-500">
-                  {airdrop ? "모두에게" : "꺼짐"}
+                  {airdrop ? t("controlCenter.everyone") : t("controlCenter.off")}
                 </p>
               </div>
             </button>
@@ -210,10 +212,10 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
               </div>
               <div className="text-left">
                 <p className="text-[12px] font-semibold text-gray-800">
-                  집중 모드
+                  {t("controlCenter.focusMode")}
                 </p>
                 <p className="text-[10px] text-gray-500">
-                  {focusMode ? "방해 금지" : "꺼짐"}
+                  {focusMode ? t("controlCenter.doNotDisturb") : t("controlCenter.off")}
                 </p>
               </div>
             </button>
@@ -228,7 +230,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
           <div className="flex items-center gap-2 mb-2">
             <Sun size={14} className="text-gray-500 flex-shrink-0" />
             <span className="text-[12px] font-semibold text-gray-700">
-              디스플레이 밝기
+              {t("controlCenter.brightness")}
             </span>
             <span className="ml-auto text-[11px] text-gray-400">
               {brightness}%
@@ -245,7 +247,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
           <div className="flex items-center gap-2 mb-2">
             <Volume2 size={14} className="text-gray-500 flex-shrink-0" />
             <span className="text-[12px] font-semibold text-gray-700">
-              사운드
+              {t("controlCenter.sound")}
             </span>
             <span className="ml-auto text-[11px] text-gray-400">
               {volume}%
@@ -262,7 +264,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
           <div className="flex items-center gap-2 mb-2">
             <Music size={12} className="text-gray-400" />
             <span className="text-[10px] text-gray-400 uppercase tracking-wider">
-              지금 재생 중
+              {t("controlCenter.nowPlaying")}
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -321,7 +323,8 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
               className="text-[10px]"
               style={{ color: darkMode ? "white" : "#555" }}
             >
-              다크 모드
+
+              {t("controlCenter.darkMode")}
             </span>
           </button>
           <button
@@ -329,7 +332,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
             style={{ background: "rgba(255,255,255,0.7)" }}
           >
             <Monitor size={16} className="text-gray-600" />
-            <span className="text-[10px] text-gray-600">미러링</span>
+            <span className="text-[10px] text-gray-600">{t("controlCenter.mirroring")}</span>
           </button>
           <button
             className="rounded-xl p-2 flex flex-col items-center gap-1"
