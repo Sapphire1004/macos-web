@@ -1,0 +1,167 @@
+import { useState, useRef, useEffect } from "react";
+
+interface Line {
+  type: "input" | "output" | "error";
+  content: string;
+}
+
+const commands: Record<string, string> = {
+  help: `사용 가능한 명령어:
+  help     - 도움말 표시
+  ls       - 파일 목록
+  pwd      - 현재 경로
+  whoami   - 현재 사용자
+  date     - 현재 날짜/시간
+  clear    - 화면 지우기
+  echo     - 텍스트 출력
+  uname    - 시스템 정보
+  neofetch - 시스템 정보 (시각화)`,
+  ls: `Applications    Desktop    Documents    Downloads
+Library         Movies     Music        Pictures
+Public`,
+  pwd: "/Users/사용자",
+  whoami: "사용자",
+  date: new Date().toLocaleString("ko-KR"),
+  uname: "Darwin MacBook-Pro.local 24.4.0 Darwin Kernel Version 24.4.0",
+  neofetch: `
+                    'c.          사용자@MacBook-Pro
+                 ,xNMM.          -------------------------
+               .OMMMMo           OS: macOS Sequoia 15.4.1
+               OMMM0,            Host: MacBook Pro (M4)
+     .;loddo:.  oMMMo            Kernel: Darwin 24.4.0
+   cKMMMMMMMMMMNWMMMNk.          Uptime: 3 days, 14 hours
+ .XMMMMMMMMMMMMMMMMMMMX.         Packages: 142 (brew)
+;MMMMMMMMMMMMMMMMMMMMMM:         Shell: zsh 5.9
+:MMMMMMMMMMMMMMMMMMMMMM:         Resolution: 2560x1664
+.MMMMMMMMMMMMMMMMMMMMMMX.        DE: Aqua
+ kMMMMMMMMMMMMMMMMMMMMMMMk.      WM: Quartz Compositor
+ .KMMMMMMMMMMMMMMMMMMMMMMk.      CPU: Apple M4
+   kMMMMMMMMMMMMMMMMMMMMk.       GPU: Apple M4
+     xMMMMMMMMMMMMMMMMk.         Memory: 8192MiB / 16384MiB
+      oMMMMMMMMMMMMMMo.`,
+};
+
+export function TerminalWindow() {
+  const [lines, setLines] = useState<Line[]>([
+    {
+      type: "output",
+      content: "Last login: Wed Apr  9 09:00:00 on ttys001",
+    },
+    {
+      type: "output",
+      content: 'macOS Sequoia 15.4.1 — "help"를 입력하면 도움말을 볼 수 있습니다.',
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [lines]);
+
+  const execute = (cmd: string) => {
+    const trimmed = cmd.trim();
+    if (!trimmed) return;
+
+    const newLines: Line[] = [{ type: "input", content: trimmed }];
+
+    if (trimmed === "clear") {
+      setLines([]);
+      setHistory((h) => [trimmed, ...h]);
+      setHistoryIndex(-1);
+      return;
+    }
+
+    const parts = trimmed.split(" ");
+    const baseCmd = parts[0];
+
+    if (baseCmd === "echo") {
+      newLines.push({ type: "output", content: parts.slice(1).join(" ") });
+    } else if (commands[baseCmd]) {
+      newLines.push({ type: "output", content: commands[baseCmd] });
+    } else {
+      newLines.push({
+        type: "error",
+        content: `zsh: command not found: ${baseCmd}`,
+      });
+    }
+
+    setLines((prev) => [...prev, ...newLines]);
+    setHistory((h) => [trimmed, ...h]);
+    setHistoryIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      execute(input);
+      setInput("");
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const next = historyIndex + 1;
+      if (next < history.length) {
+        setHistoryIndex(next);
+        setInput(history[next]);
+      }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const next = historyIndex - 1;
+      if (next < 0) {
+        setHistoryIndex(-1);
+        setInput("");
+      } else {
+        setHistoryIndex(next);
+        setInput(history[next]);
+      }
+    }
+  };
+
+  return (
+    <div
+      className="h-full flex flex-col p-4 font-mono text-[13px] cursor-text overflow-y-auto"
+      style={{ background: "#1e1e1e", color: "#d4d4d4" }}
+      onClick={() => inputRef.current?.focus()}
+    >
+      {lines.map((line, i) => (
+        <div key={i} className="leading-6 whitespace-pre-wrap">
+          {line.type === "input" && (
+            <span>
+              <span style={{ color: "#50fa7b" }}>사용자@MacBook-Pro</span>
+              <span style={{ color: "#bd93f9" }}> ~ </span>
+              <span style={{ color: "#8be9fd" }}>% </span>
+              <span style={{ color: "#f8f8f2" }}>{line.content}</span>
+            </span>
+          )}
+          {line.type === "output" && (
+            <span style={{ color: "#d4d4d4" }}>{line.content}</span>
+          )}
+          {line.type === "error" && (
+            <span style={{ color: "#ff5555" }}>{line.content}</span>
+          )}
+        </div>
+      ))}
+
+      <div className="flex items-center leading-6 mt-1">
+        <span style={{ color: "#50fa7b" }}>사용자@MacBook-Pro</span>
+        <span style={{ color: "#bd93f9" }}> ~ </span>
+        <span style={{ color: "#8be9fd" }}>% </span>
+        <input
+          ref={inputRef}
+          autoFocus
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-1 bg-transparent outline-none caret-white"
+          style={{ color: "#f8f8f2", caretColor: "#f8f8f2" }}
+          spellCheck={false}
+        />
+        <span className="animate-pulse" style={{ color: "#f8f8f2" }}>
+          █
+        </span>
+      </div>
+      <div ref={bottomRef} />
+    </div>
+  );
+}

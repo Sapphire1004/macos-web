@@ -1,0 +1,265 @@
+import { useState } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+  Lock,
+  Plus,
+  Share,
+} from "lucide-react";
+
+const bookmarks = [
+  { name: "Apple", url: "apple.com", icon: "🍎" },
+  { name: "GitHub", url: "github.com", icon: "🐙" },
+  { name: "YouTube", url: "youtube.com", icon: "📺" },
+  { name: "Gmail", url: "gmail.com", icon: "✉️" },
+  { name: "Maps", url: "maps.apple.com", icon: "🗺️" },
+  { name: "News", url: "news.apple.com", icon: "📰" },
+];
+
+const news = [
+  {
+    title: "Apple, 새로운 M4 칩 공개 - 역대 가장 강력한 프로세서",
+    category: "기술",
+    time: "2시간 전",
+    image: "🖥️",
+  },
+  {
+    title: "macOS Sequoia의 새로운 기능들 완전 가이드",
+    category: "소프트웨어",
+    time: "4시간 전",
+    image: "📱",
+  },
+  {
+    title: "인공지능이 바꾸는 미래의 업무 방식",
+    category: "AI",
+    time: "6시간 전",
+    image: "🤖",
+  },
+  {
+    title: "2026년 최고의 맥북 추천 및 비교 분석",
+    category: "리뷰",
+    time: "어제",
+    image: "💻",
+  },
+];
+
+export function SafariWindow() {
+  const [inputUrl, setInputUrl] = useState("apple.com");
+  const [isEditing, setIsEditing] = useState(false);
+  const [tabs, setTabs] = useState([
+    { id: 1, title: "Apple", url: "apple.com", active: true },
+    { id: 2, title: "GitHub", url: "github.com", active: false },
+  ]);
+
+  return (
+    <div className="flex flex-col h-full" style={{ background: "#f5f5f5" }}>
+      {/* Tabs */}
+      <div
+        className="flex items-center h-9 px-2 gap-0.5 overflow-x-auto"
+        style={{
+          background: "rgba(228,228,228,0.95)",
+          borderBottom: "1px solid rgba(0,0,0,0.08)",
+        }}
+      >
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() =>
+              setTabs((prev) =>
+                prev.map((t) => ({ ...t, active: t.id === tab.id }))
+              )
+            }
+            className="flex items-center gap-1.5 px-3 py-1 rounded-t-lg text-[12px] min-w-[120px] max-w-[180px] flex-shrink-0 transition-colors"
+            style={{
+              background: tab.active ? "rgba(255,255,255,0.9)" : "transparent",
+              color: tab.active ? "#333" : "#888",
+              boxShadow: tab.active ? "0 1px 0 white" : "none",
+            }}
+          >
+            <span className="truncate flex-1 text-left">{tab.title}</span>
+            <span
+              className="text-[10px] text-gray-400 hover:text-gray-600 flex-shrink-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                setTabs((prev) => prev.filter((t) => t.id !== tab.id));
+              }}
+            >
+              ×
+            </span>
+          </button>
+        ))}
+        <button
+          className="p-1 rounded hover:bg-black/10 transition-colors ml-1"
+          onClick={() =>
+            setTabs((prev) => [
+              ...prev.map((t) => ({ ...t, active: false })),
+              { id: Date.now(), title: "새 탭", url: "", active: true },
+            ])
+          }
+        >
+          <Plus size={13} className="text-gray-500" />
+        </button>
+      </div>
+
+      {/* Toolbar */}
+      <div
+        className="flex items-center gap-2 px-3 py-2"
+        style={{
+          background: "rgba(235,235,235,0.95)",
+          borderBottom: "1px solid rgba(0,0,0,0.08)",
+        }}
+      >
+        <button className="p-1 rounded hover:bg-black/10 text-gray-400">
+          <ChevronLeft size={16} />
+        </button>
+        <button className="p-1 rounded hover:bg-black/10 text-gray-400">
+          <ChevronRight size={16} />
+        </button>
+        <button className="p-1 rounded hover:bg-black/10 text-gray-500">
+          <RefreshCw size={14} />
+        </button>
+
+        <div
+          className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-text"
+          style={{
+            background: "rgba(255,255,255,0.85)",
+            border: "1px solid rgba(0,0,0,0.12)",
+          }}
+          onClick={() => setIsEditing(true)}
+        >
+          <Lock size={11} className="text-gray-400 flex-shrink-0" />
+          {isEditing ? (
+            <input
+              autoFocus
+              value={inputUrl}
+              onChange={(e) => setInputUrl(e.target.value)}
+              onBlur={() => setIsEditing(false)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") setIsEditing(false);
+              }}
+              className="flex-1 bg-transparent outline-none text-[13px] text-gray-700 text-center"
+            />
+          ) : (
+            <span className="flex-1 text-[13px] text-gray-700 text-center truncate">
+              {inputUrl}
+            </span>
+          )}
+        </div>
+
+        <button className="p-1 rounded hover:bg-black/10 text-gray-500">
+          <Share size={14} />
+        </button>
+        <button className="p-1 rounded hover:bg-black/10 text-gray-500">
+          <Plus size={14} />
+        </button>
+      </div>
+
+      {/* Bookmarks Bar */}
+      <div
+        className="flex items-center gap-1 px-3 py-1 overflow-x-auto"
+        style={{
+          background: "rgba(235,235,235,0.7)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
+        }}
+      >
+        {bookmarks.map((bm) => (
+          <button
+            key={bm.name}
+            className="flex items-center gap-1.5 px-2 py-0.5 rounded hover:bg-black/10 transition-colors flex-shrink-0"
+          >
+            <span className="text-[13px]">{bm.icon}</span>
+            <span className="text-[11px] text-gray-600 hidden sm:block">
+              {bm.name}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto" style={{ background: "white" }}>
+        <div className="p-6 max-w-3xl mx-auto">
+          {/* Favorites */}
+          <div className="mb-8">
+            <h3 className="text-[14px] text-gray-500 mb-3 font-semibold">
+              즐겨찾기
+            </h3>
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-4">
+              {bookmarks.map((bm) => (
+                <button
+                  key={bm.name}
+                  className="flex flex-col items-center gap-1.5 group"
+                >
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:shadow-md transition-shadow"
+                    style={{ background: "rgba(0,0,0,0.05)" }}
+                  >
+                    {bm.icon}
+                  </div>
+                  <span className="text-[11px] text-gray-600">{bm.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Privacy Report */}
+          <div
+            className="mb-6 p-4 rounded-xl"
+            style={{
+              background: "rgba(0,100,255,0.06)",
+              border: "1px solid rgba(0,100,255,0.12)",
+            }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <Lock size={14} className="text-blue-500" />
+              <span className="text-[13px] text-blue-600 font-semibold">
+                개인 정보 보호 리포트
+              </span>
+            </div>
+            <p className="text-[12px] text-gray-500">
+              지난 30일 동안 Safari가{" "}
+              <strong className="text-gray-700">148개</strong>의 추적기를
+              차단했습니다.
+            </p>
+          </div>
+
+          {/* News */}
+          <div>
+            <h3 className="text-[14px] text-gray-500 mb-3 font-semibold">
+              주요 기사
+            </h3>
+            <div className="space-y-3">
+              {news.map((article) => (
+                <div
+                  key={article.title}
+                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors"
+                  style={{ border: "1px solid rgba(0,0,0,0.06)" }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl flex-shrink-0"
+                    style={{ background: "rgba(0,0,0,0.05)" }}
+                  >
+                    {article.image}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] text-gray-800 leading-snug">
+                      {article.title}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] text-blue-500 font-medium">
+                        {article.category}
+                      </span>
+                      <span className="text-[10px] text-gray-400">
+                        {article.time}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

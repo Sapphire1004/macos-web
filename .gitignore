@@ -11,6 +11,7 @@ node_modules
 dist
 package-lock.json
 dist-ssr
+Create responsive macOS UI
 *.local
 
 # Editor directories and files

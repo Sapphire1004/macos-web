@@ -1,0 +1,345 @@
+import { useState } from "react";
+import {
+  Wifi,
+  Moon,
+  Sun,
+  Volume2,
+  Airplay,
+  Battery,
+  Monitor,
+  Music,
+  SkipBack,
+  Play,
+  SkipForward,
+  Pause,
+} from "lucide-react";
+
+interface ControlCenterProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function Toggle({
+  on,
+  onClick,
+  color = "#30d158",
+}: {
+  on: boolean;
+  onClick: () => void;
+  color?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="relative w-10 h-6 rounded-full transition-colors flex-shrink-0"
+      style={{ background: on ? color : "rgba(0,0,0,0.2)" }}
+    >
+      <div
+        className="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+        style={{ transform: `translateX(${on ? 16 : 2}px)` }}
+      />
+    </button>
+  );
+}
+
+function Slider({
+  value,
+  onChange,
+  color = "#1d7af5",
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  color?: string;
+}) {
+  return (
+    <div className="relative w-full h-1.5 bg-black/15 rounded-full">
+      <div
+        className="h-full rounded-full"
+        style={{ width: `${value}%`, background: color }}
+      />
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="absolute inset-0 w-full opacity-0 cursor-pointer"
+        style={{ height: "100%" }}
+      />
+    </div>
+  );
+}
+
+export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
+  const [wifi, setWifi] = useState(true);
+  const [bluetooth, setBluetooth] = useState(true);
+  const [airdrop, setAirdrop] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
+  const [brightness, setBrightness] = useState(75);
+  const [volume, setVolume] = useState(60);
+  const [darkMode, setDarkMode] = useState(false);
+  const [playing, setPlaying] = useState(true);
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      <div className="fixed inset-0 z-[80]" onClick={onClose} />
+      <div
+        className="fixed top-8 right-2 z-[90] w-80 p-3 rounded-2xl"
+        style={{
+          background: "rgba(245,245,245,0.88)",
+          backdropFilter: "blur(40px) saturate(180%)",
+          WebkitBackdropFilter: "blur(40px) saturate(180%)",
+          border: "1px solid rgba(255,255,255,0.6)",
+          boxShadow: "0 25px 80px rgba(0,0,0,0.35)",
+          animation: "slideDown 0.15s ease-out",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Row 1: WiFi, Bluetooth, AirDrop, Focus */}
+        <div className="grid grid-cols-2 gap-2 mb-2">
+          <div
+            className="rounded-xl p-3"
+            style={{ background: "rgba(255,255,255,0.7)" }}
+          >
+            <button
+              onClick={() => setWifi(!wifi)}
+              className="flex items-center gap-2.5 w-full mb-2.5"
+            >
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{
+                  background: wifi ? "#1d7af5" : "rgba(0,0,0,0.12)",
+                }}
+              >
+                <Wifi
+                  size={14}
+                  className={wifi ? "text-white" : "text-gray-500"}
+                />
+              </div>
+              <div className="text-left">
+                <p className="text-[12px] font-semibold text-gray-800">
+                  Wi-Fi
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  {wifi ? "HomeNetwork_5G" : "꺼짐"}
+                </p>
+              </div>
+            </button>
+            <div className="h-px bg-gray-200 mb-2.5" />
+            <button
+              onClick={() => setBluetooth(!bluetooth)}
+              className="flex items-center gap-2.5 w-full"
+            >
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{
+                  background: bluetooth ? "#1d7af5" : "rgba(0,0,0,0.12)",
+                }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-4 h-4"
+                  fill={bluetooth ? "white" : "#888"}
+                >
+                  <path
+                    d="M6.5 6.5l11 5-5.5 5.5V1l5.5 5.5-11 5"
+                    strokeWidth="2"
+                    stroke={bluetooth ? "white" : "#888"}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                </svg>
+              </div>
+              <div className="text-left">
+                <p className="text-[12px] font-semibold text-gray-800">
+                  Bluetooth
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  {bluetooth ? "켜짐" : "꺼짐"}
+                </p>
+              </div>
+            </button>
+          </div>
+
+          <div
+            className="rounded-xl p-3 flex flex-col gap-2"
+            style={{ background: "rgba(255,255,255,0.7)" }}
+          >
+            <button
+              onClick={() => setAirdrop(!airdrop)}
+              className="flex items-center gap-2.5"
+            >
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{
+                  background: airdrop ? "#1d7af5" : "rgba(0,0,0,0.12)",
+                }}
+              >
+                <Airplay
+                  size={14}
+                  className={airdrop ? "text-white" : "text-gray-500"}
+                />
+              </div>
+              <div className="text-left">
+                <p className="text-[12px] font-semibold text-gray-800">
+                  AirDrop
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  {airdrop ? "모두에게" : "꺼짐"}
+                </p>
+              </div>
+            </button>
+            <div className="h-px bg-gray-200" />
+            <button
+              onClick={() => setFocusMode(!focusMode)}
+              className="flex items-center gap-2.5"
+            >
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{
+                  background: focusMode ? "#30d158" : "rgba(0,0,0,0.12)",
+                }}
+              >
+                <Moon
+                  size={14}
+                  className={focusMode ? "text-white" : "text-gray-500"}
+                />
+              </div>
+              <div className="text-left">
+                <p className="text-[12px] font-semibold text-gray-800">
+                  집중 모드
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  {focusMode ? "방해 금지" : "꺼짐"}
+                </p>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Brightness */}
+        <div
+          className="rounded-xl p-3 mb-2"
+          style={{ background: "rgba(255,255,255,0.7)" }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Sun size={14} className="text-gray-500 flex-shrink-0" />
+            <span className="text-[12px] font-semibold text-gray-700">
+              디스플레이 밝기
+            </span>
+            <span className="ml-auto text-[11px] text-gray-400">
+              {brightness}%
+            </span>
+          </div>
+          <Slider value={brightness} onChange={setBrightness} color="#FFB800" />
+        </div>
+
+        {/* Volume */}
+        <div
+          className="rounded-xl p-3 mb-2"
+          style={{ background: "rgba(255,255,255,0.7)" }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Volume2 size={14} className="text-gray-500 flex-shrink-0" />
+            <span className="text-[12px] font-semibold text-gray-700">
+              사운드
+            </span>
+            <span className="ml-auto text-[11px] text-gray-400">
+              {volume}%
+            </span>
+          </div>
+          <Slider value={volume} onChange={setVolume} color="#1d7af5" />
+        </div>
+
+        {/* Now Playing */}
+        <div
+          className="rounded-xl p-3 mb-2"
+          style={{ background: "rgba(255,255,255,0.7)" }}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Music size={12} className="text-gray-400" />
+            <span className="text-[10px] text-gray-400 uppercase tracking-wider">
+              지금 재생 중
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-xl flex-shrink-0"
+              style={{
+                background: "linear-gradient(135deg, #ff6b6b, #ffd93d)",
+              }}
+            >
+              🎵
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold text-gray-800 truncate">
+                Dynamite
+              </p>
+              <p className="text-[11px] text-gray-400 truncate">BTS</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="text-gray-500 hover:text-gray-800 transition-colors">
+                <SkipBack size={14} />
+              </button>
+              <button
+                onClick={() => setPlaying(!playing)}
+                className="w-7 h-7 rounded-full flex items-center justify-center"
+                style={{ background: "rgba(0,0,0,0.08)" }}
+              >
+                {playing ? (
+                  <Pause size={12} className="text-gray-700" />
+                ) : (
+                  <Play size={12} className="text-gray-700" />
+                )}
+              </button>
+              <button className="text-gray-500 hover:text-gray-800 transition-colors">
+                <SkipForward size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom row */}
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="rounded-xl p-2 flex flex-col items-center gap-1 transition-colors"
+            style={{
+              background: darkMode
+                ? "rgba(0,0,0,0.7)"
+                : "rgba(255,255,255,0.7)",
+            }}
+          >
+            <Moon
+              size={16}
+              className={darkMode ? "text-white" : "text-gray-600"}
+            />
+            <span
+              className="text-[10px]"
+              style={{ color: darkMode ? "white" : "#555" }}
+            >
+              다크 모드
+            </span>
+          </button>
+          <button
+            className="rounded-xl p-2 flex flex-col items-center gap-1"
+            style={{ background: "rgba(255,255,255,0.7)" }}
+          >
+            <Monitor size={16} className="text-gray-600" />
+            <span className="text-[10px] text-gray-600">미러링</span>
+          </button>
+          <button
+            className="rounded-xl p-2 flex flex-col items-center gap-1"
+            style={{ background: "rgba(255,255,255,0.7)" }}
+          >
+            <Battery size={16} className="text-green-500" />
+            <span className="text-[10px] text-gray-600">85%</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
