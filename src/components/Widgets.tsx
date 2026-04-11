@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { X, Plus, Wind, Droplets, Thermometer, Activity } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { apiGet } from "../lib/axios";
 
 // ─── Draggable Widget Shell ───────────────────────────────────────────────────
 interface WidgetShellProps {
@@ -159,18 +160,108 @@ function ClockWidget() {
   );
 }
 
+// ─── WMO天気コードをアイコンに変換 ─────────────────────────────────────────────
+const WMO_ICONS: Record<number, string> = {
+  0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
+  45: "🌫️", 48: "🌫️",
+  51: "🌦️", 53: "🌦️", 55: "🌧️",
+  61: "🌧️", 63: "🌧️", 65: "🌧️",
+  71: "🌨️", 73: "🌨️", 75: "❄️",
+  80: "🌦️", 81: "🌧️", 82: "⛈️",
+  95: "⛈️", 96: "⛈️", 99: "⛈️",
+};
+
+// ─── Open-Meteoレスポンスの型 ───────────────────────────────────────────────
+interface WeatherData {
+  current: {
+    temperature_2m: number;
+    weather_code: number;
+    wind_speed_10m: number;
+    relative_humidity_2m: number;
+  };
+  daily: {
+    time: string[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+    weather_code: number[];
+  };
+  hourly: {
+    time: string[];
+    temperature_2m: number[];
+    weather_code: number[];
+  };
+}
+
 // ─── Weather Widget ───────────────────────────────────────────────────────────
 function WeatherWidget() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [cityName, setCityName] = useState(t("widgets.weather.location"));
 
-  const hourly = [
-    { time: t("widgets.weather.now"), icon: "☀️", temp: 23 },
-    { time: "13:00", icon: "🌤️", temp: 25 },
-    { time: "14:00", icon: "⛅", temp: 24 },
-    { time: "15:00", icon: "🌧️", temp: 19 },
-    { time: "16:00", icon: "🌧️", temp: 17 },
-    { time: "17:00", icon: "🌦️", temp: 18 },
-  ];
+  // 位置情報を取得（ソウルをフォールバック）
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      () => setCoords({ lat: 37.5665, lon: 126.978 })
+    );
+  }, []);
+
+  // 天気データを取得
+  useEffect(() => {
+    if (!coords) return;
+
+    apiGet<WeatherData>("https://api.open-meteo.com/v1/forecast", {
+      params: {
+        latitude: coords.lat,
+        longitude: coords.lon,
+        current: "temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m",
+        daily: "temperature_2m_max,temperature_2m_min,weather_code",
+        hourly: "temperature_2m,weather_code",
+        timezone: "auto",
+        forecast_days: 5,
+        forecast_hours: 6,
+      },
+    }).then(setWeather).catch(console.error);
+
+    // 逆ジオコーディングで都市名を取得（BigDataCloud、無料・キー不要）
+    apiGet<{ city: string; locality: string }>(
+      "https://api.bigdatacloud.net/data/reverse-geocode-client",
+      { params: { latitude: coords.lat, longitude: coords.lon, localityLanguage: i18n.language } }
+    ).then((data) => {
+      setCityName(data.city || data.locality);
+    }).catch(() => {});
+  }, [coords]);
+
+  // データがない場合はローディング表示
+  const current = weather?.current;
+  const daily = weather?.daily;
+  const hourlyData = weather?.hourly;
+
+  // 時間別データを整形
+  const hourlyItems = hourlyData
+    ? hourlyData.time.slice(0, 6).map((time, i) => ({
+        time: i === 0 ? t("widgets.weather.now") : time.split("T")[1]?.slice(0, 5) ?? "",
+        icon: WMO_ICONS[hourlyData.weather_code[i]] ?? "☁️",
+        temp: Math.round(hourlyData.temperature_2m[i]),
+      }))
+    : [];
+
+  // 5日間予報を整形
+  const dailyItems = daily
+    ? daily.time.map((date, i) => {
+        const d = Temporal.PlainDate.from(date);
+        return {
+          day: i === 0
+            ? t("widgets.calendar.today")
+            : d.toLocaleString(i18n.language, { weekday: "short" }),
+          icon: WMO_ICONS[daily.weather_code[i]] ?? "☁️",
+          high: Math.round(daily.temperature_2m_max[i]),
+          low: Math.round(daily.temperature_2m_min[i]),
+        };
+      })
+    : [];
+
   return (
     <div
       className="w-72 p-4"
@@ -181,14 +272,20 @@ function WeatherWidget() {
     >
       <div className="flex items-start justify-between mb-3">
         <div>
-          <p className="text-white/80 text-[11px] font-medium">{t("widgets.weather.location")}</p>
-          <span className="text-white text-[52px] leading-none font-thin">23°</span>
+          <p className="text-white/80 text-[11px] font-medium">{cityName}</p>
+          <span className="text-white text-[52px] leading-none font-thin">
+            {current ? `${Math.round(current.temperature_2m)}°` : "--°"}
+          </span>
           <p className="text-white text-[13px] opacity-80 mt-0.5">
-            {t("widgets.weather.condition")} · {t("widgets.weather.high")} 26°{" "}
-            {t("widgets.weather.low")} 15°
+            {current ? (WMO_ICONS[current.weather_code] ?? "☁️") : ""}{" "}
+            {daily
+              ? `${t("widgets.weather.high")} ${Math.round(daily.temperature_2m_max[0])}° ${t("widgets.weather.low")} ${Math.round(daily.temperature_2m_min[0])}°`
+              : ""}
           </p>
         </div>
-        <div className="text-5xl mt-1">☀️</div>
+        <div className="text-5xl mt-1">
+          {current ? (WMO_ICONS[current.weather_code] ?? "☁️") : "⏳"}
+        </div>
       </div>
       <div
         className="flex items-center gap-3 mb-3 p-2 rounded-xl"
@@ -196,19 +293,25 @@ function WeatherWidget() {
       >
         <div className="flex items-center gap-1">
           <Wind size={11} className="text-white/70" />
-          <span className="text-white/80 text-[11px]">3.2 m/s</span>
+          <span className="text-white/80 text-[11px]">
+            {current ? `${current.wind_speed_10m} m/s` : "-- m/s"}
+          </span>
         </div>
         <div className="flex items-center gap-1">
           <Droplets size={11} className="text-white/70" />
-          <span className="text-white/80 text-[11px]">45%</span>
+          <span className="text-white/80 text-[11px]">
+            {current ? `${current.relative_humidity_2m}%` : "--%"}
+          </span>
         </div>
         <div className="flex items-center gap-1">
           <Thermometer size={11} className="text-white/70" />
-          <span className="text-white/80 text-[11px]">{t("widgets.weather.feelsLike")} 21°</span>
+          <span className="text-white/80 text-[11px]">
+            {t("widgets.weather.feelsLike")} {current ? `${Math.round(current.temperature_2m)}°` : "--°"}
+          </span>
         </div>
       </div>
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {hourly.map((h) => (
+        {hourlyItems.map((h) => (
           <div key={h.time} className="flex flex-col items-center gap-0.5 flex-shrink-0">
             <span className="text-white/60 text-[10px]">{h.time}</span>
             <span className="text-base">{h.icon}</span>
@@ -216,6 +319,30 @@ function WeatherWidget() {
           </div>
         ))}
       </div>
+      {/* 5日間予報 */}
+      {dailyItems.length > 0 && (
+        <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.15)" }}>
+          {dailyItems.map((d) => (
+            <div key={d.day} className="flex items-center justify-between py-0.5">
+              <span className="text-white/70 text-[11px] w-8">{d.day}</span>
+              <span className="text-base">{d.icon}</span>
+              <div className="flex items-center gap-1">
+                <span className="text-white/50 text-[11px]">{d.low}°</span>
+                <div className="w-16 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)" }}>
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      background: "linear-gradient(90deg, #60a5fa, #f97316)",
+                      width: "100%",
+                    }}
+                  />
+                </div>
+                <span className="text-white text-[11px]">{d.high}°</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
