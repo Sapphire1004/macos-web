@@ -25,6 +25,9 @@ Create responsive macOS UI
 *.sln
 *.sw?
 
+# Work notes
+docs/today-work.md
+
 # Lighthouse reports
 lighthouse-report.*
 lighthouse-*.html
