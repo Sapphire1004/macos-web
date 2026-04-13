@@ -279,7 +279,10 @@
       "high": "H",
       "low": "L",
       "feelsLike": "Feels like",
-      "now": "Now"
+      "now": "Now",
+      "staleBanner": "Weather may be out of date",
+      "noData": "No Weather Data",
+      "noDataDesc": "Connect to the Internet to load weather."
     },
     "calendar": {
       "name": "Calendar",

@@ -279,7 +279,10 @@
       "high": "최고",
       "low": "최저",
       "feelsLike": "체감",
-      "now": "지금"
+      "now": "지금",
+      "staleBanner": "날씨 정보가 최신이 아닐 수 있습니다",
+      "noData": "날씨 정보 없음",
+      "noDataDesc": "인터넷에 연결하면 날씨 정보를 불러옵니다."
     },
     "calendar": {
       "name": "달력",

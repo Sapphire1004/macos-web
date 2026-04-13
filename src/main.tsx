@@ -1,21 +1,46 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "./index.css";
 import App from "./App.tsx";
 import "./i18n";
 import { NetworkProvider } from "./contexts/network";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 60 * 60 * 24,   // 24h (persist 하려면 길어야 함)
+    },
+  },
+});
+
+const persister = createAsyncStoragePersister({
+  storage: {
+    getItem: (key: string) => Promise.resolve(window.localStorage.getItem(key)),
+    setItem: (key: string, value: string) => {
+      window.localStorage.setItem(key, value);
+      return Promise.resolve();
+    },
+    removeItem: (key: string) => {
+      window.localStorage.removeItem(key);
+      return Promise.resolve();
+    },
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister, maxAge: 1000 * 60 * 60 * 24 }}
+    >
       <NetworkProvider>
         <App />
       </NetworkProvider>
       <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   </StrictMode>
 );
