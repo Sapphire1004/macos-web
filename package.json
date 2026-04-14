@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,css}\"",
+    "check": "pnpm lint && pnpm format:check",
     "preview": "vite preview",
     "lighthouse": "node scripts/lighthouse.js"
   },
@@ -44,6 +46,9 @@
     "lighthouse": "^13.1.0",
     "oxlint": "^1.59.0",
     "prettier": "^3.8.1",
+    "prettier-plugin-organize-imports": "^4.3.0",
+    "prettier-plugin-packagejson": "^3.0.2",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript": "~6.0.2",
     "vite": "^8.0.4",
     "vitest": "^4.1.3"
