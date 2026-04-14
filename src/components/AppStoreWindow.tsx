@@ -4,15 +4,16 @@ import { useState } from "react";
 import { WifiOff } from "lucide-react";
 
 function AppStoreOffline() {
+  const { t } = useTranslation();
   return (
     <div className="h-full flex flex-col items-center justify-center text-center p-8" style={{ background: "#f5f5f7" }}>
       <div className="text-6xl mb-4">🛍️</div>
       <WifiOff size={40} className="text-gray-300 mb-4" />
       <h2 className="text-[18px] font-semibold text-gray-700 mb-2">
-        Cannot connect to App Store
+        {t("appStore.offline.title")}
       </h2>
       <p className="text-[13px] text-gray-500 max-w-sm">
-        An Internet connection is required. Check your Wi-Fi and try again.
+        {t("appStore.offline.description")}
       </p>
     </div>
   );
