@@ -7,6 +7,10 @@ type NetworkContextValue = {
 
 const NetworkContext = createContext<NetworkContextValue | null>(null);
 
+const ERRORS = {
+  PROVIDER_NOT_FOUND: "useNetwork must be used within a NetworkProvider",
+} as const;
+
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
  const [isOnline, setOnline] = useState(true);
 
@@ -21,7 +25,7 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
 export function useNetwork() {
   const context = useContext(NetworkContext);
   if (!context) {
-    throw new Error("useNetwork must be used within a NetworkProvider");
+    throw new Error(ERRORS.PROVIDER_NOT_FOUND);
   }
   return context;
 }

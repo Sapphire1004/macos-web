@@ -14,7 +14,9 @@ import {
   Pause,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useNetwork } from '../contexts/network';
+import { useNetwork } from "../contexts/network";
+
+const DEMO_SSID = "HomeNetwork_5G";
 
 interface ControlCenterProps {
   isOpen: boolean;
@@ -115,7 +117,7 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
               <div className="text-left">
                 <p className="text-[12px] font-semibold text-gray-800">Wi-Fi</p>
                 <p className="text-[10px] text-gray-500">
-                  {isOnline ? t("controlCenter.connectedNetwork") : t("controlCenter.off")}
+                  {isOnline ? DEMO_SSID : t("controlCenter.off")}
                 </p>
               </div>
             </button>
