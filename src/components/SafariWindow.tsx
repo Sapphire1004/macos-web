@@ -90,7 +90,9 @@ export function SafariWindow() {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setTabs((prev) => prev.map((t) => ({ ...t, active: t.id === tab.id })))}
+            onClick={() =>
+              setTabs((prev) => prev.map((x) => ({ ...x, active: x.id === tab.id })))
+            }
             className="flex items-center gap-1.5 px-3 py-1 rounded-t-lg text-[12px] min-w-[120px] max-w-[180px] flex-shrink-0 transition-colors"
             style={{
               background: tab.active ? "rgba(255,255,255,0.9)" : "transparent",
@@ -103,7 +105,7 @@ export function SafariWindow() {
               className="text-[10px] text-gray-400 hover:text-gray-600 flex-shrink-0"
               onClick={(e) => {
                 e.stopPropagation();
-                setTabs((prev) => prev.filter((t) => t.id !== tab.id));
+                setTabs((prev) => prev.filter((x) => x.id !== tab.id));
               }}
             >
               ×
@@ -114,7 +116,7 @@ export function SafariWindow() {
           className="p-1 rounded hover:bg-black/10 transition-colors ml-1"
           onClick={() =>
             setTabs((prev) => [
-              ...prev.map((t) => ({ ...t, active: false })),
+              ...prev.map((x) => ({ ...x, active: false })),
               { id: Date.now(), title: t("safari.newTab"), url: "", active: true },
             ])
           }

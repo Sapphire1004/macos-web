@@ -120,7 +120,7 @@ export function NotesWindow() {
             </div>
           )}
           {filtered
-            .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
+            .toSorted((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
             .map((note) => (
               <button
                 key={note.id}

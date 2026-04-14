@@ -23,29 +23,6 @@ interface ControlCenterProps {
   onClose: () => void;
 }
 
-function Toggle({
-  on,
-  onClick,
-  color = "#30d158",
-}: {
-  on: boolean;
-  onClick: () => void;
-  color?: string;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="relative w-10 h-6 rounded-full transition-colors flex-shrink-0"
-      style={{ background: on ? color : "rgba(0,0,0,0.2)" }}
-    >
-      <div
-        className="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
-        style={{ transform: `translateX(${on ? 16 : 2}px)` }}
-      />
-    </button>
-  );
-}
-
 function Slider({
   value,
   onChange,
