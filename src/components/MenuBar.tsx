@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Wifi,WifiOff, Battery, Volume2, Search, Globe } from "lucide-react";
+import { Wifi, WifiOff, Battery, Volume2, Search, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useNetwork } from '../contexts/network';
+import { useNetwork } from "../contexts/network";
 
 interface MenuBarProps {
   onSpotlight: () => void;
@@ -57,7 +57,6 @@ export function MenuBar({ onSpotlight, onControlCenter, activeApp }: MenuBarProp
 
   const formatDate = (dt: Temporal.PlainDateTime) =>
     dt.toLocaleString(i18n.language, { month: "short", day: "numeric", weekday: "short" });
-
 
   const menuItems: Record<string, string[]> = {
     Finder: [

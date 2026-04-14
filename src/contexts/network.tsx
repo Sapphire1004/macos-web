@@ -1,8 +1,8 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext } from "react";
 
 type NetworkContextValue = {
-  isOnline: boolean;                    
-  setOnline: (v: boolean) => void;      
+  isOnline: boolean;
+  setOnline: (v: boolean) => void;
 };
 
 const NetworkContext = createContext<NetworkContextValue | null>(null);
@@ -12,14 +12,11 @@ const ERRORS = {
 } as const;
 
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
- const [isOnline, setOnline] = useState(true);
+  const [isOnline, setOnline] = useState(true);
 
- return (
-   <NetworkContext.Provider value={{ isOnline, setOnline }}>
-     {children}
-   </NetworkContext.Provider>
- );
-
+  return (
+    <NetworkContext.Provider value={{ isOnline, setOnline }}>{children}</NetworkContext.Provider>
+  );
 }
 
 export function useNetwork() {

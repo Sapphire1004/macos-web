@@ -14,7 +14,7 @@ const ONE_DAY_MS = 1000 * 60 * 60 * 24; // 24 hours in milliseconds
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: ONE_DAY_MS,   // 24h (persist 하려면 길어야 함)
+      gcTime: ONE_DAY_MS, // 24h (persist 하려면 길어야 함)
     },
   },
 });

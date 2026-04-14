@@ -43,13 +43,12 @@ function shouldLog(level: LogLevel): boolean {
 
 // ─── タイムスタンプ ──────────────────────────────────────────────────────────
 function timestamp(): string {
-  return Temporal.Now.plainDateTimeISO()
-    .toLocaleString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
+  return Temporal.Now.plainDateTimeISO().toLocaleString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
 }
 
 // ─── ロガー本体 ──────────────────────────────────────────────────────────────

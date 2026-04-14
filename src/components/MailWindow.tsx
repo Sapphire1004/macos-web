@@ -9,12 +9,8 @@ function MailOffline() {
     <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-white">
       <div className="text-6xl mb-4">✉️</div>
       <WifiOff size={40} className="text-gray-300 mb-4" />
-      <h2 className="text-[18px] font-semibold text-gray-700 mb-2">
-        {t("mail.offline.title")}
-      </h2>
-      <p className="text-[13px] text-gray-500 max-w-sm">
-        {t("mail.offline.description")}
-      </p>
+      <h2 className="text-[18px] font-semibold text-gray-700 mb-2">{t("mail.offline.title")}</h2>
+      <p className="text-[13px] text-gray-500 max-w-sm">{t("mail.offline.description")}</p>
     </div>
   );
 }

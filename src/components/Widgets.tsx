@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { X, Plus, Wind, Droplets, Thermometer, Activity, WifiOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { apiGet } from "../lib/axios";
-import { useQuery } from '@tanstack/react-query';
-import { useNetwork } from '../contexts/network';
+import { useQuery } from "@tanstack/react-query";
+import { useNetwork } from "../contexts/network";
 
 // ─── Draggable Widget Shell ───────────────────────────────────────────────────
 interface WidgetShellProps {
@@ -79,9 +79,9 @@ function ClockWidget() {
   const { i18n } = useTranslation();
 
   useEffect(() => {
-  const t = setInterval(() => setNow(Temporal.Now.plainDateTimeISO()), 1000);
-  return () => clearInterval(t);
-}, []);
+    const t = setInterval(() => setNow(Temporal.Now.plainDateTimeISO()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   const sec = now.second;
   const min = now.minute;
@@ -164,13 +164,27 @@ function ClockWidget() {
 
 // ─── WMO天気コードをアイコンに変換 ─────────────────────────────────────────────
 const WMO_ICONS: Record<number, string> = {
-  0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
-  45: "🌫️", 48: "🌫️",
-  51: "🌦️", 53: "🌦️", 55: "🌧️",
-  61: "🌧️", 63: "🌧️", 65: "🌧️",
-  71: "🌨️", 73: "🌨️", 75: "❄️",
-  80: "🌦️", 81: "🌧️", 82: "⛈️",
-  95: "⛈️", 96: "⛈️", 99: "⛈️",
+  0: "☀️",
+  1: "🌤️",
+  2: "⛅",
+  3: "☁️",
+  45: "🌫️",
+  48: "🌫️",
+  51: "🌦️",
+  53: "🌦️",
+  55: "🌧️",
+  61: "🌧️",
+  63: "🌧️",
+  65: "🌧️",
+  71: "🌨️",
+  73: "🌨️",
+  75: "❄️",
+  80: "🌦️",
+  81: "🌧️",
+  82: "⛈️",
+  95: "⛈️",
+  96: "⛈️",
+  99: "⛈️",
 };
 
 // ─── Open-Meteoレスポンスの型 ───────────────────────────────────────────────
@@ -253,7 +267,7 @@ function WeatherWidget() {
   // 時間別データを整形
   const hourlyItems = hourlyData
     ? hourlyData.time.slice(0, 6).map((time, i) => ({
-        time: i === 0 ? t("widgets.weather.now") : time.split("T")[1]?.slice(0, 5) ?? "",
+        time: i === 0 ? t("widgets.weather.now") : (time.split("T")[1]?.slice(0, 5) ?? ""),
         icon: WMO_ICONS[hourlyData.weather_code[i]] ?? "☁️",
         temp: Math.round(hourlyData.temperature_2m[i]),
       }))
@@ -264,9 +278,10 @@ function WeatherWidget() {
     ? daily.time.map((date, i) => {
         const d = Temporal.PlainDate.from(date);
         return {
-          day: i === 0
-            ? t("widgets.calendar.today")
-            : d.toLocaleString(i18n.language, { weekday: "short" }),
+          day:
+            i === 0
+              ? t("widgets.calendar.today")
+              : d.toLocaleString(i18n.language, { weekday: "short" }),
           icon: WMO_ICONS[daily.weather_code[i]] ?? "☁️",
           high: Math.round(daily.temperature_2m_max[i]),
           low: Math.round(daily.temperature_2m_min[i]),
@@ -281,12 +296,8 @@ function WeatherWidget() {
         style={{ background: "rgba(80,80,80,0.88)", backdropFilter: "blur(20px)" }}
       >
         <WifiOff size={32} className="text-white/50 mx-auto mb-2" />
-        <p className="text-white/80 text-[13px] font-semibold">
-          {t("widgets.weather.noData")}
-        </p>
-        <p className="text-white/50 text-[11px] mt-1">
-          {t("widgets.weather.noDataDesc")}
-        </p>
+        <p className="text-white/80 text-[13px] font-semibold">{t("widgets.weather.noData")}</p>
+        <p className="text-white/50 text-[11px] mt-1">{t("widgets.weather.noDataDesc")}</p>
       </div>
     );
   }
@@ -299,13 +310,12 @@ function WeatherWidget() {
         backdropFilter: "blur(20px)",
       }}
     >
-      
       {!isOnline && (
         <div className="flex items-center gap-1 text-[10px] text-white/90 bg-black/25 px-2 py-1 mb-2 rounded">
-      <WifiOff size={10} />
-      <span>{t("widgets.weather.staleBanner")}</span>
-    </div>
-  )}
+          <WifiOff size={10} />
+          <span>{t("widgets.weather.staleBanner")}</span>
+        </div>
+      )}
       <div className="flex items-start justify-between mb-3">
         <div>
           <p className="text-white/80 text-[11px] font-medium">{cityName}</p>
@@ -342,7 +352,8 @@ function WeatherWidget() {
         <div className="flex items-center gap-1">
           <Thermometer size={11} className="text-white/70" />
           <span className="text-white/80 text-[11px]">
-            {t("widgets.weather.feelsLike")} {current ? `${Math.round(current.temperature_2m)}°` : "--°"}
+            {t("widgets.weather.feelsLike")}{" "}
+            {current ? `${Math.round(current.temperature_2m)}°` : "--°"}
           </span>
         </div>
       </div>
@@ -364,7 +375,10 @@ function WeatherWidget() {
               <span className="text-base">{d.icon}</span>
               <div className="flex items-center gap-1">
                 <span className="text-white/50 text-[11px]">{d.low}°</span>
-                <div className="w-16 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)" }}>
+                <div
+                  className="w-16 h-1 rounded-full"
+                  style={{ background: "rgba(255,255,255,0.15)" }}
+                >
                   <div
                     className="h-full rounded-full"
                     style={{

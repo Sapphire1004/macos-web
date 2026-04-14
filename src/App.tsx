@@ -213,7 +213,6 @@ function TrashIcon() {
   );
 }
 
-
 // ── App types ────────────────────────────────────────────────────────────────
 type AppId = "finder" | "safari" | "notes" | "terminal" | "appstore" | "mail";
 

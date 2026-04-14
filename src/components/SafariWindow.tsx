@@ -7,14 +7,12 @@ function OfflinePage({ url }: { url: string }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center h-full text-center px-8 py-12 select-none">
-      <div className="text-7xl mb-6" aria-hidden>🦖</div>
+      <div className="text-7xl mb-6" aria-hidden>
+        🦖
+      </div>
       <WifiOff size={48} className="text-gray-300 mb-4" />
-      <h2 className="text-[20px] font-semibold text-gray-700 mb-2">
-        {t("safari.offline.title")}
-      </h2>
-      <p className="text-[13px] text-gray-500 mb-1">
-        {t("safari.offline.description")}
-      </p>
+      <h2 className="text-[20px] font-semibold text-gray-700 mb-2">{t("safari.offline.title")}</h2>
+      <p className="text-[13px] text-gray-500 mb-1">{t("safari.offline.description")}</p>
       <p className="text-[12px] text-gray-400 mb-8">
         {t("safari.offline.connectingTo")}{" "}
         <span className="font-mono">{url || t("safari.offline.fallbackServer")}</span>
@@ -23,7 +21,9 @@ function OfflinePage({ url }: { url: string }) {
         <Trans
           i18nKey="safari.offline.pressSpace"
           components={{
-            1: <kbd className="px-1.5 py-0.5 rounded border border-gray-300 bg-gray-50 font-mono" />,
+            1: (
+              <kbd className="px-1.5 py-0.5 rounded border border-gray-300 bg-gray-50 font-mono" />
+            ),
           }}
         />
       </p>
@@ -48,7 +48,7 @@ export function SafariWindow() {
     { id: 2, title: "GitHub", url: "github.com", active: false },
   ]);
   const { t } = useTranslation();
-const { isOnline } = useNetwork();
+  const { isOnline } = useNetwork();
 
   const news = [
     {
@@ -198,79 +198,81 @@ const { isOnline } = useNetwork();
       {/* Content */}
       <div className="flex-1 overflow-y-auto" style={{ background: "white" }}>
         {isOnline ? (
-        <div className="p-6 max-w-3xl mx-auto">
-          {/* Favorites */}
-          <div className="mb-8">
-            <h3 className="text-[14px] text-gray-500 mb-3 font-semibold">
-              {t("safari.favorites")}
-            </h3>
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-4">
-              {bookmarks.map((bm) => (
-                <button key={bm.name} className="flex flex-col items-center gap-1.5 group">
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:shadow-md transition-shadow"
-                    style={{ background: "rgba(0,0,0,0.05)" }}
-                  >
-                    {bm.icon}
-                  </div>
-                  <span className="text-[11px] text-gray-600">{bm.name}</span>
-                </button>
-              ))}
+          <div className="p-6 max-w-3xl mx-auto">
+            {/* Favorites */}
+            <div className="mb-8">
+              <h3 className="text-[14px] text-gray-500 mb-3 font-semibold">
+                {t("safari.favorites")}
+              </h3>
+              <div className="grid grid-cols-4 sm:grid-cols-6 gap-4">
+                {bookmarks.map((bm) => (
+                  <button key={bm.name} className="flex flex-col items-center gap-1.5 group">
+                    <div
+                      className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-sm group-hover:shadow-md transition-shadow"
+                      style={{ background: "rgba(0,0,0,0.05)" }}
+                    >
+                      {bm.icon}
+                    </div>
+                    <span className="text-[11px] text-gray-600">{bm.name}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Privacy Report */}
-          <div
-            className="mb-6 p-4 rounded-xl"
-            style={{
-              background: "rgba(0,100,255,0.06)",
-              border: "1px solid rgba(0,100,255,0.12)",
-            }}
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <Lock size={14} className="text-blue-500" />
-              <span className="text-[13px] text-blue-600 font-semibold">
-                {t("safari.privacyReport")}
-              </span>
-            </div>
-            <p
-              className="text-[12px] text-gray-500"
-              dangerouslySetInnerHTML={{
-                __html: t("safari.privacyText", { count: 148 }),
+            {/* Privacy Report */}
+            <div
+              className="mb-6 p-4 rounded-xl"
+              style={{
+                background: "rgba(0,100,255,0.06)",
+                border: "1px solid rgba(0,100,255,0.12)",
               }}
-            />
-          </div>
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Lock size={14} className="text-blue-500" />
+                <span className="text-[13px] text-blue-600 font-semibold">
+                  {t("safari.privacyReport")}
+                </span>
+              </div>
+              <p
+                className="text-[12px] text-gray-500"
+                dangerouslySetInnerHTML={{
+                  __html: t("safari.privacyText", { count: 148 }),
+                }}
+              />
+            </div>
 
-          {/* News */}
-          <div>
-            <h3 className="text-[14px] text-gray-500 mb-3 font-semibold">{t("safari.topNews")}</h3>
-            <div className="space-y-3">
-              {news.map((article) => (
-                <div
-                  key={article.title}
-                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors"
-                  style={{ border: "1px solid rgba(0,0,0,0.06)" }}
-                >
+            {/* News */}
+            <div>
+              <h3 className="text-[14px] text-gray-500 mb-3 font-semibold">
+                {t("safari.topNews")}
+              </h3>
+              <div className="space-y-3">
+                {news.map((article) => (
                   <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl flex-shrink-0"
-                    style={{ background: "rgba(0,0,0,0.05)" }}
+                    key={article.title}
+                    className="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors"
+                    style={{ border: "1px solid rgba(0,0,0,0.06)" }}
                   >
-                    {article.image}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] text-gray-800 leading-snug">{article.title}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] text-blue-500 font-medium">
-                        {article.category}
-                      </span>
-                      <span className="text-[10px] text-gray-400">{article.time}</span>
+                    <div
+                      className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl flex-shrink-0"
+                      style={{ background: "rgba(0,0,0,0.05)" }}
+                    >
+                      {article.image}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] text-gray-800 leading-snug">{article.title}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-blue-500 font-medium">
+                          {article.category}
+                        </span>
+                        <span className="text-[10px] text-gray-400">{article.time}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
         ) : (
           <OfflinePage url={inputUrl} />
         )}
