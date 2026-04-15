@@ -1,23 +1,30 @@
-import { ChevronLeft, ChevronRight, Lock, Plus, RefreshCw, Share, WifiOff } from "lucide-react";
+import { ChevronLeft, ChevronRight, Lock, Plus, RefreshCw, Share } from "lucide-react";
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useNetwork } from "../contexts/network";
+import { DinoGame } from "./dino/DinoGame";
 
-function OfflinePage({ url }: { url: string }) {
+function OfflinePage({ url, isActive }: { url: string; isActive: boolean }) {
   const { t } = useTranslation();
   return (
-    <div className="flex h-full flex-col items-center justify-center px-8 py-12 text-center select-none">
-      <div className="mb-6 text-7xl" aria-hidden>
-        🦖
+    <div className="flex h-full flex-col bg-white px-12 py-8 select-none">
+      {/* 게임 영역 (공룡) */}
+      <div className="mb-8">
+        <DinoGame isActive={isActive} />
       </div>
-      <WifiOff size={48} className="mb-4 text-gray-300" />
-      <h2 className="mb-2 text-[20px] font-semibold text-gray-700">{t("safari.offline.title")}</h2>
-      <p className="mb-1 text-[13px] text-gray-500">{t("safari.offline.description")}</p>
-      <p className="mb-8 text-[12px] text-gray-400">
+
+      {/* 오프라인 안내 문구 */}
+      <h2 className="mb-3 text-[22px] font-normal text-gray-800">
+        {t("safari.offline.title")}
+      </h2>
+      <p className="mb-1 max-w-[480px] text-[13px] leading-relaxed text-gray-600">
+        {t("safari.offline.description")}
+      </p>
+      <p className="text-[12px] text-gray-400">
         {t("safari.offline.connectingTo")}{" "}
         <span className="font-mono">{url || t("safari.offline.fallbackServer")}</span>
       </p>
-      <p className="text-[11px] text-gray-400">
+      <p className="mt-4 text-[11px] text-gray-400">
         <Trans
           i18nKey="safari.offline.pressSpace"
           components={{
@@ -40,7 +47,12 @@ const bookmarks = [
   { name: "News", url: "news.apple.com", icon: "📰" },
 ];
 
-export function SafariWindow() {
+interface SafariWindowProps {
+  /** 현재 활성 앱 이름 (예: "Safari") — DinoGame pause/resume에 사용 */
+  activeApp?: string;
+}
+
+export function SafariWindow({ activeApp }: SafariWindowProps = {}) {
   const [inputUrl, setInputUrl] = useState("apple.com");
   const [isEditing, setIsEditing] = useState(false);
   const [tabs, setTabs] = useState([
@@ -280,7 +292,7 @@ export function SafariWindow() {
             </div>
           </div>
         ) : (
-          <OfflinePage url={inputUrl} />
+          <OfflinePage url={inputUrl} isActive={activeApp === "Safari"} />
         )}
       </div>
     </div>

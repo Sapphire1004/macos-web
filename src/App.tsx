@@ -370,7 +370,7 @@ export default function App() {
       case "finder":
         return <FinderWindow />;
       case "safari":
-        return <SafariWindow />;
+        return <SafariWindow activeApp={activeApp} />;
       case "notes":
         return <NotesWindow />;
       case "terminal":
