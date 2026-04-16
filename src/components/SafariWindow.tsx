@@ -4,10 +4,21 @@ import { Trans, useTranslation } from "react-i18next";
 import { useNetwork } from "../contexts/network";
 import { DinoGame } from "./dino/DinoGame";
 
-function OfflinePage({ url, isActive }: { url: string; isActive: boolean }) {
+function OfflinePage({
+  url,
+  isActive,
+  visible,
+}: {
+  url: string;
+  isActive: boolean;
+  visible: boolean;
+}) {
   const { t } = useTranslation();
   return (
-    <div className="flex h-full flex-col items-center bg-white px-12 py-8 select-none">
+    <div
+      className="flex h-full flex-col items-center bg-white px-12 py-8 select-none"
+      style={{ display: visible ? "flex" : "none" }}
+    >
       <div className="flex w-full max-w-[600px] flex-col items-center text-center">
         {/* 게임 영역 (공룡) */}
         <div className="mb-8 w-full">
@@ -294,7 +305,16 @@ export function SafariWindow({ activeApp }: SafariWindowProps = {}) {
             </div>
           </div>
         ) : (
-          <OfflinePage url={inputUrl} isActive={activeApp === "Safari"} />
+          // 탭별 독립 DinoGame 인스턴스 — 각 탭의 점수/상태를 유지.
+          // 비활성 탭은 display:none으로 숨기되 mount는 유지.
+          tabs.map((tab) => (
+            <OfflinePage
+              key={tab.id}
+              url={inputUrl}
+              isActive={activeApp === "Safari" && tab.active}
+              visible={tab.active}
+            />
+          ))
         )}
       </div>
     </div>

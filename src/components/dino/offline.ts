@@ -134,8 +134,6 @@ enum RunnerEvents {
   GAMEPADCONNECTED = 'gamepadconnected',
 }
 
-let runnerInstance: Runner|null = null;
-
 const ARCADE_MODE_URL: string = 'chrome://dino/';
 
 const RESOURCE_POSTFIX: string = 'offline-resources-';
@@ -224,26 +222,16 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   private previousGamepad: Gamepad|null = null;
 
 
-  // Initialize the singleton instance of Runner. Should only be called once.
-  static initializeInstance(outerContainerId: string, config?: Config): Runner {
-    assert(runnerInstance === null);
-    runnerInstance = new Runner(outerContainerId, config);
-    if (!runnerInstance.isDisabled) {
-      runnerInstance.loadImages();
-    }
+  /** AbortController for all DOM listeners — aborted in destroy(). */
+  private controller = new AbortController();
+  /** True once init() has finished creating the canvas/container. */
+  private ready: boolean = false;
+  /** Pending focus request from before init() completed. */
+  private wantsFocus: boolean = false;
+  /** True once destroy() has been called — guards late async callbacks. */
+  private destroyed: boolean = false;
 
-    return runnerInstance;
-  }
-
-  static getInstance(): Runner {
-    assert(runnerInstance);
-    return runnerInstance;
-  }
-
-  private constructor(outerContainerId: string, configParam?: Config) {
-    const outerContainerElement =
-        document.querySelector<HTMLElement>(outerContainerId);
-    assert(outerContainerElement);
+  constructor(outerContainerElement: HTMLElement, configParam?: Config) {
     this.outerContainerEl = outerContainerElement;
 
     this.config =
@@ -260,7 +248,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       this.initAltGameType();
     }
 
-    window.initializeEasterEggHighScore = this.initializeHighScore.bind(this);
+    this.loadImages();
   }
 
   // GameStateProvider implementation.
@@ -447,7 +435,9 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     } else {
       // If the images are not yet loaded, add a listener.
       this.getRunnerImageSprite().addEventListener(
-          RunnerEvents.LOAD, this.init.bind(this));
+          RunnerEvents.LOAD,
+          () => { if (!this.destroyed) this.init(); },
+          { signal: this.controller.signal, once: true });
     }
   }
 
@@ -597,15 +587,22 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     this.update();
 
     window.addEventListener(
-        RunnerEvents.RESIZE, this.debounceResize.bind(this));
+        RunnerEvents.RESIZE, this.debounceResize.bind(this),
+        { signal: this.controller.signal });
 
     // Handle dark mode
     const darkModeMediaQuery =
         window.matchMedia('(prefers-color-scheme: dark)');
     this.isDarkMode = darkModeMediaQuery && darkModeMediaQuery.matches;
-    darkModeMediaQuery.addListener((e) => {
+    darkModeMediaQuery.addEventListener('change', (e) => {
       this.isDarkMode = e.matches;
-    });
+    }, { signal: this.controller.signal });
+
+    this.ready = true;
+    if (this.wantsFocus) {
+      this.containerEl.focus();
+      this.wantsFocus = false;
+    }
   }
 
   /**
@@ -738,14 +735,11 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     this.containerEl.setAttribute('title', getA11yString(A11yStrings.JUMP));
 
     // Handle tabbing off the page. Pause the current game.
-    document.addEventListener(
-        RunnerEvents.VISIBILITY, this.onVisibilityChange.bind(this));
-
-    window.addEventListener(
-        RunnerEvents.BLUR, this.onVisibilityChange.bind(this));
-
-    window.addEventListener(
-        RunnerEvents.FOCUS, this.onVisibilityChange.bind(this));
+    const opts = { signal: this.controller.signal };
+    const onVis = this.onVisibilityChange.bind(this);
+    document.addEventListener(RunnerEvents.VISIBILITY, onVis, opts);
+    window.addEventListener(RunnerEvents.BLUR, onVis, opts);
+    window.addEventListener(RunnerEvents.FOCUS, onVis, opts);
   }
 
   private clearCanvas() {
@@ -1035,34 +1029,39 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
   /**
    * Bind relevant key / mouse / touch listeners.
+   * 웹 포트: Chromium 원본은 document 전역에 등록했지만, 멀티 인스턴스 지원을
+   * 위해 컨테이너/캔버스 단위로 스코프. tabindex=0인 containerEl이 포커스를
+   * 가졌을 때만 키 이벤트를 받음.
    */
   private startListening() {
     assert(this.containerEl);
     assert(this.canvas);
+    const opts = { signal: this.controller.signal };
+
     // A11y keyboard / screen reader activation.
     this.containerEl.addEventListener(
-        RunnerEvents.KEYDOWN, this.handleCanvasKeyPress.bind(this));
+        RunnerEvents.KEYDOWN, this.handleCanvasKeyPress.bind(this), opts);
     if (!IS_MOBILE) {
       this.containerEl.addEventListener(
-          RunnerEvents.FOCUS, this.showSpeedToggle.bind(this));
+          RunnerEvents.FOCUS, this.showSpeedToggle.bind(this), opts);
     }
     this.canvas.addEventListener(
-        RunnerEvents.KEYDOWN, this.preventScrolling.bind(this));
+        RunnerEvents.KEYDOWN, this.preventScrolling.bind(this), opts);
     this.canvas.addEventListener(
-        RunnerEvents.KEYUP, this.preventScrolling.bind(this));
+        RunnerEvents.KEYUP, this.preventScrolling.bind(this), opts);
 
-    // Keys.
-    document.addEventListener(RunnerEvents.KEYDOWN, this);
-    document.addEventListener(RunnerEvents.KEYUP, this);
+    // Keys — canvas-scoped instead of document-scoped.
+    this.containerEl.addEventListener(RunnerEvents.KEYDOWN, this, opts);
+    this.containerEl.addEventListener(RunnerEvents.KEYUP, this, opts);
 
-    // Touch / pointer.
-    this.containerEl.addEventListener(RunnerEvents.TOUCHSTART, this);
-    document.addEventListener(RunnerEvents.POINTERDOWN, this);
-    document.addEventListener(RunnerEvents.POINTERUP, this);
+    // Touch / pointer — container-scoped.
+    this.containerEl.addEventListener(RunnerEvents.TOUCHSTART, this, opts);
+    this.containerEl.addEventListener(RunnerEvents.POINTERDOWN, this, opts);
+    this.containerEl.addEventListener(RunnerEvents.POINTERUP, this, opts);
 
     if (this.isArcadeMode()) {
       // Gamepad
-      window.addEventListener(RunnerEvents.GAMEPADCONNECTED, this);
+      window.addEventListener(RunnerEvents.GAMEPADCONNECTED, this, opts);
     }
   }
 
@@ -1316,23 +1315,6 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   }
 
   /**
-   * Set the initial high score as stored in the user's profile.
-   */
-  private initializeHighScore(highScore: number) {
-    assert(this.distanceMeter);
-    this.syncHighestScore = true;
-    highScore = Math.ceil(highScore);
-    if (highScore < this.highestScore) {
-      if (window.errorPageController) {
-        window.errorPageController.updateEasterEggHighScore(this.highestScore);
-      }
-      return;
-    }
-    this.highestScore = highScore;
-    this.distanceMeter.setHighScore(this.highestScore);
-  }
-
-  /**
    * Sets the current high score and saves to the profile if available.
    * @param distanceRan Total distance ran.
    * @param  resetScore Whether to reset the score.
@@ -1452,6 +1434,40 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     }
   }
 
+  /**
+   * 컨테이너에 포커스를 줘서 키 입력을 받도록 함.
+   * init()이 비동기라 아직 DOM이 없으면 ready 시점까지 플래그로 대기.
+   */
+  focus() {
+    if (this.ready && this.containerEl) {
+      this.containerEl.focus();
+    } else {
+      this.wantsFocus = true;
+    }
+  }
+
+  /**
+   * Runner 전체 해제. 탭 닫기/언마운트 시 호출.
+   * AbortController로 모든 리스너 제거, RAF 취소, DOM 제거.
+   */
+  destroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    this.setPlayStatus(false);
+    cancelAnimationFrame(this.raqId);
+    this.raqId = 0;
+    clearInterval(this.resizeTimerId);
+    this.resizeTimerId = undefined;
+    if (this.hasAudioCuesInternal && this.generatedSoundFx) {
+      this.generatedSoundFx.stopAll();
+    }
+    this.controller.abort();
+    this.containerEl?.remove();
+    this.slowSpeedCheckboxLabel?.remove();
+    this.touchController?.remove();
+    if (IS_IOS) this.a11yStatusEl?.remove();
+  }
+
   play() {
     // 웹 포트: 외부에서 init 완료 전에 호출될 수 있어 tRex 체크 가드 추가
     if (this.crashed || !this.tRex) return;
@@ -1548,12 +1564,14 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
   /**
    * Pause the game if the tab is not in focus.
+   * 웹 포트: externallyLocked면 자동 재개하지 않음. 멀티 인스턴스에서
+   * 포커스 이벤트가 발생해도 비활성 탭의 Runner는 계속 정지 상태를 유지.
    */
   private onVisibilityChange(e: Event) {
     if (document.hidden || e.type === 'blur' ||
         document.visibilityState !== 'visible') {
       this.stop();
-    } else if (!this.crashed) {
+    } else if (!this.crashed && !this.externallyLocked) {
       assert(this.tRex);
       this.tRex.reset();
       this.play();

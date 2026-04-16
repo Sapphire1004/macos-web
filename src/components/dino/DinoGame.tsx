@@ -2,10 +2,8 @@ import { useEffect, useRef } from "react";
 import { Runner } from "./offline";
 import "./runner.css";
 
-const CONTAINER_ID = "dino-container";
-
-function ensureDom() {
-  // 스프라이트 리소스 (Runner.loadImages가 id로 찾음)
+function ensureSharedDom() {
+  // 스프라이트 리소스 (Runner.loadImages가 id로 찾음) — 모든 인스턴스 공유.
   if (!document.getElementById("offline-resources")) {
     const resDiv = document.createElement("div");
     resDiv.id = "offline-resources";
@@ -24,7 +22,7 @@ function ensureDom() {
     document.body.appendChild(resDiv);
   }
 
-  // Runner.init()가 .icon-offline 엘리먼트를 assert로 요구
+  // Runner.init()가 .icon-offline 엘리먼트를 assert로 요구.
   if (!document.querySelector(".icon-offline")) {
     const icon = document.createElement("div");
     icon.className = "icon icon-offline";
@@ -34,38 +32,41 @@ function ensureDom() {
 }
 
 interface DinoGameProps {
-  /** Safari 창이 활성 상태인가 — false면 게임 일시정지 */
+  /** 이 탭이 현재 활성 상태인가 — false면 Runner pause + 키 lock. */
   isActive: boolean;
 }
 
 export function DinoGame({ isActive }: DinoGameProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const runnerRef = useRef<Runner | null>(null);
 
-  // Runner 초기화 (mount 시 1회)
+  // 첫 activation 시점에 Runner 생성 (display:none 상태에서 init하면 dimensions이 0이라
+  // 탭이 보이게 된 이후 lazy init). 이후 isActive 변화는 lock/unlock으로만 처리.
   useEffect(() => {
-    ensureDom();
-    try {
-      Runner.getInstance();
-    } catch {
-      Runner.initializeInstance(`#${CONTAINER_ID}`);
-    }
-  }, []);
-
-  // Safari 창 활성/비활성 상태에 따라 키 입력 lock
-  useEffect(() => {
-    let runner: Runner;
-    try {
-      runner = Runner.getInstance();
-    } catch {
-      return;
-    }
-    runner.setExternallyLocked(!isActive);
+    if (!isActive || runnerRef.current || !containerRef.current) return;
+    ensureSharedDom();
+    runnerRef.current = new Runner(containerRef.current);
   }, [isActive]);
+
+  // 활성 상태 변화 → lock/unlock + focus 이동.
+  useEffect(() => {
+    const runner = runnerRef.current;
+    if (!runner) return;
+    runner.setExternallyLocked(!isActive);
+    if (isActive) runner.focus();
+  }, [isActive]);
+
+  // 언마운트 시 Runner 해제 (탭 닫기 대응).
+  useEffect(() => {
+    return () => {
+      runnerRef.current?.destroy();
+      runnerRef.current = null;
+    };
+  }, []);
 
   return (
     <div
       ref={containerRef}
-      id={CONTAINER_ID}
       className="relative mx-auto h-[150px] w-full max-w-[600px]"
     />
   );
