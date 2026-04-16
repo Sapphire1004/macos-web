@@ -43,7 +43,7 @@ export interface GameModeConfig {
   speed: number;
 }
 
-export type Config = BaseConfig&GameModeConfig;
+export type Config = BaseConfig & GameModeConfig;
 
 /**
  * Interface to retrieve the current game configuration.

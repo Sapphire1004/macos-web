@@ -2,26 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome-shims';
-import {loadTimeData} from './chrome-shims';
+import { assert, loadTimeData } from "./chrome-shims";
 
-import {HIDDEN_CLASS} from './parent-constants';
+import { HIDDEN_CLASS } from "./parent-constants";
 
-import {DEFAULT_DIMENSIONS, FPS, IS_HIDPI, IS_IOS, IS_MOBILE, IS_RTL} from './constants.js';
-import type {Dimensions} from './dimensions.js';
-import {DistanceMeter} from './distance_meter.js';
-import type {BaseConfig, Config, ConfigProvider, GameModeConfig} from './game_config.js';
-import {GameOverPanel} from './game_over_panel.js';
-import type {GameStateProvider} from './game_state_provider.js';
-import type {GeneratedSoundFxProvider} from './generated_sound_fx.js';
-import {GeneratedSoundFx} from './generated_sound_fx.js';
-import {Horizon} from './horizon.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import type {Obstacle} from './obstacle.js';
-import type {SpriteDefinition, SpriteDefinitionByType, SpritePositions} from './offline_sprite_definitions.js';
-import {CollisionBox, GAME_TYPE, spriteDefinitionByType} from './offline_sprite_definitions.js';
-import {Status as TrexStatus, Trex} from './trex.js';
-import {getTimeStamp} from './utils.js';
+import { DEFAULT_DIMENSIONS, FPS, IS_HIDPI, IS_IOS, IS_MOBILE, IS_RTL } from "./constants.js";
+import type { Dimensions } from "./dimensions.js";
+import { DistanceMeter } from "./distance_meter.js";
+import type { BaseConfig, Config, ConfigProvider, GameModeConfig } from "./game_config.js";
+import { GameOverPanel } from "./game_over_panel.js";
+import type { GameStateProvider } from "./game_state_provider.js";
+import type { GeneratedSoundFxProvider } from "./generated_sound_fx.js";
+import { GeneratedSoundFx } from "./generated_sound_fx.js";
+import { Horizon } from "./horizon.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import type { Obstacle } from "./obstacle.js";
+import type {
+  SpriteDefinition,
+  SpriteDefinitionByType,
+  SpritePositions,
+} from "./offline_sprite_definitions.js";
+import { CollisionBox, GAME_TYPE, spriteDefinitionByType } from "./offline_sprite_definitions.js";
+import { Trex, Status as TrexStatus } from "./trex.js";
+import { getTimeStamp } from "./utils.js";
 
 const defaultBaseConfig: BaseConfig = {
   audiocueProximityThreshold: 190,
@@ -41,7 +44,7 @@ const defaultBaseConfig: BaseConfig = {
   maxClouds: 6,
   maxObstacleLength: 3,
   maxObstacleDuplication: 2,
-  resourceTemplateId: 'audio-resources',
+  resourceTemplateId: "audio-resources",
   speed: 6,
   speedDropCoefficient: 3,
   arcadeModeInitialTopPosition: 35,
@@ -60,114 +63,119 @@ const normalModeConfig: GameModeConfig = {
 };
 
 const slowModeConfig: GameModeConfig = {
-  acceleration: 0.0005,              // 원본값 유지
+  acceleration: 0.0005, // keep original value
   audiocueProximityThreshold: 170,
   audiocueProximityThresholdMobileA11y: 220,
   gapCoefficient: 0.3,
   invertDistance: 350,
-  maxSpeed: 9,                       // 원본값 유지
+  maxSpeed: 9, // keep original value
   mobileSpeedCoefficient: 1.5,
-  speed: 4.2,                        // 원본값 유지
+  speed: 4.2, // keep original value
 };
 
-type TrexDebugConfigSetting = 'gravity'|'minJumpHeight'|'speedDropCoefficient'|
-    'initialJumpVelocity'|'speed';
+type TrexDebugConfigSetting =
+  | "gravity"
+  | "minJumpHeight"
+  | "speedDropCoefficient"
+  | "initialJumpVelocity"
+  | "speed";
 
 /**
  * CSS class names.
  */
 enum RunnerClasses {
-  ARCADE_MODE = 'arcade-mode',
-  CANVAS = 'runner-canvas',
-  CONTAINER = 'runner-container',
-  CRASHED = 'crashed',
-  ICON = 'icon-offline',
-  ICON_DISABLED = 'icon-disabled',
-  INVERTED = 'inverted',
-  SNACKBAR = 'snackbar',
-  SNACKBAR_SHOW = 'snackbar-show',
-  TOUCH_CONTROLLER = 'controller',
+  ARCADE_MODE = "arcade-mode",
+  CANVAS = "runner-canvas",
+  CONTAINER = "runner-container",
+  CRASHED = "crashed",
+  ICON = "icon-offline",
+  ICON_DISABLED = "icon-disabled",
+  INVERTED = "inverted",
+  SNACKBAR = "snackbar",
+  SNACKBAR_SHOW = "snackbar-show",
+  TOUCH_CONTROLLER = "controller",
 }
 
 /**
  * Sound FX. Reference to the ID of the audio tag on interstitial page.
  */
 enum RunnerSounds {
-  BUTTON_PRESS = 'offline-sound-press',
-  HIT = 'offline-sound-hit',
-  SCORE = 'offline-sound-reached',
+  BUTTON_PRESS = "offline-sound-press",
+  HIT = "offline-sound-hit",
+  SCORE = "offline-sound-reached",
 }
 
 /**
  * Key code mapping.
  */
-const runnerKeycodes: {jump: number[], duck: number[], restart: number[]} = {
-  jump: [38, 32],  // Up, spacebar
-  duck: [40],      // Down
-  restart: [13],   // Enter
+const runnerKeycodes: { jump: number[]; duck: number[]; restart: number[] } = {
+  jump: [38, 32], // Up, spacebar
+  duck: [40], // Down
+  restart: [13], // Enter
 };
 
 enum RunnerEvents {
-  ANIM_END = 'webkitAnimationEnd',
-  CLICK = 'click',
-  KEYDOWN = 'keydown',
-  KEYUP = 'keyup',
-  POINTERDOWN = 'pointerdown',
-  POINTERUP = 'pointerup',
-  RESIZE = 'resize',
-  TOUCHEND = 'touchend',
-  TOUCHSTART = 'touchstart',
-  VISIBILITY = 'visibilitychange',
-  BLUR = 'blur',
-  FOCUS = 'focus',
-  LOAD = 'load',
-  GAMEPADCONNECTED = 'gamepadconnected',
+  ANIM_END = "webkitAnimationEnd",
+  CLICK = "click",
+  KEYDOWN = "keydown",
+  KEYUP = "keyup",
+  POINTERDOWN = "pointerdown",
+  POINTERUP = "pointerup",
+  RESIZE = "resize",
+  TOUCHEND = "touchend",
+  TOUCHSTART = "touchstart",
+  VISIBILITY = "visibilitychange",
+  BLUR = "blur",
+  FOCUS = "focus",
+  LOAD = "load",
+  GAMEPADCONNECTED = "gamepadconnected",
 }
 
-const ARCADE_MODE_URL: string = 'chrome://dino/';
+const ARCADE_MODE_URL: string = "chrome://dino/";
 
-/** 툴팁 등 외부 UI 갱신용 상태. */
-export type GameState = 'idle'|'playing'|'gameOver';
+/** Game state used to update external UI (tooltips, etc.). */
+export type GameState = "idle" | "playing" | "gameOver";
 
-const RESOURCE_POSTFIX: string = 'offline-resources-';
+const RESOURCE_POSTFIX: string = "offline-resources-";
 
 /**
  * T-Rex runner.
  */
-export class Runner implements ImageSpriteProvider, GameStateProvider,
-                               ConfigProvider, GeneratedSoundFxProvider {
+export class Runner
+  implements ImageSpriteProvider, GameStateProvider, ConfigProvider, GeneratedSoundFxProvider
+{
   private outerContainerEl: HTMLElement;
-  private containerEl: HTMLElement|null = null;
+  private containerEl: HTMLElement | null = null;
   // A div to intercept touch events. Only set while (playing && useTouch).
-  private touchController: HTMLElement|null = null;
-  private canvas: HTMLCanvasElement|null = null;
-  private canvasCtx: CanvasRenderingContext2D|null = null;
-  private slowSpeedCheckboxLabel: HTMLElement|null = null;
-  private slowSpeedCheckbox: HTMLInputElement|null = null;
-  private slowSpeedToggleEl: HTMLElement|null = null;
-  private origImageSprite: HTMLImageElement|null = null;
-  private altCommonImageSprite: HTMLImageElement|null = null;
-  private altGameImageSprite: HTMLImageElement|null = null;
-  private imageSprite: HTMLImageElement|null = null;
+  private touchController: HTMLElement | null = null;
+  private canvas: HTMLCanvasElement | null = null;
+  private canvasCtx: CanvasRenderingContext2D | null = null;
+  private slowSpeedCheckboxLabel: HTMLElement | null = null;
+  private slowSpeedCheckbox: HTMLInputElement | null = null;
+  private slowSpeedToggleEl: HTMLElement | null = null;
+  private origImageSprite: HTMLImageElement | null = null;
+  private altCommonImageSprite: HTMLImageElement | null = null;
+  private altGameImageSprite: HTMLImageElement | null = null;
+  private imageSprite: HTMLImageElement | null = null;
 
   private config: Config;
   // Logical dimensions of the container.
   private dimensions: Dimensions = DEFAULT_DIMENSIONS;
-  private gameType: (keyof SpriteDefinitionByType|null) = null;
+  private gameType: keyof SpriteDefinitionByType | null = null;
   private spriteDefinition: SpriteDefinition = spriteDefinitionByType.original;
-  private spriteDef: SpritePositions|null = null;
+  private spriteDef: SpritePositions | null = null;
 
   // Alt game mode state.
   private altGameModeActive: boolean = false;
-  private altGameModeFlashTimer: number|null = null;
+  private altGameModeFlashTimer: number | null = null;
   private altGameAssetsFailedToLoad: boolean = false;
   private fadeInTimer: number = 0;
 
   // UI components.
-  private tRex: Trex|null = null;
-  private distanceMeter: DistanceMeter|null = null;
-  private gameOverPanel: GameOverPanel|null = null;
-  private horizon: Horizon|null = null;
+  private tRex: Trex | null = null;
+  private distanceMeter: DistanceMeter | null = null;
+  private gameOverPanel: GameOverPanel | null = null;
+  private horizon: Horizon | null = null;
 
   private msPerFrame: number = 1000 / FPS;
   private time: number = 0;
@@ -179,7 +187,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   private playCount: number = 0;
 
   // Whether the easter egg has been disabled. CrOS enterprise enrolled devices.
-  private isDisabled: boolean = loadTimeData.valueExists('disabledEasterEgg');
+  private isDisabled: boolean = loadTimeData.valueExists("disabledEasterEgg");
   // Whether the easter egg has been activated.
   private activated: boolean = false;
   // Whether the game is currently in play state.
@@ -187,9 +195,9 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   private playingIntro: boolean = false;
   private crashed: boolean = false;
   private paused: boolean = false;
-  /** 외부(React)에서 강제 pause — onKeyUp 자동 재개를 막음 */
+  /** External (React) forced-pause flag — blocks auto-resume on onKeyUp. */
   private externallyLocked: boolean = false;
-  /** lock 직전에 플레이 중이었는지 (unlock 시 자동 재개 여부 판단) */
+  /** Whether the game was playing right before lock (drives auto-resume on unlock). */
   private wasPlayingBeforeLock: boolean = false;
   private inverted: boolean = false;
   private isDarkMode: boolean = false;
@@ -203,33 +211,31 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   private invertTimer: number = 0;
   private invertTrigger: boolean = false;
 
-  private soundFx:
-      Partial<{[K in keyof typeof RunnerSounds]: AudioBuffer}> = {};
-  private audioContext: AudioContext|null = null;
-  private generatedSoundFx: GeneratedSoundFx|null = null;
+  private soundFx: Partial<{ [K in keyof typeof RunnerSounds]: AudioBuffer }> = {};
+  private audioContext: AudioContext | null = null;
+  private generatedSoundFx: GeneratedSoundFx | null = null;
 
   // Gamepad state.
   private pollingGamepads: boolean = false;
   private gamepadIndex?: number;
-  private previousGamepad: Gamepad|null = null;
-
+  private previousGamepad: Gamepad | null = null;
 
   /** AbortController for all DOM listeners — aborted in destroy(). */
   private controller = new AbortController();
   /** True once destroy() has been called — guards late async callbacks. */
   private destroyed: boolean = false;
-  /** Game state change callback — 툴팁 등 React 쪽 UI 갱신용. */
+  /** Game state change callback — used by React to update UI like tooltips. */
   private onStateChange?: (state: GameState) => void;
 
   constructor(
-      outerContainerElement: HTMLElement,
-      onStateChange?: (state: GameState) => void,
-      configParam?: Config) {
+    outerContainerElement: HTMLElement,
+    onStateChange?: (state: GameState) => void,
+    configParam?: Config
+  ) {
     this.outerContainerEl = outerContainerElement;
     this.onStateChange = onStateChange;
 
-    this.config =
-        configParam || Object.assign({}, defaultBaseConfig, normalModeConfig);
+    this.config = configParam || Object.assign({}, defaultBaseConfig, normalModeConfig);
 
     this.currentSpeed = this.config.speed;
 
@@ -265,7 +271,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     if (this.altGameAssetsFailedToLoad) {
       return false;
     }
-    return loadTimeData.valueExists('enableAltGameMode');
+    return loadTimeData.valueExists("enableAltGameMode");
   }
 
   // GeneratedSoundFxProvider implementation.
@@ -292,12 +298,12 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   }
 
   // ImageSpriteProvider implementation.
-  getRunnerAltGameImageSprite(): HTMLImageElement|null {
+  getRunnerAltGameImageSprite(): HTMLImageElement | null {
     return this.altGameImageSprite;
   }
 
   // ImageSpriteProvider implementation.
-  getAltCommonImageSprite(): HTMLImageElement|null {
+  getAltCommonImageSprite(): HTMLImageElement | null {
     return this.altCommonImageSprite;
   }
 
@@ -310,10 +316,9 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * Initialize alternative game type.
    */
   private initAltGameType() {
-    assert(loadTimeData.valueExists('altGameType'));
+    assert(loadTimeData.valueExists("altGameType"));
     if (GAME_TYPE.length > 0) {
-      const parsedValue =
-          Number.parseInt(loadTimeData.getValue('altGameType'), 10);
+      const parsedValue = Number.parseInt(loadTimeData.getValue("altGameType"), 10);
       const type = GAME_TYPE[parsedValue - 1];
       this.gameType = type || null;
     }
@@ -323,17 +328,17 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * For disabled instances, set up a snackbar with the disabled message.
    */
   private setupDisabledRunner() {
-    this.containerEl = document.createElement('div');
+    this.containerEl = document.createElement("div");
     this.containerEl.className = RunnerClasses.SNACKBAR;
-    this.containerEl.textContent = loadTimeData.getValue('disabledEasterEgg');
+    this.containerEl.textContent = loadTimeData.getValue("disabledEasterEgg");
     this.outerContainerEl.appendChild(this.containerEl);
 
     // Show notification when the activation key is pressed.
-    document.addEventListener(RunnerEvents.KEYDOWN, e => {
+    document.addEventListener(RunnerEvents.KEYDOWN, (e) => {
       if (runnerKeycodes.jump.includes(e.keyCode)) {
         assert(this.containerEl);
         this.containerEl.classList.add(RunnerClasses.SNACKBAR_SHOW);
-        const iconElement = document.querySelector('.icon');
+        const iconElement = document.querySelector(".icon");
         assert(iconElement);
         iconElement.classList.add(RunnerClasses.ICON_DISABLED);
       }
@@ -354,15 +359,15 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     assert(this.tRex);
 
     switch (setting) {
-      case 'gravity':
-      case 'minJumpHeight':
-      case 'speedDropCoefficient':
+      case "gravity":
+      case "minJumpHeight":
+      case "speedDropCoefficient":
         this.tRex.config[setting] = value;
         break;
-      case 'initialJumpVelocity':
+      case "initialJumpVelocity":
         this.tRex.setJumpVelocity(value);
         break;
-      case 'speed':
+      case "speed":
         this.setSpeed(value);
         break;
       default:
@@ -375,16 +380,16 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * @param resourceName Name in data object,
    * @return The created element.
    */
-  private createImageElement(resourceName: string): HTMLImageElement|null {
-    const imgSrc = loadTimeData.valueExists(resourceName) ?
-        loadTimeData.getString(resourceName) :
-        null;
+  private createImageElement(resourceName: string): HTMLImageElement | null {
+    const imgSrc = loadTimeData.valueExists(resourceName)
+      ? loadTimeData.getString(resourceName)
+      : null;
 
     if (imgSrc) {
-      const el = document.createElement('img');
+      const el = document.createElement("img");
       el.id = resourceName;
       el.src = imgSrc;
-      const resourcesElement = document.getElementById('offline-resources');
+      const resourcesElement = document.getElementById("offline-resources");
       assert(resourcesElement);
       resourcesElement.appendChild(el);
       return el;
@@ -397,29 +402,27 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * definition.
    */
   private loadImages() {
-    let scale = '1x';
+    let scale = "1x";
     this.spriteDef = this.getSpriteDefinition().ldpi;
     if (IS_HIDPI) {
-      scale = '2x';
+      scale = "2x";
       this.spriteDef = this.getSpriteDefinition().hdpi;
     }
 
     const imageSpriteElement = document.querySelector<HTMLImageElement>(
-        `#${RESOURCE_POSTFIX + scale}`);
+      `#${RESOURCE_POSTFIX + scale}`
+    );
     assert(imageSpriteElement);
     this.imageSprite = imageSpriteElement;
 
     if (this.gameType) {
-      this.altGameImageSprite =
-          (this.createImageElement('altGameSpecificImage' + scale));
-      this.altCommonImageSprite =
-          (this.createImageElement('altGameCommonImage' + scale));
+      this.altGameImageSprite = this.createImageElement("altGameSpecificImage" + scale);
+      this.altCommonImageSprite = this.createImageElement("altGameCommonImage" + scale);
     }
     this.origImageSprite = this.getRunnerImageSprite();
 
     // Disable the alt game mode if the sprites can't be loaded.
-    if (!this.getRunnerAltGameImageSprite() === null ||
-        this.getAltCommonImageSprite() === null) {
+    if (!this.getRunnerAltGameImageSprite() === null || this.getAltCommonImageSprite() === null) {
       this.altGameAssetsFailedToLoad = true;
       this.altGameModeActive = false;
     }
@@ -429,9 +432,12 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     } else {
       // If the images are not yet loaded, add a listener.
       this.getRunnerImageSprite().addEventListener(
-          RunnerEvents.LOAD,
-          () => { if (!this.destroyed) this.init(); },
-          { signal: this.controller.signal, once: true });
+        RunnerEvents.LOAD,
+        () => {
+          if (!this.destroyed) this.init();
+        },
+        { signal: this.controller.signal, once: true }
+      );
     }
   }
 
@@ -442,27 +448,29 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     if (IS_IOS) {
       return;
     }
-    // 웹 포트: audio-resources template이 없으면 사운드 스킵
+    // Web port: skip sound setup if the audio-resources template is absent.
     if (!document.getElementById(this.config.resourceTemplateId)) {
       return;
     }
     this.audioContext = new AudioContext();
 
     const resourceTemplateElement = document.querySelector<HTMLTemplateElement>(
-        `#${this.config.resourceTemplateId}`);
+      `#${this.config.resourceTemplateId}`
+    );
     assert(resourceTemplateElement);
     const resourceTemplate = resourceTemplateElement.content;
 
     for (const sound in RunnerSounds) {
       const audioElement = resourceTemplate.querySelector<HTMLAudioElement>(
-          `#${RunnerSounds[sound as keyof typeof RunnerSounds]}`);
+        `#${RunnerSounds[sound as keyof typeof RunnerSounds]}`
+      );
       assert(audioElement);
       let soundSrc = audioElement.src;
-      soundSrc = soundSrc.substr(soundSrc.indexOf(',') + 1);
+      soundSrc = soundSrc.substr(soundSrc.indexOf(",") + 1);
       const buffer = decodeBase64ToArrayBuffer(soundSrc);
 
       // Async, so no guarantee of order in array.
-      this.audioContext.decodeAudioData(buffer, audioBuffer => {
+      this.audioContext.decodeAudioData(buffer, (audioBuffer) => {
         this.soundFx = {
           ...this.soundFx,
           [sound]: audioBuffer,
@@ -479,9 +487,10 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
     // Reduce the speed on smaller mobile screens.
     if (this.dimensions.width < DEFAULT_DIMENSIONS.width) {
-      const mobileSpeed = this.hasSlowdown ? speed :
-                                             speed * this.dimensions.width /
-              DEFAULT_DIMENSIONS.width * this.config.mobileSpeedCoefficient;
+      const mobileSpeed = this.hasSlowdown
+        ? speed
+        : ((speed * this.dimensions.width) / DEFAULT_DIMENSIONS.width) *
+          this.config.mobileSpeedCoefficient;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
     } else if (newSpeed) {
       this.currentSpeed = newSpeed;
@@ -493,59 +502,63 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    */
   private init() {
     assert(this.spriteDef);
-    const iconElement =
-        document.querySelector<HTMLElement>('.' + RunnerClasses.ICON);
+    const iconElement = document.querySelector<HTMLElement>("." + RunnerClasses.ICON);
     assert(iconElement);
 
     // Hide the static icon.
-    iconElement.style.visibility = 'hidden';
+    iconElement.style.visibility = "hidden";
 
     this.adjustDimensions();
     this.setSpeed();
 
-    this.containerEl = document.createElement('div');
-    this.containerEl.setAttribute('tabindex', '0');
+    this.containerEl = document.createElement("div");
+    this.containerEl.setAttribute("tabindex", "0");
     this.containerEl.className = RunnerClasses.CONTAINER;
 
     // Player canvas container.
-    this.canvas = createCanvas(
-        this.containerEl, this.dimensions.width, this.dimensions.height);
+    this.canvas = createCanvas(this.containerEl, this.dimensions.width, this.dimensions.height);
 
     // Add checkbox to slow down the game.
-    this.slowSpeedCheckboxLabel = document.createElement('label');
-    this.slowSpeedCheckboxLabel.className = 'slow-speed-option hidden';
+    this.slowSpeedCheckboxLabel = document.createElement("label");
+    this.slowSpeedCheckboxLabel.className = "slow-speed-option hidden";
 
-    this.slowSpeedCheckbox = document.createElement('input');
-    this.slowSpeedCheckbox.setAttribute('type', 'checkbox');
-    this.slowSpeedCheckbox.setAttribute('tabindex', '0');
-    this.slowSpeedCheckbox.setAttribute('checked', 'checked');
+    this.slowSpeedCheckbox = document.createElement("input");
+    this.slowSpeedCheckbox.setAttribute("type", "checkbox");
+    this.slowSpeedCheckbox.setAttribute("tabindex", "0");
+    this.slowSpeedCheckbox.setAttribute("checked", "checked");
 
-    this.slowSpeedToggleEl = document.createElement('span');
-    this.slowSpeedToggleEl.className = 'slow-speed-toggle';
+    this.slowSpeedToggleEl = document.createElement("span");
+    this.slowSpeedToggleEl.className = "slow-speed-toggle";
 
     this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedCheckbox);
     this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedToggleEl);
 
-    const canvasContext = this.canvas.getContext('2d');
+    const canvasContext = this.canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
-    this.canvasCtx.fillStyle = '#f7f7f7';
+    this.canvasCtx.fillStyle = "#f7f7f7";
     this.canvasCtx.fill();
     updateCanvasScaling(this.canvas);
 
     // Horizon contains clouds, obstacles and the ground.
     this.horizon = new Horizon(
-        this.canvas, this.spriteDef, this.dimensions,
-        this.config.gapCoefficient, /* resourceProvider= */ this);
+      this.canvas,
+      this.spriteDef,
+      this.dimensions,
+      this.config.gapCoefficient,
+      /* resourceProvider= */ this
+    );
 
     // Distance meter
     this.distanceMeter = new DistanceMeter(
-        this.canvas, this.spriteDef.textSprite, this.dimensions.width,
-        /* imageSpriteProvider= */ this);
+      this.canvas,
+      this.spriteDef.textSprite,
+      this.dimensions.width,
+      /* imageSpriteProvider= */ this
+    );
 
     // Draw t-rex
-    this.tRex = new Trex(
-        this.canvas, this.spriteDef.tRex, /* resourceProvider= */ this);
+    this.tRex = new Trex(this.canvas, this.spriteDef.tRex, /* resourceProvider= */ this);
 
     this.outerContainerEl.appendChild(this.containerEl);
     this.outerContainerEl.appendChild(this.slowSpeedCheckboxLabel);
@@ -553,26 +566,29 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     this.startListening();
     this.update();
 
-    window.addEventListener(
-        RunnerEvents.RESIZE, this.debounceResize.bind(this),
-        { signal: this.controller.signal });
+    window.addEventListener(RunnerEvents.RESIZE, this.debounceResize.bind(this), {
+      signal: this.controller.signal,
+    });
 
     // Handle dark mode
-    const darkModeMediaQuery =
-        window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     this.isDarkMode = darkModeMediaQuery && darkModeMediaQuery.matches;
-    darkModeMediaQuery.addEventListener('change', (e) => {
-      this.isDarkMode = e.matches;
-    }, { signal: this.controller.signal });
+    darkModeMediaQuery.addEventListener(
+      "change",
+      (e) => {
+        this.isDarkMode = e.matches;
+      },
+      { signal: this.controller.signal }
+    );
 
-    this.onStateChange?.('idle');
+    this.onStateChange?.("idle");
   }
 
   /**
    * Create the touch controller. A div that covers whole screen.
    */
   private createTouchController() {
-    this.touchController = document.createElement('div');
+    this.touchController = document.createElement("div");
     this.touchController.className = RunnerClasses.TOUCH_CONTROLLER;
     this.touchController.addEventListener(RunnerEvents.TOUCHSTART, this);
     this.touchController.addEventListener(RunnerEvents.TOUCHEND, this);
@@ -596,13 +612,11 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     this.resizeTimerId = undefined;
 
     const boxStyles = window.getComputedStyle(this.outerContainerEl);
-    const padding = Number(
-        boxStyles.paddingLeft.substr(0, boxStyles.paddingLeft.length - 2));
+    const padding = Number(boxStyles.paddingLeft.substr(0, boxStyles.paddingLeft.length - 2));
 
     this.dimensions.width = this.outerContainerEl.offsetWidth - padding * 2;
     if (this.isArcadeMode()) {
-      this.dimensions.width =
-          Math.min(DEFAULT_DIMENSIONS.width, this.dimensions.width);
+      this.dimensions.width = Math.min(DEFAULT_DIMENSIONS.width, this.dimensions.width);
       if (this.activated) {
         this.setArcadeModeContainerScale();
       }
@@ -626,8 +640,8 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
       // Outer container and distance meter.
       if (this.playing || this.crashed || this.paused) {
-        this.containerEl.style.width = this.dimensions.width + 'px';
-        this.containerEl.style.height = this.dimensions.height + 'px';
+        this.containerEl.style.width = this.dimensions.width + "px";
+        this.containerEl.style.height = this.dimensions.height + "px";
         this.distanceMeter.update(0, Math.ceil(this.distanceRan));
         this.stop();
       } else {
@@ -654,19 +668,23 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       this.tRex.playingIntro = true;
 
       // CSS animation definition.
-      const keyframes = '@-webkit-keyframes intro { ' +
-          'from { width:' + this.tRex.config.width + 'px }' +
-          'to { width: ' + this.dimensions.width + 'px }' +
-          '}';
+      const keyframes =
+        "@-webkit-keyframes intro { " +
+        "from { width:" +
+        this.tRex.config.width +
+        "px }" +
+        "to { width: " +
+        this.dimensions.width +
+        "px }" +
+        "}";
       const styleSheet = document.styleSheets[0];
       assert(styleSheet);
       styleSheet.insertRule(keyframes, 0);
 
-      this.containerEl.addEventListener(
-          RunnerEvents.ANIM_END, this.startGame.bind(this));
+      this.containerEl.addEventListener(RunnerEvents.ANIM_END, this.startGame.bind(this));
 
-      this.containerEl.style.webkitAnimation = 'intro .4s ease-out 1 both';
-      this.containerEl.style.width = this.dimensions.width + 'px';
+      this.containerEl.style.webkitAnimation = "intro .4s ease-out 1 both";
+      this.containerEl.style.width = this.dimensions.width + "px";
 
       this.setPlayStatus(true);
       this.activated = true;
@@ -674,7 +692,6 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       this.restart();
     }
   }
-
 
   /**
    * Update the game status to started.
@@ -689,7 +706,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     this.runningTime = 0;
     this.playingIntro = false;
     this.tRex.playingIntro = false;
-    this.containerEl.style.webkitAnimation = '';
+    this.containerEl.style.webkitAnimation = "";
     this.playCount++;
 
     if (this.hasAudioCuesInternal) {
@@ -703,13 +720,12 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     window.addEventListener(RunnerEvents.BLUR, onVis, opts);
     window.addEventListener(RunnerEvents.FOCUS, onVis, opts);
 
-    this.onStateChange?.('playing');
+    this.onStateChange?.("playing");
   }
 
   private clearCanvas() {
     assert(this.canvasCtx);
-    this.canvasCtx.clearRect(
-        0, 0, this.dimensions.width, this.dimensions.height);
+    this.canvasCtx.clearRect(0, 0, this.dimensions.width, this.dimensions.height);
   }
 
   /**
@@ -718,8 +734,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    */
   private isCanvasInView(): boolean {
     assert(this.containerEl);
-    return this.containerEl.getBoundingClientRect().top >
-        this.config.canvasInViewOffset;
+    return this.containerEl.getBoundingClientRect().top > this.config.canvasInViewOffset;
   }
 
   /**
@@ -780,8 +795,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       this.clearCanvas();
 
       // Additional fade in - Prevents jump when switching sprites
-      if (this.altGameModeActive &&
-          this.fadeInTimer <= this.config.fadeDuration) {
+      if (this.altGameModeActive && this.fadeInTimer <= this.config.fadeDuration) {
         this.fadeInTimer += deltaTime / 1000;
         this.canvasCtx.globalAlpha = this.fadeInTimer;
       } else {
@@ -802,30 +816,28 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
       // The horizon doesn't move until the intro is over.
       if (this.playingIntro) {
-        this.horizon.update(
-            0, this.currentSpeed, hasObstacles, /* showNightMode = */ false);
+        this.horizon.update(0, this.currentSpeed, hasObstacles, /* showNightMode = */ false);
       } else if (!this.crashed) {
         const showNightMode = this.isDarkMode !== this.inverted;
         deltaTime = !this.activated ? 0 : deltaTime;
-        this.horizon.update(
-            deltaTime, this.currentSpeed, hasObstacles, showNightMode);
+        this.horizon.update(deltaTime, this.currentSpeed, hasObstacles, showNightMode);
       }
 
       const firstObstacle = this.horizon.obstacles[0];
 
       // Check for collisions.
-      let collision = hasObstacles && firstObstacle &&
-          this.checkForCollision(firstObstacle, this.tRex);
+      let collision =
+        hasObstacles && firstObstacle && this.checkForCollision(firstObstacle, this.tRex);
 
       // For a11y, audio cues.
       if (this.hasAudioCuesInternal && hasObstacles) {
         assert(firstObstacle);
-        const jumpObstacle = firstObstacle.typeConfig.type !== 'collectable';
+        const jumpObstacle = firstObstacle.typeConfig.type !== "collectable";
 
         if (!firstObstacle.jumpAlerted) {
           const threshold = this.config.audiocueProximityThreshold;
-          const adjProximityThreshold = threshold +
-              (threshold * Math.log10(this.currentSpeed / this.config.speed));
+          const adjProximityThreshold =
+            threshold + threshold * Math.log10(this.currentSpeed / this.config.speed);
 
           if (firstObstacle.xPos < adjProximityThreshold) {
             if (jumpObstacle) {
@@ -837,8 +849,12 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       }
 
       // Activated alt game mode.
-      if (this.isAltGameModeEnabled() && collision && firstObstacle &&
-          firstObstacle.typeConfig.type === 'collectable') {
+      if (
+        this.isAltGameModeEnabled() &&
+        collision &&
+        firstObstacle &&
+        firstObstacle.typeConfig.type === "collectable"
+      ) {
         this.horizon.removeFirstObstacle();
         this.tRex.setFlashing(true);
         collision = false;
@@ -850,7 +866,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       }
 
       if (!collision) {
-        this.distanceRan += this.currentSpeed * deltaTime / this.msPerFrame;
+        this.distanceRan += (this.currentSpeed * deltaTime) / this.msPerFrame;
 
         if (this.currentSpeed < this.config.maxSpeed) {
           this.currentSpeed += this.config.acceleration;
@@ -859,8 +875,10 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
         this.gameOver();
       }
 
-      const playAchievementSound =
-          this.distanceMeter.update(deltaTime, Math.ceil(this.distanceRan));
+      const playAchievementSound = this.distanceMeter.update(
+        deltaTime,
+        Math.ceil(this.distanceRan)
+      );
 
       if (!this.hasAudioCuesInternal && playAchievementSound) {
         this.playSound(this.soundFx.SCORE);
@@ -875,8 +893,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
         } else if (this.invertTimer) {
           this.invertTimer += deltaTime;
         } else {
-          const actualDistance =
-              this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan));
+          const actualDistance = this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan));
 
           if (actualDistance > 0) {
             this.invertTrigger = !(actualDistance % this.config.invertDistance);
@@ -890,8 +907,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       }
     }
 
-    if (this.playing ||
-        (!this.activated && this.tRex.blinkCount < this.config.maxBlinkCount)) {
+    if (this.playing || (!this.activated && this.tRex.blinkCount < this.config.maxBlinkCount)) {
       this.tRex.update(deltaTime);
       this.scheduleNextUpdate();
     }
@@ -925,8 +941,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       this.hasAudioCuesInternal = true;
       this.generatedSoundFx = new GeneratedSoundFx();
       this.config.clearTime *= 1.2;
-    } else if (
-        e instanceof KeyboardEvent && runnerKeycodes.jump.includes(e.keyCode)) {
+    } else if (e instanceof KeyboardEvent && runnerKeycodes.jump.includes(e.keyCode)) {
       this.onKeyDown(e);
     }
   }
@@ -952,8 +967,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
         assert(this.horizon);
         assert(this.tRex);
         this.hasSlowdownInternal = this.slowSpeedCheckbox.checked;
-        const updatedConfig =
-            this.hasSlowdown ? slowModeConfig : normalModeConfig;
+        const updatedConfig = this.hasSlowdown ? slowModeConfig : normalModeConfig;
 
         this.config = Object.assign(defaultBaseConfig, updatedConfig);
         this.currentSpeed = updatedConfig.speed;
@@ -971,11 +985,13 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * From focus event or when audio cues are activated.
    */
   private showSpeedToggle(e?: Event) {
-    const isFocusEvent = e && e.type === 'focus';
+    const isFocusEvent = e && e.type === "focus";
     if (this.hasAudioCuesInternal || isFocusEvent) {
       assert(this.slowSpeedCheckboxLabel);
       this.slowSpeedCheckboxLabel.classList.toggle(
-          HIDDEN_CLASS, isFocusEvent ? false : !this.crashed);
+        HIDDEN_CLASS,
+        isFocusEvent ? false : !this.crashed
+      );
     }
   }
 
@@ -985,17 +1001,18 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   private disableSpeedToggle(disable: boolean) {
     assert(this.slowSpeedCheckbox);
     if (disable) {
-      this.slowSpeedCheckbox.setAttribute('disabled', 'disabled');
+      this.slowSpeedCheckbox.setAttribute("disabled", "disabled");
     } else {
-      this.slowSpeedCheckbox.removeAttribute('disabled');
+      this.slowSpeedCheckbox.removeAttribute("disabled");
     }
   }
 
   /**
    * Bind relevant key / mouse / touch listeners.
-   * 웹 포트: document 전역에 등록 (Chromium 원본 동일). 멀티 인스턴스에서는
-   * onKeyDown/onKeyUp 맨 앞의 externallyLocked 체크로 비활성 탭의 Runner가
-   * 키를 무시. URL 바 편집 중에도 React 쪽에서 lock을 걸어 키를 차단.
+   * Web port: registered on document (same as Chromium original). With
+   * multiple instances, the externallyLocked check at the top of
+   * onKeyDown/onKeyUp lets inactive tabs' Runners ignore keys. The React
+   * layer also locks the Runner while the URL bar is being edited.
    */
   private startListening() {
     assert(this.containerEl);
@@ -1004,15 +1021,15 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
     // A11y keyboard / screen reader activation.
     this.containerEl.addEventListener(
-        RunnerEvents.KEYDOWN, this.handleCanvasKeyPress.bind(this), opts);
+      RunnerEvents.KEYDOWN,
+      this.handleCanvasKeyPress.bind(this),
+      opts
+    );
     if (!IS_MOBILE) {
-      this.containerEl.addEventListener(
-          RunnerEvents.FOCUS, this.showSpeedToggle.bind(this), opts);
+      this.containerEl.addEventListener(RunnerEvents.FOCUS, this.showSpeedToggle.bind(this), opts);
     }
-    this.canvas.addEventListener(
-        RunnerEvents.KEYDOWN, this.preventScrolling.bind(this), opts);
-    this.canvas.addEventListener(
-        RunnerEvents.KEYUP, this.preventScrolling.bind(this), opts);
+    this.canvas.addEventListener(RunnerEvents.KEYDOWN, this.preventScrolling.bind(this), opts);
+    this.canvas.addEventListener(RunnerEvents.KEYUP, this.preventScrolling.bind(this), opts);
 
     // Keys.
     document.addEventListener(RunnerEvents.KEYDOWN, this, opts);
@@ -1041,24 +1058,30 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
     if (this.isCanvasInView()) {
       // Allow toggling of speed toggle.
-      if (e instanceof KeyboardEvent &&
-          runnerKeycodes.jump.includes(e.keyCode) &&
-          e.target === this.slowSpeedCheckbox) {
+      if (
+        e instanceof KeyboardEvent &&
+        runnerKeycodes.jump.includes(e.keyCode) &&
+        e.target === this.slowSpeedCheckbox
+      ) {
         return;
       }
 
       if (!this.crashed && !this.paused) {
         // For a11y, screen reader activation.
-        const isMobileMouseInput = IS_MOBILE && e instanceof PointerEvent &&
-            e.type === RunnerEvents.POINTERDOWN && e.pointerType === 'mouse' &&
-            (e.target === this.containerEl ||
-             (IS_IOS &&
-              (e.target === this.touchController || e.target === this.canvas)));
+        const isMobileMouseInput =
+          IS_MOBILE &&
+          e instanceof PointerEvent &&
+          e.type === RunnerEvents.POINTERDOWN &&
+          e.pointerType === "mouse" &&
+          (e.target === this.containerEl ||
+            (IS_IOS && (e.target === this.touchController || e.target === this.canvas)));
         assert(this.tRex);
 
-        if ((e instanceof KeyboardEvent &&
-             runnerKeycodes.jump.includes(e.keyCode)) ||
-            e.type === RunnerEvents.TOUCHSTART || isMobileMouseInput) {
+        if (
+          (e instanceof KeyboardEvent && runnerKeycodes.jump.includes(e.keyCode)) ||
+          e.type === RunnerEvents.TOUCHSTART ||
+          isMobileMouseInput
+        ) {
           e.preventDefault();
           // Starting the game for the first time.
           if (!this.playing) {
@@ -1087,8 +1110,10 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
             this.tRex.startJump(this.currentSpeed);
           }
         } else if (
-            this.playing && e instanceof KeyboardEvent &&
-            runnerKeycodes.duck.includes(e.keyCode)) {
+          this.playing &&
+          e instanceof KeyboardEvent &&
+          runnerKeycodes.duck.includes(e.keyCode)
+        ) {
           e.preventDefault();
           if (this.tRex.jumping) {
             // Speed drop, activated only when jump key is not pressed.
@@ -1108,9 +1133,11 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   private onKeyUp(e: Event) {
     if (this.externallyLocked) return;
     assert(this.tRex);
-    const keyCode = ('keyCode' in e) ? e.keyCode as number : 0;
-    const isjumpKey = runnerKeycodes.jump.includes(keyCode) ||
-        e.type === RunnerEvents.TOUCHEND || e.type === RunnerEvents.POINTERUP;
+    const keyCode = "keyCode" in e ? (e.keyCode as number) : 0;
+    const isjumpKey =
+      runnerKeycodes.jump.includes(keyCode) ||
+      e.type === RunnerEvents.TOUCHEND ||
+      e.type === RunnerEvents.POINTERUP;
 
     if (this.isRunning() && isjumpKey) {
       this.tRex.endJump();
@@ -1121,11 +1148,12 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       // Check that enough time has elapsed before allowing jump key to restart.
       const deltaTime = getTimeStamp() - this.time;
 
-      if (this.isCanvasInView() &&
-          (runnerKeycodes.restart.includes(keyCode) ||
-           this.isLeftClickOnCanvas(e) ||
-           (deltaTime >= this.config.gameoverClearTime &&
-            runnerKeycodes.jump.includes(keyCode)))) {
+      if (
+        this.isCanvasInView() &&
+        (runnerKeycodes.restart.includes(keyCode) ||
+          this.isLeftClickOnCanvas(e) ||
+          (deltaTime >= this.config.gameoverClearTime && runnerKeycodes.jump.includes(keyCode)))
+      ) {
         this.handleGameOverClicks(e);
       }
     } else if (this.paused && isjumpKey) {
@@ -1148,7 +1176,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * rAF loop for gamepad polling.
    */
   private pollGamepadState() {
-    const gamepads: Array<Gamepad|null> = navigator.getGamepads();
+    const gamepads: Array<Gamepad | null> = navigator.getGamepads();
     this.pollActiveGamepad(gamepads);
 
     this.pollingGamepads = true;
@@ -1159,10 +1187,9 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * Polls for a gamepad with the jump button pressed. If one is found this
    * becomes the "active" gamepad and all others are ignored.
    */
-  private pollForActiveGamepad(gamepads: Array<Gamepad|null>) {
+  private pollForActiveGamepad(gamepads: Array<Gamepad | null>) {
     for (const [i, gamepad] of gamepads.entries()) {
-      if (gamepad && gamepad.buttons.length > 0 &&
-          gamepad.buttons[0]!.pressed) {
+      if (gamepad && gamepad.buttons.length > 0 && gamepad.buttons[0]!.pressed) {
         this.gamepadIndex = i;
         this.pollActiveGamepad(gamepads);
         return;
@@ -1174,7 +1201,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * Polls the chosen gamepad for button presses and generates KeyboardEvents
    * to integrate with the rest of the game logic.
    */
-  private pollActiveGamepad(gamepads: Array<Gamepad|null>) {
+  private pollActiveGamepad(gamepads: Array<Gamepad | null>) {
     if (this.gamepadIndex === undefined) {
       this.pollForActiveGamepad(gamepads);
       return;
@@ -1189,12 +1216,12 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
     // The gamepad specification defines the typical mapping of physical buttons
     // to button indices: https://w3c.github.io/gamepad/#remapping
-    this.pollGamepadButton(gamepad, 0, 38);  // Jump
+    this.pollGamepadButton(gamepad, 0, 38); // Jump
     if (gamepad.buttons.length >= 2) {
-      this.pollGamepadButton(gamepad, 1, 40);  // Duck
+      this.pollGamepadButton(gamepad, 1, 40); // Duck
     }
     if (gamepad.buttons.length >= 10) {
-      this.pollGamepadButton(gamepad, 9, 13);  // Restart
+      this.pollGamepadButton(gamepad, 9, 13); // Restart
     }
 
     this.previousGamepad = gamepad;
@@ -1203,19 +1230,17 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   /**
    * Generates a key event based on a gamepad button.
    */
-  private pollGamepadButton(
-      gamepad: Gamepad, buttonIndex: number, keyCode: number) {
+  private pollGamepadButton(gamepad: Gamepad, buttonIndex: number, keyCode: number) {
     const state = gamepad.buttons[buttonIndex]?.pressed || false;
     let previousState = false;
     if (this.previousGamepad) {
-      previousState =
-          this.previousGamepad.buttons[buttonIndex]?.pressed || false;
+      previousState = this.previousGamepad.buttons[buttonIndex]?.pressed || false;
     }
     // Generate key events on the rising and falling edge of a button press.
     if (state !== previousState) {
-      const e = new KeyboardEvent(
-          state ? RunnerEvents.KEYDOWN : RunnerEvents.KEYUP,
-          {keyCode: keyCode});
+      const e = new KeyboardEvent(state ? RunnerEvents.KEYDOWN : RunnerEvents.KEYUP, {
+        keyCode: keyCode,
+      });
       document.dispatchEvent(e);
     }
   }
@@ -1253,12 +1278,13 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       return false;
     }
 
-
-    return e.button != null && e.button < 2 &&
-        e.type === RunnerEvents.POINTERUP &&
-        (e.target === this.canvas ||
-         (IS_MOBILE && this.hasAudioCuesInternal &&
-          e.target === this.containerEl));
+    return (
+      e.button != null &&
+      e.button < 2 &&
+      e.type === RunnerEvents.POINTERUP &&
+      (e.target === this.canvas ||
+        (IS_MOBILE && this.hasAudioCuesInternal && e.target === this.containerEl))
+    );
   }
 
   /**
@@ -1316,19 +1342,29 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
 
     // Game over panel.
     if (!this.gameOverPanel) {
-      const origSpriteDef = IS_HIDPI ? spriteDefinitionByType.original.hdpi :
-                                       spriteDefinitionByType.original.ldpi;
+      const origSpriteDef = IS_HIDPI
+        ? spriteDefinitionByType.original.hdpi
+        : spriteDefinitionByType.original.ldpi;
 
       if (this.canvas) {
         if (this.isAltGameModeEnabled()) {
           this.gameOverPanel = new GameOverPanel(
-              this.canvas, origSpriteDef.textSprite, origSpriteDef.restart,
-              this.dimensions, /* imageSpriteProvider= */ this,
-              origSpriteDef.altGameEnd, this.altGameModeActive);
+            this.canvas,
+            origSpriteDef.textSprite,
+            origSpriteDef.restart,
+            this.dimensions,
+            /* imageSpriteProvider= */ this,
+            origSpriteDef.altGameEnd,
+            this.altGameModeActive
+          );
         } else {
           this.gameOverPanel = new GameOverPanel(
-              this.canvas, origSpriteDef.textSprite, origSpriteDef.restart,
-              this.dimensions, /* imageSpriteProvider= */ this);
+            this.canvas,
+            origSpriteDef.textSprite,
+            origSpriteDef.restart,
+            this.dimensions,
+            /* imageSpriteProvider= */ this
+          );
         }
       }
     }
@@ -1350,7 +1386,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     this.showSpeedToggle();
     this.disableSpeedToggle(false);
 
-    this.onStateChange?.('gameOver');
+    this.onStateChange?.("gameOver");
   }
 
   stop() {
@@ -1364,9 +1400,9 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   }
 
   /**
-   * 외부(React) lock 설정 — true면 키 이벤트 무시 + 게임 정지.
-   * macOS-web 다른 앱/탭으로 포커스 이동 시 호출.
-   * lock 해제 시 이전에 플레이 중이었다면 자동 재개.
+   * External (React) lock. When true, key events are ignored and the game
+   * is stopped. Called when macOS-web focus shifts to another app/tab. On
+   * unlock, auto-resumes if the game was playing before the lock.
    */
   setExternallyLocked(locked: boolean) {
     if (locked === this.externallyLocked) return;
@@ -1385,8 +1421,8 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   }
 
   /**
-   * Runner 전체 해제. 탭 닫기/언마운트 시 호출.
-   * AbortController로 모든 리스너 제거, RAF 취소, DOM 제거.
+   * Tear down the entire Runner. Called on tab close / component unmount.
+   * Aborts all listeners via AbortController, cancels RAF, removes DOM.
    */
   destroy() {
     if (this.destroyed) return;
@@ -1406,13 +1442,15 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   }
 
   play() {
-    // 웹 포트: 외부에서 init 완료 전에 호출될 수 있어 tRex 체크 가드 추가
+    // Web port: may be called before init() completes from the outside,
+    // so guard on tRex existence.
     if (this.crashed || !this.tRex) return;
     this.setPlayStatus(true);
     this.paused = false;
-    // 웹 포트: 점프/덕 중에 lock → resume 시 status를 RUNNING으로 강제하면
-    // updateJump가 RUNNING의 msPerFrame(1000/12)을 쓰게 돼 중력 적용이
-    // 5배 느려지는 "깃털 낙하" 버그 발생. 공중/덕 상태일 땐 status 유지.
+    // Web port: if we lock mid-jump/duck and then force status back to
+    // RUNNING on resume, updateJump uses RUNNING's msPerFrame (1000/12) and
+    // gravity ends up ~5x weaker — the "feather-fall" bug. Keep the existing
+    // status while airborne or ducking.
     if (!this.tRex.jumping && !this.tRex.ducking) {
       this.tRex.update(0, TrexStatus.RUNNING);
     }
@@ -1451,7 +1489,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       if (this.hasAudioCuesInternal) {
         this.getGeneratedSoundFx().background();
       }
-      this.onStateChange?.('playing');
+      this.onStateChange?.("playing");
     }
   }
 
@@ -1491,26 +1529,27 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     const scaledCanvasHeight = this.dimensions.height * scale;
     // Positions the game container at 10% of the available vertical window
     // height minus the game container height.
-    const translateY = Math.ceil(Math.max(
-                           0,
-                           (windowHeight - scaledCanvasHeight -
-                            this.config.arcadeModeInitialTopPosition) *
-                               this.config.arcadeModeTopPositionPercent)) *
-        window.devicePixelRatio;
+    const translateY =
+      Math.ceil(
+        Math.max(
+          0,
+          (windowHeight - scaledCanvasHeight - this.config.arcadeModeInitialTopPosition) *
+            this.config.arcadeModeTopPositionPercent
+        )
+      ) * window.devicePixelRatio;
 
-    const cssScale = IS_RTL ? -scale + ',' + scale : scale;
-    this.containerEl.style.transform =
-        'scale(' + cssScale + ') translateY(' + translateY + 'px)';
+    const cssScale = IS_RTL ? -scale + "," + scale : scale;
+    this.containerEl.style.transform = "scale(" + cssScale + ") translateY(" + translateY + "px)";
   }
 
   /**
    * Pause the game if the tab is not in focus.
-   * 웹 포트: externallyLocked면 자동 재개하지 않음. 멀티 인스턴스에서
-   * 포커스 이벤트가 발생해도 비활성 탭의 Runner는 계속 정지 상태를 유지.
+   * Web port: skips auto-resume when externallyLocked. With multiple
+   * instances, inactive tabs' Runners stay stopped even when focus events
+   * fire on the window/document.
    */
   private onVisibilityChange(e: Event) {
-    if (document.hidden || e.type === 'blur' ||
-        document.visibilityState !== 'visible') {
+    if (document.hidden || e.type === "blur" || document.visibilityState !== "visible") {
       this.stop();
     } else if (!this.crashed && !this.externallyLocked) {
       assert(this.tRex);
@@ -1545,8 +1584,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       this.invertTimer = 0;
       this.inverted = false;
     } else {
-      this.inverted =
-          htmlEl.classList.toggle(RunnerClasses.INVERTED, this.invertTrigger);
+      this.inverted = htmlEl.classList.toggle(RunnerClasses.INVERTED, this.invertTrigger);
     }
   }
 
@@ -1557,18 +1595,25 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * @param canvasCtx Optional canvas context for drawing collision boxes.
    */
   private checkForCollision(
-      obstacle: Obstacle, tRex: Trex,
-      canvasCtx?: CanvasRenderingContext2D): CollisionBox[]|null {
+    obstacle: Obstacle,
+    tRex: Trex,
+    canvasCtx?: CanvasRenderingContext2D
+  ): CollisionBox[] | null {
     // Adjustments are made to the bounding box as there is a 1 pixel white
     // border around the t-rex and obstacles.
     const tRexBox = new CollisionBox(
-        tRex.xPos + 1, tRex.yPos + 1, tRex.config.width - 2,
-        tRex.config.height - 2);
+      tRex.xPos + 1,
+      tRex.yPos + 1,
+      tRex.config.width - 2,
+      tRex.config.height - 2
+    );
 
     const obstacleBox = new CollisionBox(
-        obstacle.xPos + 1, obstacle.yPos + 1,
-        obstacle.typeConfig.width * obstacle.size - 2,
-        obstacle.typeConfig.height - 2);
+      obstacle.xPos + 1,
+      obstacle.yPos + 1,
+      obstacle.typeConfig.width * obstacle.size - 2,
+      obstacle.typeConfig.height - 2
+    );
 
     // Debug outer box
     if (canvasCtx) {
@@ -1593,10 +1638,8 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
       for (const tRexCollisionBox of tRexCollisionBoxes) {
         for (const obstacleCollixionBox of collisionBoxes) {
           // Adjust the box to actual positions.
-          const adjTrexBox =
-              createAdjustedCollisionBox(tRexCollisionBox, tRexBox);
-          const adjObstacleBox =
-              createAdjustedCollisionBox(obstacleCollixionBox, obstacleBox);
+          const adjTrexBox = createAdjustedCollisionBox(tRexCollisionBox, tRexBox);
+          const adjObstacleBox = createAdjustedCollisionBox(obstacleCollixionBox, obstacleBox);
           const crashed = boxCompare(adjTrexBox, adjObstacleBox);
 
           // Draw boxes for debug.
@@ -1615,7 +1658,6 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   }
 }
 
-
 /**
  * Updates the canvas size taking into
  * account the backing store pixel ratio and
@@ -1626,17 +1668,17 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
  *
  * @return Whether the canvas was scaled.
  */
-function updateCanvasScaling(
-    canvas: HTMLCanvasElement, width?: number, height?: number): boolean {
-  const context = canvas.getContext('2d');
+function updateCanvasScaling(canvas: HTMLCanvasElement, width?: number, height?: number): boolean {
+  const context = canvas.getContext("2d");
   assert(context);
 
   // Query the various pixel ratios
   const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
   /** @suppress {missingProperties} */
-  const backingStoreRatio = ('webkitBackingStorePixelRatio' in context) ?
-      Math.floor(context.webkitBackingStorePixelRatio as number) :
-      1;
+  const backingStoreRatio =
+    "webkitBackingStorePixelRatio" in context
+      ? Math.floor(context.webkitBackingStorePixelRatio as number)
+      : 1;
   const ratio = devicePixelRatio / backingStoreRatio;
 
   // Upscale the canvas if the two ratios don't match
@@ -1647,8 +1689,8 @@ function updateCanvasScaling(
     canvas.width = oldWidth * ratio;
     canvas.height = oldHeight * ratio;
 
-    canvas.style.width = oldWidth + 'px';
-    canvas.style.height = oldHeight + 'px';
+    canvas.style.width = oldWidth + "px";
+    canvas.style.height = oldHeight + "px";
 
     // Scale the context to counter the fact that we've manually scaled
     // our canvas element.
@@ -1657,12 +1699,11 @@ function updateCanvasScaling(
   } else if (devicePixelRatio === 1) {
     // Reset the canvas width / height. Fixes scaling bug when the page is
     // zoomed and the devicePixelRatio changes accordingly.
-    canvas.style.width = canvas.width + 'px';
-    canvas.style.height = canvas.height + 'px';
+    canvas.style.width = canvas.width + "px";
+    canvas.style.height = canvas.height + "px";
   }
   return false;
 }
-
 
 /**
  * Vibrate on mobile devices.
@@ -1674,24 +1715,24 @@ function vibrate(duration: number) {
   }
 }
 
-
 /**
  * Create canvas element.
  * @param container Element to append canvas to.
  */
 function createCanvas(
-    container: Element, width: number, height: number,
-    classname?: string): HTMLCanvasElement {
-  const canvas = document.createElement('canvas');
-  canvas.className =
-      classname ? RunnerClasses.CANVAS + ' ' + classname : RunnerClasses.CANVAS;
+  container: Element,
+  width: number,
+  height: number,
+  classname?: string
+): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.className = classname ? RunnerClasses.CANVAS + " " + classname : RunnerClasses.CANVAS;
   canvas.width = width;
   canvas.height = height;
   container.appendChild(canvas);
 
   return canvas;
 }
-
 
 /**
  * Decodes the base 64 audio to ArrayBuffer used by Web Audio.
@@ -1708,10 +1749,7 @@ function decodeBase64ToArrayBuffer(base64String: string): ArrayBuffer {
   return bytes.buffer;
 }
 
-
-
 //******************************************************************************
-
 
 /**
  * Adjust the collision box.
@@ -1719,29 +1757,26 @@ function decodeBase64ToArrayBuffer(base64String: string): ArrayBuffer {
  * @param adjustment Adjustment box.
  * @return The adjusted collision box object.
  */
-function createAdjustedCollisionBox(
-    box: CollisionBox, adjustment: CollisionBox): CollisionBox {
-  return new CollisionBox(
-      box.x + adjustment.x, box.y + adjustment.y, box.width, box.height);
+function createAdjustedCollisionBox(box: CollisionBox, adjustment: CollisionBox): CollisionBox {
+  return new CollisionBox(box.x + adjustment.x, box.y + adjustment.y, box.width, box.height);
 }
-
 
 /**
  * Draw the collision boxes for debug.
  */
 function drawCollisionBoxes(
-    canvasCtx: CanvasRenderingContext2D, tRexBox: CollisionBox,
-    obstacleBox: CollisionBox) {
+  canvasCtx: CanvasRenderingContext2D,
+  tRexBox: CollisionBox,
+  obstacleBox: CollisionBox
+) {
   canvasCtx.save();
-  canvasCtx.strokeStyle = '#f00';
+  canvasCtx.strokeStyle = "#f00";
   canvasCtx.strokeRect(tRexBox.x, tRexBox.y, tRexBox.width, tRexBox.height);
 
-  canvasCtx.strokeStyle = '#0f0';
-  canvasCtx.strokeRect(
-      obstacleBox.x, obstacleBox.y, obstacleBox.width, obstacleBox.height);
+  canvasCtx.strokeStyle = "#0f0";
+  canvasCtx.strokeRect(obstacleBox.x, obstacleBox.y, obstacleBox.width, obstacleBox.height);
   canvasCtx.restore();
 }
-
 
 /**
  * Compare two collision boxes for a collision.
@@ -1755,10 +1790,12 @@ function boxCompare(tRexBox: CollisionBox, obstacleBox: CollisionBox): boolean {
   const obstacleBoxY = obstacleBox.y;
 
   // Axis-Aligned Bounding Box method.
-  if (tRexBoxX < obstacleBoxX + obstacleBox.width &&
-      tRexBoxX + tRexBox.width > obstacleBoxX &&
-      tRexBoxY < obstacleBoxY + obstacleBox.height &&
-      tRexBox.height + tRexBoxY > obstacleBoxY) {
+  if (
+    tRexBoxX < obstacleBoxX + obstacleBox.width &&
+    tRexBoxX + tRexBox.width > obstacleBoxX &&
+    tRexBoxY < obstacleBoxY + obstacleBox.height &&
+    tRexBox.height + tRexBoxY > obstacleBoxY
+  ) {
     return true;
   }
 

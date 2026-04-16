@@ -1,20 +1,28 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {assert} from './chrome-shims';
+import { assert } from "./chrome-shims";
 
-import {BackgroundEl, getGlobalConfig as getBackgroundElGlobalConfig, setGlobalConfig as setBackgroundElGlobalConfig} from './background_el.js';
-import {Cloud} from './cloud.js';
-import type {Dimensions} from './dimensions.js';
-import type {ConfigProvider} from './game_config.js';
-import type {GameStateProvider} from './game_state_provider.js';
-import {HorizonLine} from './horizon_line.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import {NightMode} from './night_mode.js';
-import {Obstacle, setMaxGapCoefficient as setMaxObstacleGapCoefficient, setMaxObstacleLength} from './obstacle.js';
-import type {ObstacleType, SpritePositions} from './offline_sprite_definitions.js';
-import {spriteDefinitionByType} from './offline_sprite_definitions.js';
-import {getRandomNum} from './utils.js';
+import {
+  BackgroundEl,
+  getGlobalConfig as getBackgroundElGlobalConfig,
+  setGlobalConfig as setBackgroundElGlobalConfig,
+} from "./background_el.js";
+import { Cloud } from "./cloud.js";
+import type { Dimensions } from "./dimensions.js";
+import type { ConfigProvider } from "./game_config.js";
+import type { GameStateProvider } from "./game_state_provider.js";
+import { HorizonLine } from "./horizon_line.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import { NightMode } from "./night_mode.js";
+import {
+  Obstacle,
+  setMaxGapCoefficient as setMaxObstacleGapCoefficient,
+  setMaxObstacleLength,
+} from "./obstacle.js";
+import type { ObstacleType, SpritePositions } from "./offline_sprite_definitions.js";
+import { spriteDefinitionByType } from "./offline_sprite_definitions.js";
+import { getRandomNum } from "./utils.js";
 
 /**
  * Horizon background class.
@@ -27,8 +35,7 @@ export class Horizon {
   private config: HorizonConfig = horizonConfig;
   private dimensions: Dimensions;
   private gapCoefficient: number;
-  private resourceProvider: ImageSpriteProvider&ConfigProvider&
-      GameStateProvider;
+  private resourceProvider: ImageSpriteProvider & ConfigProvider & GameStateProvider;
   private obstacleHistory: Array<keyof SpritePositions> = [];
   private cloudFrequency: number;
   private spritePos: SpritePositions;
@@ -42,17 +49,20 @@ export class Horizon {
 
   // Background elements
   private backgroundEls: BackgroundEl[] = [];
-  private lastEl: string|null = null;
+  private lastEl: string | null = null;
 
   // Horizon
   private horizonLines: HorizonLine[] = [];
 
   constructor(
-      canvas: HTMLCanvasElement, spritePos: SpritePositions,
-      dimensions: Dimensions, gapCoefficient: number,
-      resourceProvider: ImageSpriteProvider&ConfigProvider&GameStateProvider) {
+    canvas: HTMLCanvasElement,
+    spritePos: SpritePositions,
+    dimensions: Dimensions,
+    gapCoefficient: number,
+    resourceProvider: ImageSpriteProvider & ConfigProvider & GameStateProvider
+  ) {
     this.canvas = canvas;
-    const canvasContext = canvas.getContext('2d');
+    const canvasContext = canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.dimensions = dimensions;
@@ -70,14 +80,17 @@ export class Horizon {
 
     // Multiple Horizon lines
     for (let i = 0; i < runnerSpriteDefinition.lines.length; i++) {
-      this.horizonLines.push(new HorizonLine(
-          this.canvas, runnerSpriteDefinition.lines[i]!,
-          this.resourceProvider));
+      this.horizonLines.push(
+        new HorizonLine(this.canvas, runnerSpriteDefinition.lines[i]!, this.resourceProvider)
+      );
     }
 
     this.nightMode = new NightMode(
-        this.canvas, this.spritePos.moon, this.dimensions.height,
-        this.resourceProvider);
+      this.canvas,
+      this.spritePos.moon,
+      this.dimensions.height,
+      this.resourceProvider
+    );
   }
 
   /**
@@ -86,8 +99,7 @@ export class Horizon {
   adjustObstacleSpeed() {
     for (let i = 0; i < this.obstacleTypes.length; i++) {
       if (this.resourceProvider.hasSlowdown) {
-        this.obstacleTypes[i]!.multipleSpeed =
-            this.obstacleTypes[i]!.multipleSpeed / 2;
+        this.obstacleTypes[i]!.multipleSpeed = this.obstacleTypes[i]!.multipleSpeed / 2;
         this.obstacleTypes[i]!.minGap *= 1.5;
         this.obstacleTypes[i]!.minSpeed = this.obstacleTypes[i]!.minSpeed / 2;
 
@@ -124,9 +136,9 @@ export class Horizon {
 
     this.horizonLines = [];
     for (let i = 0; i < runnerSpriteDefinition.lines.length; i++) {
-      this.horizonLines.push(new HorizonLine(
-          this.canvas, runnerSpriteDefinition.lines[i]!,
-          this.resourceProvider));
+      this.horizonLines.push(
+        new HorizonLine(this.canvas, runnerSpriteDefinition.lines[i]!, this.resourceProvider)
+      );
     }
     this.reset();
   }
@@ -138,8 +150,11 @@ export class Horizon {
    * @param showNightMode Night mode activated.
    */
   update(
-      deltaTime: number, currentSpeed: number, updateObstacles: boolean,
-      showNightMode: boolean) {
+    deltaTime: number,
+    currentSpeed: number,
+    updateObstacles: boolean,
+    showNightMode: boolean
+  ) {
     const runnerSpriteDefinition = this.resourceProvider.getSpriteDefinition();
     assert(runnerSpriteDefinition);
     if (this.altGameModeActive) {
@@ -164,8 +179,12 @@ export class Horizon {
    * Update background element positions. Also handles creating new elements.
    */
   private updateBackgroundEl(
-      elSpeed: number, bgElArray: Array<Cloud|BackgroundEl>, maxBgEl: number,
-      bgElAddFunction: () => void, frequency: number) {
+    elSpeed: number,
+    bgElArray: Array<Cloud | BackgroundEl>,
+    maxBgEl: number,
+    bgElAddFunction: () => void,
+    frequency: number
+  ) {
     const numElements = bgElArray.length;
 
     if (!numElements) {
@@ -180,9 +199,11 @@ export class Horizon {
     const lastEl = bgElArray.at(-1)!;
 
     // Check for adding a new element.
-    if (numElements < maxBgEl &&
-        (this.dimensions.width - lastEl.xPos) > lastEl.gap &&
-        frequency > Math.random()) {
+    if (
+      numElements < maxBgEl &&
+      this.dimensions.width - lastEl.xPos > lastEl.gap &&
+      frequency > Math.random()
+    ) {
       bgElAddFunction();
     }
   }
@@ -191,13 +212,17 @@ export class Horizon {
    * Update the cloud positions.
    */
   private updateClouds(deltaTime: number, speed: number) {
-    const elSpeed = this.cloudSpeed / 1000 * deltaTime * speed;
+    const elSpeed = (this.cloudSpeed / 1000) * deltaTime * speed;
     this.updateBackgroundEl(
-        elSpeed, this.clouds, this.config.MAX_CLOUDS, this.addCloud.bind(this),
-        this.cloudFrequency);
+      elSpeed,
+      this.clouds,
+      this.config.MAX_CLOUDS,
+      this.addCloud.bind(this),
+      this.cloudFrequency
+    );
 
     // Remove expired elements.
-    this.clouds = this.clouds.filter(obj => !obj.remove);
+    this.clouds = this.clouds.filter((obj) => !obj.remove);
   }
 
   /**
@@ -205,11 +230,15 @@ export class Horizon {
    */
   private updateBackgroundEls(deltaTime: number) {
     this.updateBackgroundEl(
-        deltaTime, this.backgroundEls, getBackgroundElGlobalConfig().maxBgEls,
-        this.addBackgroundEl.bind(this), this.cloudFrequency);
+      deltaTime,
+      this.backgroundEls,
+      getBackgroundElGlobalConfig().maxBgEls,
+      this.addBackgroundEl.bind(this),
+      this.cloudFrequency
+    );
 
     // Remove expired elements.
-    this.backgroundEls = this.backgroundEls.filter(obj => !obj.remove);
+    this.backgroundEls = this.backgroundEls.filter((obj) => !obj.remove);
   }
 
   /**
@@ -231,10 +260,12 @@ export class Horizon {
     if (this.obstacles.length > 0) {
       const lastObstacle = this.obstacles.at(-1);
 
-      if (lastObstacle && !lastObstacle.followingObstacleCreated &&
-          lastObstacle.isVisible() &&
-          (lastObstacle.xPos + lastObstacle.width + lastObstacle.gap) <
-              this.dimensions.width) {
+      if (
+        lastObstacle &&
+        !lastObstacle.followingObstacleCreated &&
+        lastObstacle.isVisible() &&
+        lastObstacle.xPos + lastObstacle.width + lastObstacle.gap < this.dimensions.width
+      ) {
         this.addNewObstacle(currentSpeed);
         lastObstacle.followingObstacleCreated = true;
       }
@@ -253,35 +284,43 @@ export class Horizon {
    */
   addNewObstacle(currentSpeed: number) {
     const obstacleCount =
-        this.obstacleTypes[this.obstacleTypes.length - 1]!.type !==
-                'collectable' ||
-            (this.resourceProvider.isAltGameModeEnabled() &&
-                 !this.altGameModeActive ||
-             this.altGameModeActive) ?
-        this.obstacleTypes.length - 1 :
-        this.obstacleTypes.length - 2;
-    const obstacleTypeIndex =
-        obstacleCount > 0 ? getRandomNum(0, obstacleCount) : 0;
+      this.obstacleTypes[this.obstacleTypes.length - 1]!.type !== "collectable" ||
+      (this.resourceProvider.isAltGameModeEnabled() && !this.altGameModeActive) ||
+      this.altGameModeActive
+        ? this.obstacleTypes.length - 1
+        : this.obstacleTypes.length - 2;
+    const obstacleTypeIndex = obstacleCount > 0 ? getRandomNum(0, obstacleCount) : 0;
     const obstacleType = this.obstacleTypes[obstacleTypeIndex]!;
 
     // Check for multiples of the same type of obstacle.
     // Also check obstacle is available at current speed.
-    if ((obstacleCount > 0 && this.duplicateObstacleCheck(obstacleType.type)) ||
-        currentSpeed < obstacleType.minSpeed) {
+    if (
+      (obstacleCount > 0 && this.duplicateObstacleCheck(obstacleType.type)) ||
+      currentSpeed < obstacleType.minSpeed
+    ) {
       this.addNewObstacle(currentSpeed);
     } else {
       const obstacleSpritePos = this.spritePos[obstacleType.type];
 
-      this.obstacles.push(new Obstacle(
-          this.canvasCtx, obstacleType, obstacleSpritePos, this.dimensions,
-          this.gapCoefficient, currentSpeed, obstacleType.width,
-          this.resourceProvider, this.altGameModeActive));
+      this.obstacles.push(
+        new Obstacle(
+          this.canvasCtx,
+          obstacleType,
+          obstacleSpritePos,
+          this.dimensions,
+          this.gapCoefficient,
+          currentSpeed,
+          obstacleType.width,
+          this.resourceProvider,
+          this.altGameModeActive
+        )
+      );
 
       this.obstacleHistory.unshift(obstacleType.type);
 
       if (this.obstacleHistory.length > 1) {
         const maxObstacleDuplicationValue =
-            this.resourceProvider.getConfig().maxObstacleDuplication;
+          this.resourceProvider.getConfig().maxObstacleDuplication;
         assert(maxObstacleDuplicationValue);
         this.obstacleHistory.splice(maxObstacleDuplicationValue);
       }
@@ -298,8 +337,7 @@ export class Horizon {
     for (const obstacle of this.obstacleHistory) {
       duplicateCount = obstacle === nextObstacleType ? duplicateCount + 1 : 0;
     }
-    const maxObstacleDuplicationValue =
-        this.resourceProvider.getConfig().maxObstacleDuplication;
+    const maxObstacleDuplicationValue = this.resourceProvider.getConfig().maxObstacleDuplication;
     assert(maxObstacleDuplicationValue);
     return duplicateCount >= maxObstacleDuplicationValue;
   }
@@ -329,9 +367,9 @@ export class Horizon {
    * Add a new cloud to the horizon.
    */
   addCloud() {
-    this.clouds.push(new Cloud(
-        this.canvas, this.spritePos.cloud, this.dimensions.width,
-        this.resourceProvider));
+    this.clouds.push(
+      new Cloud(this.canvas, this.spritePos.cloud, this.dimensions.width, this.resourceProvider)
+    );
   }
 
   /**
@@ -353,9 +391,15 @@ export class Horizon {
       }
 
       this.lastEl = type;
-      this.backgroundEls.push(new BackgroundEl(
-          this.canvas, this.spritePos.backgroundEl, this.dimensions.width, type,
-          this.resourceProvider));
+      this.backgroundEls.push(
+        new BackgroundEl(
+          this.canvas,
+          this.spritePos.backgroundEl,
+          this.dimensions.width,
+          type,
+          this.resourceProvider
+        )
+      );
     }
   }
 }
@@ -373,8 +417,8 @@ interface HorizonConfig {
  */
 const horizonConfig: HorizonConfig = {
   BG_CLOUD_SPEED: 0.2,
-  BUMPY_THRESHOLD: .3,
-  CLOUD_FREQUENCY: .5,
+  BUMPY_THRESHOLD: 0.3,
+  CLOUD_FREQUENCY: 0.5,
   HORIZON_HEIGHT: 16,
   MAX_CLOUDS: 6,
 };

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome-shims';
+import { assert } from "./chrome-shims";
 
-import {IS_HIDPI} from './constants.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import type {SpritePosition} from './sprite_position.js';
-import {getRandomNum} from './utils.js';
+import { IS_HIDPI } from "./constants.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import type { SpritePosition } from "./sprite_position.js";
+import { getRandomNum } from "./utils.js";
 
 export interface BackgroundElSpriteConfig {
   height: number;
@@ -30,7 +30,7 @@ export interface BackgroundElConfig {
   pos: number;
   speed: number;
   yPos: number;
-  msPerFrame?: number;  // only needed when spriteConfig.fixed is true
+  msPerFrame?: number; // only needed when spriteConfig.fixed is true
 }
 
 /**
@@ -70,17 +70,19 @@ export class BackgroundEl {
   private switchFrames: boolean = false;
   private imageSpriteProvider: ImageSpriteProvider;
 
-
   /**
    * Background item.
    * Similar to cloud, without random y position.
    */
   constructor(
-      canvas: HTMLCanvasElement, spritePos: SpritePosition,
-      containerWidth: number, type: string,
-      imageSpriteProvider: ImageSpriteProvider) {
+    canvas: HTMLCanvasElement,
+    spritePos: SpritePosition,
+    containerWidth: number,
+    type: string,
+    imageSpriteProvider: ImageSpriteProvider
+  ) {
     this.canvas = canvas;
-    const canvasContext = this.canvas.getContext('2d');
+    const canvasContext = this.canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.spritePos = spritePos;
@@ -89,13 +91,11 @@ export class BackgroundEl {
     this.type = type;
     this.gap = getRandomNum(getGlobalConfig().minGap, getGlobalConfig().maxGap);
 
-    const spriteConfig =
-        imageSpriteProvider.getSpriteDefinition().backgroundEl[this.type];
+    const spriteConfig = imageSpriteProvider.getSpriteDefinition().backgroundEl[this.type];
     assert(spriteConfig);
     this.spriteConfig = spriteConfig;
     this.init();
   }
-
 
   /**
    * Initialise the element setting the y position.
@@ -105,8 +105,7 @@ export class BackgroundEl {
       assert(this.spriteConfig.fixedXPos);
       this.xPos = this.spriteConfig.fixedXPos;
     }
-    this.yPos = getGlobalConfig().yPos - this.spriteConfig.height +
-        this.spriteConfig.offset;
+    this.yPos = getGlobalConfig().yPos - this.spriteConfig.height + this.spriteConfig.offset;
     this.draw();
   }
 
@@ -130,8 +129,16 @@ export class BackgroundEl {
     }
 
     this.canvasCtx.drawImage(
-        imageSprite, sourceX, this.spritePos.y, sourceWidth, sourceHeight,
-        this.xPos, this.yPos, outputWidth, outputHeight);
+      imageSprite,
+      sourceX,
+      this.spritePos.y,
+      sourceWidth,
+      sourceHeight,
+      this.xPos,
+      this.yPos,
+      outputWidth,
+      outputHeight
+    );
 
     this.canvasCtx.restore();
   }
@@ -151,8 +158,9 @@ export class BackgroundEl {
         }
 
         if (this.spriteConfig.fixedYPos1 && this.spriteConfig.fixedYPos2) {
-          this.yPos = this.switchFrames ? this.spriteConfig.fixedYPos1 :
-                                          this.spriteConfig.fixedYPos2;
+          this.yPos = this.switchFrames
+            ? this.spriteConfig.fixedYPos1
+            : this.spriteConfig.fixedYPos2;
         }
       } else {
         // Fixed speed, regardless of actual game speed.

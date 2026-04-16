@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome-shims';
+import { assert } from "./chrome-shims";
 
-import {DEFAULT_DIMENSIONS, FPS, IS_HIDPI} from './constants.js';
-import type {ConfigProvider} from './game_config.js';
-import type {GameStateProvider} from './game_state_provider.js';
-import type {GeneratedSoundFxProvider} from './generated_sound_fx.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import {CollisionBox} from './offline_sprite_definitions.js';
-import type {SpritePosition} from './sprite_position.js';
-import {getTimeStamp} from './utils.js';
-
+import { DEFAULT_DIMENSIONS, FPS, IS_HIDPI } from "./constants.js";
+import type { ConfigProvider } from "./game_config.js";
+import type { GameStateProvider } from "./game_state_provider.js";
+import type { GeneratedSoundFxProvider } from "./generated_sound_fx.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import { CollisionBox } from "./offline_sprite_definitions.js";
+import type { SpritePosition } from "./sprite_position.js";
+import { getTimeStamp } from "./utils.js";
 
 interface BaseTrexConfig {
   dropVelocity: number;
@@ -38,7 +37,7 @@ interface TrexJumpConfig {
   initialJumpVelocity: number;
 }
 
-type TrexConfig = BaseTrexConfig&TrexJumpConfig;
+type TrexConfig = BaseTrexConfig & TrexJumpConfig;
 
 interface TrexSpritePosition {
   x: number;
@@ -48,14 +47,14 @@ interface TrexSpritePosition {
 }
 
 // Sprite config for alternative game modes.
-export type AltGameModeSpriteConfig = TrexConfig&{
-  jumping: TrexSpritePosition,
-  crashed: TrexSpritePosition,
-  running1: TrexSpritePosition,
-  running2: TrexSpritePosition,
-  ducking1: TrexSpritePosition,
-  ducking2: TrexSpritePosition,
-  collisionBoxes: CollisionBox[],
+export type AltGameModeSpriteConfig = TrexConfig & {
+  jumping: TrexSpritePosition;
+  crashed: TrexSpritePosition;
+  running1: TrexSpritePosition;
+  running2: TrexSpritePosition;
+  ducking1: TrexSpritePosition;
+  ducking2: TrexSpritePosition;
+  collisionBoxes: CollisionBox[];
 };
 
 /**
@@ -93,7 +92,7 @@ const normalJumpConfig: TrexJumpConfig = {
 /**
  * Used in collision detection.
  */
-const collisionBoxes: {ducking: CollisionBox[], running: CollisionBox[]} = {
+const collisionBoxes: { ducking: CollisionBox[]; running: CollisionBox[] } = {
   ducking: [new CollisionBox(1, 18, 55, 25)],
   running: [
     new CollisionBox(22, 0, 17, 16),
@@ -178,18 +177,23 @@ export class Trex {
   private altGameModeEnabled: boolean = false;
   private flashing: boolean = false;
   private minJumpHeight: number;
-  private resourceProvider: ConfigProvider&GameStateProvider&
-      ImageSpriteProvider&GeneratedSoundFxProvider;
-
+  private resourceProvider: ConfigProvider &
+    GameStateProvider &
+    ImageSpriteProvider &
+    GeneratedSoundFxProvider;
 
   /**
    * T-rex game character.
    */
   constructor(
-      canvas: HTMLCanvasElement, spritePos: SpritePosition,
-      resourceProvider: ConfigProvider&GameStateProvider&ImageSpriteProvider&
-      GeneratedSoundFxProvider) {
-    const canvasContext = canvas.getContext('2d');
+    canvas: HTMLCanvasElement,
+    spritePos: SpritePosition,
+    resourceProvider: ConfigProvider &
+      GameStateProvider &
+      ImageSpriteProvider &
+      GeneratedSoundFxProvider
+  ) {
+    const canvasContext = canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.spritePos = spritePos;
@@ -200,8 +204,7 @@ export class Trex {
     const runnerBottomPadding = this.resourceProvider.getConfig().bottomPad;
     assert(runnerDefaultDimensions);
     assert(runnerBottomPadding);
-    this.groundYPos = runnerDefaultDimensions.height - this.config.height -
-        runnerBottomPadding;
+    this.groundYPos = runnerDefaultDimensions.height - this.config.height - runnerBottomPadding;
 
     this.yPos = this.groundYPos;
     this.minJumpHeight = this.groundYPos - this.config.minJumpHeight;
@@ -214,8 +217,7 @@ export class Trex {
    * Assign the appropriate jump parameters based on the game speed.
    */
   enableSlowConfig() {
-    const jumpConfig =
-        this.resourceProvider.hasSlowdown ? slowJumpConfig : normalJumpConfig;
+    const jumpConfig = this.resourceProvider.hasSlowdown ? slowJumpConfig : normalJumpConfig;
     this.config = Object.assign(defaultTrexConfig, jumpConfig);
 
     this.adjustAltGameConfigForSlowSpeed();
@@ -230,30 +232,32 @@ export class Trex {
     this.spritePos = spritePos;
     const spriteDefinition = this.resourceProvider.getSpriteDefinition();
     assert(spriteDefinition);
-    const tRexSpriteDefinition =
-        spriteDefinition.tRex as AltGameModeSpriteConfig;
+    const tRexSpriteDefinition = spriteDefinition.tRex as AltGameModeSpriteConfig;
     assert(tRexSpriteDefinition.running1);
     const runnerDefaultDimensions = DEFAULT_DIMENSIONS;
 
-
     // Update animation frames.
-    animFrames[Status.RUNNING].frames =
-        [tRexSpriteDefinition.running1.x, tRexSpriteDefinition.running2.x];
+    animFrames[Status.RUNNING].frames = [
+      tRexSpriteDefinition.running1.x,
+      tRexSpriteDefinition.running2.x,
+    ];
     animFrames[Status.CRASHED].frames = [tRexSpriteDefinition.crashed.x];
 
-    if (typeof tRexSpriteDefinition.jumping.x === 'object') {
+    if (typeof tRexSpriteDefinition.jumping.x === "object") {
       animFrames[Status.JUMPING].frames = tRexSpriteDefinition.jumping.x;
     } else {
       animFrames[Status.JUMPING].frames = [tRexSpriteDefinition.jumping.x];
     }
 
-    animFrames[Status.DUCKING].frames =
-        [tRexSpriteDefinition.ducking1.x, tRexSpriteDefinition.ducking2.x];
+    animFrames[Status.DUCKING].frames = [
+      tRexSpriteDefinition.ducking1.x,
+      tRexSpriteDefinition.ducking2.x,
+    ];
 
     // Update Trex config
     this.config.gravity = tRexSpriteDefinition.gravity || this.config.gravity;
-    this.config.height = tRexSpriteDefinition.running1.h,
-    this.config.initialJumpVelocity = tRexSpriteDefinition.initialJumpVelocity;
+    ((this.config.height = tRexSpriteDefinition.running1.h),
+      (this.config.initialJumpVelocity = tRexSpriteDefinition.initialJumpVelocity));
     this.config.maxJumpHeight = tRexSpriteDefinition.maxJumpHeight;
     this.config.minJumpHeight = tRexSpriteDefinition.minJumpHeight;
     this.config.width = tRexSpriteDefinition.running1.w;
@@ -264,8 +268,8 @@ export class Trex {
     this.adjustAltGameConfigForSlowSpeed(tRexSpriteDefinition.gravity);
 
     // Adjust bottom horizon placement.
-    this.groundYPos = runnerDefaultDimensions.height - this.config.height -
-        spriteDefinition.bottomPad;
+    this.groundYPos =
+      runnerDefaultDimensions.height - this.config.height - spriteDefinition.bottomPad;
     this.yPos = this.groundYPos;
     this.reset();
   }
@@ -320,8 +324,7 @@ export class Trex {
     }
     // Game intro animation, T-rex moves in from the left.
     if (this.playingIntro && this.xPos < this.config.startXPos) {
-      this.xPos += Math.round(
-          (this.config.startXPos / this.config.introDuration) * deltaTime);
+      this.xPos += Math.round((this.config.startXPos / this.config.introDuration) * deltaTime);
       this.xInitialPos = this.xPos;
     }
 
@@ -334,9 +337,7 @@ export class Trex {
     // Update the frame position.
     if (!this.flashing && this.timer >= this.msPerFrame) {
       this.currentFrame =
-          this.currentFrame === this.currentAnimFrames.length - 1 ?
-          0 :
-          this.currentFrame + 1;
+        this.currentFrame === this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
       this.timer = 0;
     }
 
@@ -353,22 +354,20 @@ export class Trex {
   draw(x: number, y: number) {
     let sourceX = x;
     let sourceY = y;
-    let sourceWidth = this.ducking && this.status !== Status.CRASHED ?
-        this.config.widthDuck :
-        this.config.width;
+    let sourceWidth =
+      this.ducking && this.status !== Status.CRASHED ? this.config.widthDuck : this.config.width;
     let sourceHeight = this.config.height;
     const outputHeight = sourceHeight;
     if (this.altGameModeEnabled) {
       assert(this.config.widthCrashed);
     }
     const outputWidth =
-        this.altGameModeEnabled && this.status === Status.CRASHED ?
-        this.config.widthCrashed! :
-        this.config.width;
+      this.altGameModeEnabled && this.status === Status.CRASHED
+        ? this.config.widthCrashed!
+        : this.config.width;
 
     const runnerImageSprite = this.resourceProvider.getRunnerImageSprite();
     assert(runnerImageSprite);
-
 
     // Width of sprite can change on jump or crashed.
     if (this.altGameModeEnabled) {
@@ -404,22 +403,34 @@ export class Trex {
     // Ducking.
     if (this.ducking && this.status !== Status.CRASHED) {
       this.canvasCtx.drawImage(
-          runnerImageSprite, sourceX, sourceY, sourceWidth, sourceHeight,
-          this.xPos, this.yPos, this.config.widthDuck, outputHeight);
-    } else if (
-        this.altGameModeEnabled && this.jumping &&
-        this.status !== Status.CRASHED) {
+        runnerImageSprite,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        this.xPos,
+        this.yPos,
+        this.config.widthDuck,
+        outputHeight
+      );
+    } else if (this.altGameModeEnabled && this.jumping && this.status !== Status.CRASHED) {
       assert(this.config.widthJump);
       const spriteDefinition = this.resourceProvider.getSpriteDefinition();
       assert(spriteDefinition);
       assert(spriteDefinition.tRex);
-      const jumpOffset =
-          spriteDefinition.tRex.jumping.xOffset * (IS_HIDPI ? 2 : 1);
+      const jumpOffset = spriteDefinition.tRex.jumping.xOffset * (IS_HIDPI ? 2 : 1);
       // Jumping with adjustments.
       this.canvasCtx.drawImage(
-          runnerImageSprite, sourceX, sourceY, sourceWidth, sourceHeight,
-          this.xPos - jumpOffset, this.yPos, this.config.widthJump,
-          outputHeight);
+        runnerImageSprite,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        this.xPos - jumpOffset,
+        this.yPos,
+        this.config.widthJump,
+        outputHeight
+      );
     } else {
       // Crashed whilst ducking. Trex is standing up so needs adjustment.
       if (this.ducking && this.status === Status.CRASHED) {
@@ -427,8 +438,16 @@ export class Trex {
       }
       // Standing / running
       this.canvasCtx.drawImage(
-          runnerImageSprite, sourceX, sourceY, sourceWidth, sourceHeight,
-          this.xPos, this.yPos, outputWidth, outputHeight);
+        runnerImageSprite,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        this.xPos,
+        this.yPos,
+        outputWidth,
+        outputHeight
+      );
     }
     this.canvasCtx.globalAlpha = 1;
   }
@@ -466,7 +485,7 @@ export class Trex {
     if (!this.jumping) {
       this.update(0, Status.JUMPING);
       // Tweak the jump velocity based on the speed.
-      this.jumpVelocity = this.config.initialJumpVelocity - (speed / 10);
+      this.jumpVelocity = this.config.initialJumpVelocity - speed / 10;
       this.jumping = true;
       this.reachedMinHeight = false;
       this.speedDrop = false;
@@ -495,8 +514,7 @@ export class Trex {
 
     // Speed drop makes Trex fall faster.
     if (this.speedDrop) {
-      this.yPos += Math.round(
-          this.jumpVelocity * this.config.speedDropCoefficient * framesElapsed);
+      this.yPos += Math.round(this.jumpVelocity * this.config.speedDropCoefficient * framesElapsed);
     } else if (this.config.invertJump) {
       this.yPos -= Math.round(this.jumpVelocity * framesElapsed);
     } else {
@@ -506,22 +524,28 @@ export class Trex {
     this.jumpVelocity += this.config.gravity * framesElapsed;
 
     // Minimum height has been reached.
-    if (this.config.invertJump && (this.yPos > this.minJumpHeight) ||
-        !this.config.invertJump && (this.yPos < this.minJumpHeight) ||
-        this.speedDrop) {
+    if (
+      (this.config.invertJump && this.yPos > this.minJumpHeight) ||
+      (!this.config.invertJump && this.yPos < this.minJumpHeight) ||
+      this.speedDrop
+    ) {
       this.reachedMinHeight = true;
     }
 
     // Reached max height.
-    if (this.config.invertJump && (this.yPos > -this.config.maxJumpHeight) ||
-        !this.config.invertJump && (this.yPos < this.config.maxJumpHeight) ||
-        this.speedDrop) {
+    if (
+      (this.config.invertJump && this.yPos > -this.config.maxJumpHeight) ||
+      (!this.config.invertJump && this.yPos < this.config.maxJumpHeight) ||
+      this.speedDrop
+    ) {
       this.endJump();
     }
 
     // Back down at ground level. Jump completed.
-    if ((this.config.invertJump && (this.yPos < this.groundYPos)) ||
-        (!this.config.invertJump && (this.yPos > this.groundYPos))) {
+    if (
+      (this.config.invertJump && this.yPos < this.groundYPos) ||
+      (!this.config.invertJump && this.yPos > this.groundYPos)
+    ) {
       this.reset();
       this.jumpCount++;
 

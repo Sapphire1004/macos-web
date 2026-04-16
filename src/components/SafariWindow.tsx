@@ -4,13 +4,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { useNetwork } from "../contexts/network";
 import { DinoGame } from "./dino/DinoGame";
 
-function OfflinePage({
-  isActive,
-  visible,
-}: {
-  isActive: boolean;
-  visible: boolean;
-}) {
+function OfflinePage({ isActive, visible }: { isActive: boolean; visible: boolean }) {
   const { t } = useTranslation();
   return (
     <div
@@ -24,9 +18,7 @@ function OfflinePage({
         </div>
 
         {/* 오프라인 안내 문구 */}
-        <h2 className="mb-3 text-[22px] font-normal text-gray-800">
-          {t("safari.offline.title")}
-        </h2>
+        <h2 className="mb-3 text-[22px] font-normal text-gray-800">{t("safari.offline.title")}</h2>
         <p className="mb-1 text-[13px] leading-relaxed text-gray-600">
           {t("safari.offline.description")}
         </p>

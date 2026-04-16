@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome-shims';
+import { assert } from "./chrome-shims";
 
-import {IS_HIDPI, IS_RTL} from './constants.js';
-import type {Dimensions} from './dimensions.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import {spriteDefinitionByType} from './offline_sprite_definitions.js';
-import type {SpritePosition} from './sprite_position.js';
-import type {Trex} from './trex.js';
-import {getTimeStamp} from './utils.js';
+import { IS_HIDPI, IS_RTL } from "./constants.js";
+import type { Dimensions } from "./dimensions.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import { spriteDefinitionByType } from "./offline_sprite_definitions.js";
+import type { SpritePosition } from "./sprite_position.js";
+import type { Trex } from "./trex.js";
+import { getTimeStamp } from "./utils.js";
 
 const RESTART_ANIM_DURATION: number = 875;
 const FLASH_ITERATIONS: number = 5;
@@ -19,8 +19,8 @@ const FLASH_ITERATIONS: number = 5;
  * Animation frames spec.
  */
 const animConfig: {
-  frames: number[],
-  msPerFrame: number,
+  frames: number[];
+  msPerFrame: number;
 } = {
   frames: [0, 36, 72, 108, 144, 180, 216, 252],
   msPerFrame: RESTART_ANIM_DURATION / 8,
@@ -38,8 +38,7 @@ interface GameOverPanelDimensions extends BaseGameOverPanelDimensions {
   restartHeight: number;
 }
 
-export interface AltGameModePanelDimensions extends
-    BaseGameOverPanelDimensions {
+export interface AltGameModePanelDimensions extends BaseGameOverPanelDimensions {
   flashing: boolean;
   flashDuration: number;
 }
@@ -69,12 +68,12 @@ export class GameOverPanel {
   private textImgPos: SpritePosition;
   private restartImgPos: SpritePosition;
   private imageSpriteProvider: ImageSpriteProvider;
-  private altGameEndImgPos: SpritePosition|null;
+  private altGameEndImgPos: SpritePosition | null;
   private altGameModeActive: boolean;
   private frameTimeStamp: number = 0;
   private animTimer: number = 0;
   private currentFrame: number = 0;
-  private gameOverRafId: number|null = null;
+  private gameOverRafId: number | null = null;
   private flashTimer: number = 0;
   private flashCounter: number = 0;
   private originalText: boolean = true;
@@ -83,11 +82,15 @@ export class GameOverPanel {
    * Game over panel.
    */
   constructor(
-      canvas: HTMLCanvasElement, textImgPos: SpritePosition,
-      restartImgPos: SpritePosition, dimensions: Dimensions,
-      imageSpriteProvider: ImageSpriteProvider,
-      altGameEndImgPos?: SpritePosition, altGameActive?: boolean) {
-    const canvasContext = canvas.getContext('2d');
+    canvas: HTMLCanvasElement,
+    textImgPos: SpritePosition,
+    restartImgPos: SpritePosition,
+    dimensions: Dimensions,
+    imageSpriteProvider: ImageSpriteProvider,
+    altGameEndImgPos?: SpritePosition,
+    altGameActive?: boolean
+  ) {
+    const canvasContext = canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.canvasDimensions = dimensions;
@@ -97,7 +100,6 @@ export class GameOverPanel {
     this.altGameEndImgPos = altGameEndImgPos ?? null;
     this.altGameModeActive = altGameActive ?? false;
   }
-
 
   /**
    * Update the panel dimensions.
@@ -112,15 +114,14 @@ export class GameOverPanel {
     this.currentFrame = 0;
   }
 
-  private drawGameOverText(
-      dimensions: BaseGameOverPanelDimensions, useAltText?: boolean) {
+  private drawGameOverText(dimensions: BaseGameOverPanelDimensions, useAltText?: boolean) {
     const centerX = this.canvasDimensions.width / 2;
     let textSourceX = dimensions.textX;
     let textSourceY = dimensions.textY;
     let textSourceWidth = dimensions.textWidth;
     let textSourceHeight = dimensions.textHeight;
 
-    const textTargetX = Math.round(centerX - (dimensions.textWidth / 2));
+    const textTargetX = Math.round(centerX - dimensions.textWidth / 2);
     const textTargetY = Math.round((this.canvasDimensions.height - 25) / 3);
     const textTargetWidth = dimensions.textWidth;
     const textTargetHeight = dimensions.textHeight;
@@ -137,9 +138,9 @@ export class GameOverPanel {
       textSourceY += this.textImgPos.y;
     }
 
-    const spriteSource = useAltText ?
-        this.imageSpriteProvider.getAltCommonImageSprite() :
-        this.imageSpriteProvider.getOrigImageSprite();
+    const spriteSource = useAltText
+      ? this.imageSpriteProvider.getAltCommonImageSprite()
+      : this.imageSpriteProvider.getOrigImageSprite();
     assert(spriteSource);
 
     this.canvasCtx.save();
@@ -151,9 +152,16 @@ export class GameOverPanel {
 
     // Game over text from sprite.
     this.canvasCtx.drawImage(
-        spriteSource, textSourceX, textSourceY, textSourceWidth,
-        textSourceHeight, textTargetX, textTargetY, textTargetWidth,
-        textTargetHeight);
+      spriteSource,
+      textSourceX,
+      textSourceY,
+      textSourceWidth,
+      textSourceHeight,
+      textTargetX,
+      textTargetY,
+      textTargetWidth,
+      textTargetHeight
+    );
 
     this.canvasCtx.restore();
   }
@@ -179,16 +187,20 @@ export class GameOverPanel {
         altGameEndSourceHeight *= 2;
       }
 
-      const altCommonImageSprite =
-          this.imageSpriteProvider.getAltCommonImageSprite();
+      const altCommonImageSprite = this.imageSpriteProvider.getAltCommonImageSprite();
       assert(altCommonImageSprite);
 
-
       this.canvasCtx.drawImage(
-          altCommonImageSprite, this.altGameEndImgPos.x,
-          this.altGameEndImgPos.y, altGameEndSourceWidth,
-          altGameEndSourceHeight, altGameEndTargetX, altGameEndTargetY,
-          altGameEndConfig.width, altGameEndConfig.height);
+        altCommonImageSprite,
+        this.altGameEndImgPos.x,
+        this.altGameEndImgPos.y,
+        altGameEndSourceWidth,
+        altGameEndSourceHeight,
+        altGameEndTargetX,
+        altGameEndTargetY,
+        altGameEndConfig.width,
+        altGameEndConfig.height
+      );
     }
   }
 
@@ -200,8 +212,7 @@ export class GameOverPanel {
     let framePosX = animConfig.frames[this.currentFrame]!;
     let restartSourceWidth = dimensions.restartWidth;
     let restartSourceHeight = dimensions.restartHeight;
-    const restartTargetX =
-        (this.canvasDimensions.width / 2) - (dimensions.restartHeight / 2);
+    const restartTargetX = this.canvasDimensions.width / 2 - dimensions.restartHeight / 2;
     const restartTargetY = this.canvasDimensions.height / 2;
 
     if (IS_HIDPI) {
@@ -219,12 +230,18 @@ export class GameOverPanel {
     const origImageSprite = this.imageSpriteProvider.getOrigImageSprite();
 
     this.canvasCtx.drawImage(
-        origImageSprite, this.restartImgPos.x + framePosX, this.restartImgPos.y,
-        restartSourceWidth, restartSourceHeight, restartTargetX, restartTargetY,
-        dimensions.restartWidth, dimensions.restartHeight);
+      origImageSprite,
+      this.restartImgPos.x + framePosX,
+      this.restartImgPos.y,
+      restartSourceWidth,
+      restartSourceHeight,
+      restartTargetX,
+      restartTargetY,
+      dimensions.restartWidth,
+      dimensions.restartHeight
+    );
     this.canvasCtx.restore();
   }
-
 
   /**
    * Draw the panel.
@@ -253,20 +270,17 @@ export class GameOverPanel {
     this.animTimer += deltaTime;
     this.flashTimer += deltaTime;
 
-    // Restart Button (애니메이션 비활성화 - 구버전 스프라이트에 프레임 없음)
+    // Restart button (animation disabled — older sprite sheet has no frames for it)
     if (!this.altGameModeActive) {
       return;
     }
 
     // Game over text
-    if (this.altGameModeActive &&
-        spriteDefinitionByType.original.altGameOverTextConfig) {
-      const altTextConfig =
-          spriteDefinitionByType.original.altGameOverTextConfig;
+    if (this.altGameModeActive && spriteDefinitionByType.original.altGameOverTextConfig) {
+      const altTextConfig = spriteDefinitionByType.original.altGameOverTextConfig;
 
       if (altTextConfig.flashing) {
-        if (this.flashCounter < FLASH_ITERATIONS &&
-            this.flashTimer > altTextConfig.flashDuration) {
+        if (this.flashCounter < FLASH_ITERATIONS && this.flashTimer > altTextConfig.flashDuration) {
           this.flashTimer = 0;
           this.originalText = !this.originalText;
 
@@ -295,14 +309,16 @@ export class GameOverPanel {
    * @param dimensions Game over text config.
    */
   private clearGameOverTextBounds(
-      dimensions: BaseGameOverPanelDimensions = defaultPanelDimensions) {
+    dimensions: BaseGameOverPanelDimensions = defaultPanelDimensions
+  ) {
     this.canvasCtx.save();
 
     this.canvasCtx.clearRect(
-        Math.round(
-            this.canvasDimensions.width / 2 - (dimensions.textWidth / 2)),
-        Math.round((this.canvasDimensions.height - 25) / 3),
-        dimensions.textWidth, dimensions.textHeight + 4);
+      Math.round(this.canvasDimensions.width / 2 - dimensions.textWidth / 2),
+      Math.round((this.canvasDimensions.height - 25) / 3),
+      dimensions.textWidth,
+      dimensions.textHeight + 4
+    );
     this.canvasCtx.restore();
   }
 

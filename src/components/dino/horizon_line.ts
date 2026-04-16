@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome-shims';
+import { assert } from "./chrome-shims";
 
-import {FPS, IS_HIDPI} from './constants.js';
-import type {Dimensions} from './dimensions.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import type {SpritePosition} from './sprite_position.js';
-
+import { FPS, IS_HIDPI } from "./constants.js";
+import type { Dimensions } from "./dimensions.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import type { SpritePosition } from "./sprite_position.js";
 
 export interface HorizonLineConfig {
   sourceX: number;
@@ -34,8 +33,10 @@ export class HorizonLine {
    * Consists of two connecting lines. Randomly assigns a flat / bumpy horizon.
    */
   constructor(
-      canvas: HTMLCanvasElement, lineConfig: HorizonLineConfig,
-      imageSpriteProvider: ImageSpriteProvider) {
+    canvas: HTMLCanvasElement,
+    lineConfig: HorizonLineConfig,
+    imageSpriteProvider: ImageSpriteProvider
+  ) {
     let sourceX = lineConfig.sourceX;
     let sourceY = lineConfig.sourceY;
 
@@ -44,15 +45,14 @@ export class HorizonLine {
       sourceY *= 2;
     }
 
-    this.spritePos = {x: sourceX, y: sourceY};
-    const canvasContext = canvas.getContext('2d');
+    this.spritePos = { x: sourceX, y: sourceY };
+    const canvasContext = canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
-    this.dimensions = {width: lineConfig.width, height: lineConfig.height};
+    this.dimensions = { width: lineConfig.width, height: lineConfig.height };
     this.imageSpriteProvider = imageSpriteProvider;
 
-    this.sourceXPos =
-        [this.spritePos.x, this.spritePos.x + this.dimensions.width];
+    this.sourceXPos = [this.spritePos.x, this.spritePos.x + this.dimensions.width];
     this.xPos = [0, this.dimensions.width];
     this.yPos = lineConfig.yPos;
 
@@ -82,20 +82,34 @@ export class HorizonLine {
     const runnerImageSprite = this.imageSpriteProvider.getRunnerImageSprite();
     assert(runnerImageSprite);
     this.canvasCtx.drawImage(
-        runnerImageSprite, this.sourceXPos[0], this.spritePos.y,
-        this.sourceDimensions.width, this.sourceDimensions.height, this.xPos[0],
-        this.yPos, this.dimensions.width, this.dimensions.height);
+      runnerImageSprite,
+      this.sourceXPos[0],
+      this.spritePos.y,
+      this.sourceDimensions.width,
+      this.sourceDimensions.height,
+      this.xPos[0],
+      this.yPos,
+      this.dimensions.width,
+      this.dimensions.height
+    );
 
     this.canvasCtx.drawImage(
-        runnerImageSprite, this.sourceXPos[1], this.spritePos.y,
-        this.sourceDimensions.width, this.sourceDimensions.height, this.xPos[1],
-        this.yPos, this.dimensions.width, this.dimensions.height);
+      runnerImageSprite,
+      this.sourceXPos[1],
+      this.spritePos.y,
+      this.sourceDimensions.width,
+      this.sourceDimensions.height,
+      this.xPos[1],
+      this.yPos,
+      this.dimensions.width,
+      this.dimensions.height
+    );
   }
 
   /**
    * Update the x position of an individual piece of the line.
    */
-  updatexPos(pos: 0|1, increment: number) {
+  updatexPos(pos: 0 | 1, increment: number) {
     const line1 = pos;
     const line2 = pos === 0 ? 1 : 0;
 

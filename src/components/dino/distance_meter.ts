@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome-shims';
+import { assert } from "./chrome-shims";
 
-import {IS_HIDPI, IS_RTL} from './constants.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import type {CollisionBox} from './offline_sprite_definitions.js';
-import type {SpritePosition} from './sprite_position.js';
-import {getTimeStamp} from './utils.js';
-
+import { IS_HIDPI, IS_RTL } from "./constants.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import type { CollisionBox } from "./offline_sprite_definitions.js";
+import type { SpritePosition } from "./sprite_position.js";
+import { getTimeStamp } from "./utils.js";
 
 /**
  * Dimensions of each individual character in pixels.
@@ -53,13 +52,13 @@ export class DistanceMeter {
   private x: number = 0;
   private y: number = 5;
   private maxScore: number = 0;
-  private highScore: string = '0';
+  private highScore: string = "0";
   private digits: string[] = [];
-  private defaultString: string = '';
+  private defaultString: string = "";
   private flashTimer: number = 0;
   private flashIterations: number = 0;
-  private flashingRafId: number|null = null;
-  private highScoreBounds: CollisionBox|null = null;
+  private flashingRafId: number | null = null;
+  private highScoreBounds: CollisionBox | null = null;
   private highScoreFlashing: boolean = false;
   private maxScoreUnits: number = Config.MAX_DISTANCE_UNITS;
   private canvasWidth: number;
@@ -69,10 +68,13 @@ export class DistanceMeter {
    * Handles displaying the distance meter.
    */
   constructor(
-      canvas: HTMLCanvasElement, spritePos: SpritePosition, canvasWidth: number,
-      imageSpriteProvider: ImageSpriteProvider) {
+    canvas: HTMLCanvasElement,
+    spritePos: SpritePosition,
+    canvasWidth: number,
+    imageSpriteProvider: ImageSpriteProvider
+  ) {
     this.canvas = canvas;
-    const canvasContext = canvas.getContext('2d');
+    const canvasContext = canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.image = imageSpriteProvider.getRunnerImageSprite();
@@ -82,20 +84,19 @@ export class DistanceMeter {
     this.init(canvasWidth);
   }
 
-
   /**
    * Initialise the distance meter to '00000'.
    * @param width Canvas width in px.
    */
   private init(width: number) {
-    let maxDistanceStr = '';
+    let maxDistanceStr = "";
 
     this.calcXpos(width);
     this.maxScore = this.maxScoreUnits;
     for (let i = 0; i < this.maxScoreUnits; i++) {
       this.draw(i, 0);
-      this.defaultString += '0';
-      maxDistanceStr += '9';
+      this.defaultString += "0";
+      maxDistanceStr += "9";
     }
 
     this.maxScore = parseInt(maxDistanceStr, 10);
@@ -105,7 +106,7 @@ export class DistanceMeter {
    * Calculate the xPos in the canvas.
    */
   calcXpos(canvasWidth: number) {
-    this.x = canvasWidth - (Dimensions.DEST_WIDTH * (this.maxScoreUnits + 1));
+    this.x = canvasWidth - Dimensions.DEST_WIDTH * (this.maxScoreUnits + 1);
   }
 
   /**
@@ -138,26 +139,26 @@ export class DistanceMeter {
     this.canvasCtx.save();
 
     if (IS_RTL) {
-      const translateX = highScore ?
-          this.canvasWidth - (Dimensions.WIDTH * (this.maxScoreUnits + 3)) :
-          this.canvasWidth - Dimensions.WIDTH;
+      const translateX = highScore
+        ? this.canvasWidth - Dimensions.WIDTH * (this.maxScoreUnits + 3)
+        : this.canvasWidth - Dimensions.WIDTH;
       this.canvasCtx.translate(translateX, this.y);
       this.canvasCtx.scale(-1, 1);
     } else {
-      const highScoreX = this.x - (this.maxScoreUnits * 2) * Dimensions.WIDTH;
+      const highScoreX = this.x - this.maxScoreUnits * 2 * Dimensions.WIDTH;
       this.canvasCtx.translate(highScore ? highScoreX : this.x, this.y);
     }
 
     this.canvasCtx.drawImage(
-        this.image,
-        sourceX,
-        sourceY,
-        sourceWidth,
-        sourceHeight,
-        targetX,
-        targetY,
-        targetWidth,
-        targetHeight,
+      this.image,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      targetX,
+      targetY,
+      targetWidth,
+      targetHeight
     );
 
     this.canvasCtx.restore();
@@ -183,10 +184,9 @@ export class DistanceMeter {
     if (!this.achievement) {
       distance = this.getActualDistance(distance);
       // Score has gone beyond the initial digit count.
-      if (distance > this.maxScore &&
-          this.maxScoreUnits === Config.MAX_DISTANCE_UNITS) {
+      if (distance > this.maxScore && this.maxScoreUnits === Config.MAX_DISTANCE_UNITS) {
         this.maxScoreUnits++;
-        this.maxScore = parseInt(this.maxScore + '9', 10);
+        this.maxScore = parseInt(this.maxScore + "9", 10);
       }
 
       if (distance > 0) {
@@ -199,11 +199,10 @@ export class DistanceMeter {
         }
 
         // Create a string representation of the distance with leading 0.
-        const distanceStr =
-            (this.defaultString + distance).substr(-this.maxScoreUnits);
-        this.digits = distanceStr.split('');
+        const distanceStr = (this.defaultString + distance).substr(-this.maxScoreUnits);
+        this.digits = distanceStr.split("");
       } else {
-        this.digits = this.defaultString.split('');
+        this.digits = this.defaultString.split("");
       }
     } else {
       // Control flashing of the score on reaching achievement.
@@ -240,7 +239,7 @@ export class DistanceMeter {
   private drawHighScore() {
     if (this.highScore.length > 0) {
       this.canvasCtx.save();
-      this.canvasCtx.globalAlpha = .8;
+      this.canvasCtx.globalAlpha = 0.8;
       for (let i = this.highScore.length - 1; i >= 0; i--) {
         const characterToDraw = this.highScore[i]!;
         // Position of characterToDraw in sprite sheet, digits 0-9 are mapped
@@ -251,10 +250,10 @@ export class DistanceMeter {
         // - 11.
         if (isNaN(characterSpritePosition)) {
           switch (characterToDraw) {
-            case 'H':
+            case "H":
               characterSpritePosition = 10;
               break;
-            case 'I':
+            case "I":
               characterSpritePosition = 11;
               break;
             // Any other character is ignored.
@@ -274,12 +273,10 @@ export class DistanceMeter {
    */
   setHighScore(distance: number) {
     distance = this.getActualDistance(distance);
-    const highScoreStr =
-        (this.defaultString + distance).substr(-this.maxScoreUnits);
+    const highScoreStr = (this.defaultString + distance).substr(-this.maxScoreUnits);
 
-    this.highScore = 'HI ' + highScoreStr;
+    this.highScore = "HI " + highScoreStr;
   }
-
 
   /**
    * Whether a clicked is in the high score area.
@@ -300,10 +297,12 @@ export class DistanceMeter {
     }
 
     this.highScoreBounds = this.getHighScoreBounds();
-    return x >= this.highScoreBounds.x &&
-        x <= this.highScoreBounds.x + this.highScoreBounds.width &&
-        y >= this.highScoreBounds.y &&
-        y <= this.highScoreBounds.y + this.highScoreBounds.height;
+    return (
+      x >= this.highScoreBounds.x &&
+      x <= this.highScoreBounds.x + this.highScoreBounds.width &&
+      y >= this.highScoreBounds.y &&
+      y <= this.highScoreBounds.y + this.highScoreBounds.height
+    );
   }
 
   /**
@@ -311,12 +310,10 @@ export class DistanceMeter {
    */
   private getHighScoreBounds(): CollisionBox {
     return {
-      x: (this.x - (this.maxScoreUnits * 2) * Dimensions.WIDTH) -
-          Config.HIGH_SCORE_HIT_AREA_PADDING,
+      x: this.x - this.maxScoreUnits * 2 * Dimensions.WIDTH - Config.HIGH_SCORE_HIT_AREA_PADDING,
       y: this.y,
-      width: Dimensions.WIDTH * (this.highScore.length + 1) +
-          Config.HIGH_SCORE_HIT_AREA_PADDING,
-      height: Dimensions.HEIGHT + (Config.HIGH_SCORE_HIT_AREA_PADDING * 2),
+      width: Dimensions.WIDTH * (this.highScore.length + 1) + Config.HIGH_SCORE_HIT_AREA_PADDING,
+      height: Dimensions.HEIGHT + Config.HIGH_SCORE_HIT_AREA_PADDING * 2,
     };
   }
 
@@ -361,10 +358,13 @@ export class DistanceMeter {
   private clearHighScoreBounds() {
     assert(this.highScoreBounds);
     this.canvasCtx.save();
-    this.canvasCtx.fillStyle = '#fff';
+    this.canvasCtx.fillStyle = "#fff";
     this.canvasCtx.rect(
-        this.highScoreBounds.x, this.highScoreBounds.y,
-        this.highScoreBounds.width, this.highScoreBounds.height);
+      this.highScoreBounds.x,
+      this.highScoreBounds.y,
+      this.highScoreBounds.width,
+      this.highScoreBounds.height
+    );
     this.canvasCtx.fill();
     this.canvasCtx.restore();
   }

@@ -4,7 +4,7 @@ import { Runner, type GameState } from "./offline";
 import "./runner.css";
 
 function ensureSharedDom() {
-  // 스프라이트 리소스 (Runner.loadImages가 id로 찾음) — 모든 인스턴스 공유.
+  // Sprite resources (Runner.loadImages looks them up by id) — shared across all instances.
   if (!document.getElementById("offline-resources")) {
     const resDiv = document.createElement("div");
     resDiv.id = "offline-resources";
@@ -23,7 +23,7 @@ function ensureSharedDom() {
     document.body.appendChild(resDiv);
   }
 
-  // Runner.init()가 .icon-offline 엘리먼트를 assert로 요구.
+  // Runner.init() asserts the presence of a .icon-offline element.
   if (!document.querySelector(".icon-offline")) {
     const icon = document.createElement("div");
     icon.className = "icon icon-offline";
@@ -33,7 +33,7 @@ function ensureSharedDom() {
 }
 
 interface DinoGameProps {
-  /** 이 탭이 현재 활성 상태인가 — false면 Runner pause + 키 lock. */
+  /** Whether this tab is currently active — when false, the Runner pauses and keys are locked. */
   isActive: boolean;
 }
 
@@ -43,22 +43,23 @@ export function DinoGame({ isActive }: DinoGameProps) {
   const runnerRef = useRef<Runner | null>(null);
   const [gameState, setGameState] = useState<GameState>("idle");
 
-  // 첫 activation 시점에 Runner 생성 (display:none 상태에서 init하면 dimensions이 0이라
-  // 탭이 보이게 된 이후 lazy init). 이후 isActive 변화는 lock/unlock으로만 처리.
+  // Create Runner on first activation (init with display:none would give 0
+  // dimensions, so defer until the tab becomes visible). After that, isActive
+  // changes only toggle lock/unlock.
   useEffect(() => {
     if (!isActive || runnerRef.current || !containerRef.current) return;
     ensureSharedDom();
     runnerRef.current = new Runner(containerRef.current, setGameState);
   }, [isActive]);
 
-  // 활성 상태 변화 → lock/unlock.
+  // Active-state change → lock/unlock.
   useEffect(() => {
     const runner = runnerRef.current;
     if (!runner) return;
     runner.setExternallyLocked(!isActive);
   }, [isActive]);
 
-  // 언마운트 시 Runner 해제 (탭 닫기 대응).
+  // Tear down the Runner on unmount (handles tab close).
   useEffect(() => {
     return () => {
       runnerRef.current?.destroy();

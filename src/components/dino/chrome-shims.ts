@@ -1,8 +1,8 @@
-// Chromium 내부 리소스 대체 shim (ES module alias로 매핑)
-// ./dino/ 폴더의 ts 파일들이 chrome://resources/js/*.js를 import하는데,
-// 브라우저에선 존재하지 않으므로 vite alias로 이 파일을 대체.
+// Shim for Chromium internal resources (mapped via ES module alias).
+// Files under ./dino/ import from chrome://resources/js/*.js, which doesn't
+// exist in the browser, so vite alias redirects those imports to this file.
 
-// Chromium이 window에 주입하는 전역 필드 타입 확장 (no-op stub)
+// Type augmentation for globals Chromium injects on window (no-op stub).
 declare global {
   interface Window {
     initializeEasterEggHighScore?: (highScore: number) => void;
@@ -21,9 +21,10 @@ export function assert<T>(condition: T, message?: string): asserts condition {
   }
 }
 
-// loadTimeData: Chromium이 페이지에 주입하는 설정 저장소.
-// 웹 포트에선 주입 데이터가 없으니 모든 조회를 빈 값/false로 반환하는 no-op 스텁.
-// 결과적으로 disabledEasterEgg / enableAltGameMode 등은 항상 꺼진 상태.
+// loadTimeData: Chromium's page-injected config store.
+// The web port has no injected data, so this is a no-op stub that returns
+// empty/false for every lookup. As a result, disabledEasterEgg /
+// enableAltGameMode and related flags are always off.
 export const loadTimeData = {
   valueExists(_key: string): boolean {
     return false;

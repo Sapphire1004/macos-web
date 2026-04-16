@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome-shims';
+import { assert } from "./chrome-shims";
 
-import {IS_HIDPI} from './constants.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import {spriteDefinitionByType} from './offline_sprite_definitions.js';
-import type {SpritePosition} from './sprite_position.js';
-import {getRandomNum} from './utils.js';
-
+import { IS_HIDPI } from "./constants.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import { spriteDefinitionByType } from "./offline_sprite_definitions.js";
+import type { SpritePosition } from "./sprite_position.js";
+import { getRandomNum } from "./utils.js";
 
 const PHASES: number[] = [140, 120, 100, 60, 40, 20, 0];
 
@@ -46,17 +45,19 @@ export class NightMode {
    * Nightmode shows a moon and stars on the horizon.
    */
   constructor(
-      canvas: HTMLCanvasElement, spritePos: SpritePosition,
-      containerWidth: number, imageSpriteProvider: ImageSpriteProvider) {
+    canvas: HTMLCanvasElement,
+    spritePos: SpritePosition,
+    containerWidth: number,
+    imageSpriteProvider: ImageSpriteProvider
+  ) {
     this.spritePos = spritePos;
     this.imageSpriteProvider = imageSpriteProvider;
-    const canvasContext = canvas.getContext('2d');
+    const canvasContext = canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.containerWidth = containerWidth;
     this.placeStars();
   }
-
 
   /**
    * Update moving moon, changing phases.
@@ -108,8 +109,7 @@ export class NightMode {
   }
 
   private draw() {
-    let moonSourceWidth =
-        this.currentPhase === 3 ? Config.WIDTH * 2 : Config.WIDTH;
+    let moonSourceWidth = this.currentPhase === 3 ? Config.WIDTH * 2 : Config.WIDTH;
     let moonSourceHeight = Config.HEIGHT;
     const currentPhaseSpritePosition = PHASES[this.currentPhase];
     assert(currentPhaseSpritePosition !== undefined);
@@ -123,7 +123,7 @@ export class NightMode {
     if (IS_HIDPI) {
       moonSourceWidth *= 2;
       moonSourceHeight *= 2;
-      moonSourceX = this.spritePos.x + (currentPhaseSpritePosition * 2);
+      moonSourceX = this.spritePos.x + currentPhaseSpritePosition * 2;
       starSize *= 2;
       starSourceX = spriteDefinitionByType.original.hdpi.star.x;
     }
@@ -135,17 +135,31 @@ export class NightMode {
     if (this.drawStars) {
       for (const star of this.stars) {
         this.canvasCtx.drawImage(
-            runnerOrigImageSprite, starSourceX, star.sourceY, starSize,
-            starSize, Math.round(star.x), star.y, Config.STAR_SIZE,
-            Config.STAR_SIZE);
+          runnerOrigImageSprite,
+          starSourceX,
+          star.sourceY,
+          starSize,
+          starSize,
+          Math.round(star.x),
+          star.y,
+          Config.STAR_SIZE,
+          Config.STAR_SIZE
+        );
       }
     }
 
     // Moon.
     this.canvasCtx.drawImage(
-        runnerOrigImageSprite, moonSourceX, this.spritePos.y, moonSourceWidth,
-        moonSourceHeight, Math.round(this.xPos), this.yPos, moonOutputWidth,
-        Config.HEIGHT);
+      runnerOrigImageSprite,
+      moonSourceX,
+      this.spritePos.y,
+      moonSourceWidth,
+      moonSourceHeight,
+      Math.round(this.xPos),
+      this.yPos,
+      moonOutputWidth,
+      Config.HEIGHT
+    );
 
     this.canvasCtx.globalAlpha = 1;
     this.canvasCtx.restore();
@@ -163,11 +177,10 @@ export class NightMode {
       };
 
       if (IS_HIDPI) {
-        starPosition.sourceY = spriteDefinitionByType.original.hdpi.star.y +
-            Config.STAR_SIZE * 2 * i;
-      } else {
         starPosition.sourceY =
-            spriteDefinitionByType.original.ldpi.star.y + Config.STAR_SIZE * i;
+          spriteDefinitionByType.original.hdpi.star.y + Config.STAR_SIZE * 2 * i;
+      } else {
+        starPosition.sourceY = spriteDefinitionByType.original.ldpi.star.y + Config.STAR_SIZE * i;
       }
 
       this.stars[i] = starPosition;

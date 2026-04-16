@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome-shims';
+import { assert } from "./chrome-shims";
 
-import {IS_HIDPI} from './constants.js';
-import type {ImageSpriteProvider} from './image_sprite_provider.js';
-import type {SpritePosition} from './sprite_position.js';
-import {getRandomNum} from './utils.js';
+import { IS_HIDPI } from "./constants.js";
+import type { ImageSpriteProvider } from "./image_sprite_provider.js";
+import type { SpritePosition } from "./sprite_position.js";
+import { getRandomNum } from "./utils.js";
 
 export class Cloud {
   gap: number;
@@ -23,9 +23,12 @@ export class Cloud {
    * Similar to an obstacle object but without collision boxes.
    */
   constructor(
-      canvas: HTMLCanvasElement, spritePos: SpritePosition,
-      containerWidth: number, imageSpriteProvider: ImageSpriteProvider) {
-    const canvasContext = canvas.getContext('2d');
+    canvas: HTMLCanvasElement,
+    spritePos: SpritePosition,
+    containerWidth: number,
+    imageSpriteProvider: ImageSpriteProvider
+  ) {
+    const canvasContext = canvas.getContext("2d");
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.xPos = containerWidth;
@@ -61,8 +64,16 @@ export class Cloud {
     }
 
     this.canvasCtx.drawImage(
-        runnerImageSprite, this.spritePos.x, this.spritePos.y, sourceWidth,
-        sourceHeight, this.xPos, this.yPos, outputWidth, outputHeight);
+      runnerImageSprite,
+      this.spritePos.x,
+      this.spritePos.y,
+      sourceWidth,
+      sourceHeight,
+      this.xPos,
+      this.yPos,
+      outputWidth,
+      outputHeight
+    );
 
     this.canvasCtx.restore();
   }

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {IS_IOS} from './constants.js';
+import { IS_IOS } from "./constants.js";
 
 export interface GeneratedSoundFxProvider {
-  getGeneratedSoundFx(): GeneratedSoundFx|null;
+  getGeneratedSoundFx(): GeneratedSoundFx | null;
 }
 
 /**
@@ -16,19 +16,17 @@ export class GeneratedSoundFx {
     this.context = new AudioContext();
     if (IS_IOS) {
       this.context.onstatechange = () => {
-        if (this.context.state !== 'running') {
+        if (this.context.state !== "running") {
           this.context.resume();
         }
       };
       this.context.resume();
     }
-    this.panner = this.context.createStereoPanner ?
-        this.context.createStereoPanner() :
-        null;
+    this.panner = this.context.createStereoPanner ? this.context.createStereoPanner() : null;
   }
   private context: AudioContext;
-  private panner: StereoPannerNode|null = null;
-  private bgSoundIntervalId: number|null = null;
+  private panner: StereoPannerNode | null = null;
+  private bgSoundIntervalId: number | null = null;
 
   stopAll() {
     this.cancelFootSteps();
@@ -38,15 +36,19 @@ export class GeneratedSoundFx {
    * Play oscillators at certain frequency and for a certain time.
    */
   playNote(
-      frequency: number, startTime: number, duration: number,
-      vol: number = 0.01, pan: number = 0) {
+    frequency: number,
+    startTime: number,
+    duration: number,
+    vol: number = 0.01,
+    pan: number = 0
+  ) {
     const osc1 = this.context.createOscillator();
     const osc2 = this.context.createOscillator();
     const volume = this.context.createGain();
 
     // Set oscillator wave type
-    osc1.type = 'triangle';
-    osc2.type = 'triangle';
+    osc1.type = "triangle";
+    osc2.type = "triangle";
     volume.gain.value = 0.1;
 
     // Set up node routing
@@ -88,7 +90,7 @@ export class GeneratedSoundFx {
     if (!this.bgSoundIntervalId) {
       this.bgSoundIntervalId = setInterval(() => {
         this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
-        this.playNote(69.30, this.context.currentTime + 0.116, 0.116, 0.16);
+        this.playNote(69.3, this.context.currentTime + 0.116, 0.116, 0.16);
       }, 280);
     }
   }
