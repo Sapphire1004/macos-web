@@ -466,7 +466,8 @@ export class Runner
       );
       assert(audioElement);
       let soundSrc = audioElement.src;
-      soundSrc = soundSrc.slice(soundSrc.indexOf(",") + 1);      const buffer = decodeBase64ToArrayBuffer(soundSrc);
+      soundSrc = soundSrc.slice(soundSrc.indexOf(",") + 1);
+      const buffer = decodeBase64ToArrayBuffer(soundSrc);
 
       // Async, so no guarantee of order in array.
       this.audioContext.decodeAudioData(buffer, (audioBuffer) => {
