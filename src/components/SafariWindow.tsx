@@ -7,33 +7,35 @@ import { DinoGame } from "./dino/DinoGame";
 function OfflinePage({ url, isActive }: { url: string; isActive: boolean }) {
   const { t } = useTranslation();
   return (
-    <div className="flex h-full flex-col bg-white px-12 py-8 select-none">
-      {/* 게임 영역 (공룡) */}
-      <div className="mb-8">
-        <DinoGame isActive={isActive} />
-      </div>
+    <div className="flex h-full flex-col items-center bg-white px-12 py-8 select-none">
+      <div className="flex w-full max-w-[600px] flex-col items-center text-center">
+        {/* 게임 영역 (공룡) */}
+        <div className="mb-8 w-full">
+          <DinoGame isActive={isActive} />
+        </div>
 
-      {/* 오프라인 안내 문구 */}
-      <h2 className="mb-3 text-[22px] font-normal text-gray-800">
-        {t("safari.offline.title")}
-      </h2>
-      <p className="mb-1 max-w-[480px] text-[13px] leading-relaxed text-gray-600">
-        {t("safari.offline.description")}
-      </p>
-      <p className="text-[12px] text-gray-400">
-        {t("safari.offline.connectingTo")}{" "}
-        <span className="font-mono">{url || t("safari.offline.fallbackServer")}</span>
-      </p>
-      <p className="mt-4 text-[11px] text-gray-400">
-        <Trans
-          i18nKey="safari.offline.pressSpace"
-          components={{
-            1: (
-              <kbd className="rounded border border-gray-300 bg-gray-50 px-1.5 py-0.5 font-mono" />
-            ),
-          }}
-        />
-      </p>
+        {/* 오프라인 안내 문구 */}
+        <h2 className="mb-3 text-[22px] font-normal text-gray-800">
+          {t("safari.offline.title")}
+        </h2>
+        <p className="mb-1 text-[13px] leading-relaxed text-gray-600">
+          {t("safari.offline.description")}
+        </p>
+        <p className="text-[12px] text-gray-400">
+          {t("safari.offline.connectingTo")}{" "}
+          <span className="font-mono">{url || t("safari.offline.fallbackServer")}</span>
+        </p>
+        <p className="mt-4 text-[11px] text-gray-400">
+          <Trans
+            i18nKey="safari.offline.pressSpace"
+            components={{
+              1: (
+                <kbd className="rounded border border-gray-300 bg-gray-50 px-1.5 py-0.5 font-mono" />
+              ),
+            }}
+          />
+        </p>
+      </div>
     </div>
   );
 }

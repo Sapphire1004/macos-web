@@ -501,6 +501,8 @@ export default function App() {
               initialY={mv ? 28 : cfg.y}
               initialW={mv ? window.innerWidth : cfg.w}
               initialH={mv ? window.innerHeight - 108 : cfg.h}
+              minW={win.id === "safari" ? 700 : undefined}
+              minH={win.id === "safari" ? 500 : undefined}
               isActive={topWin?.id === win.id}
               isMinimized={win.isMinimized}
               zIndex={win.zIndex}

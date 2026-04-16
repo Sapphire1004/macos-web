@@ -197,6 +197,10 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   private playingIntro: boolean = false;
   private crashed: boolean = false;
   private paused: boolean = false;
+  /** 외부(React)에서 강제 pause — onKeyUp 자동 재개를 막음 */
+  private externallyLocked: boolean = false;
+  /** lock 직전에 플레이 중이었는지 (unlock 시 자동 재개 여부 판단) */
+  private wasPlayingBeforeLock: boolean = false;
   private inverted: boolean = false;
   private isDarkMode: boolean = false;
   private updatePending: boolean = false;
@@ -1066,6 +1070,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * Process keydown.
    */
   private onKeyDown(e: Event) {
+    if (this.externallyLocked) return;
     // Prevent native page scrolling whilst tapping on mobile.
     if (IS_MOBILE && this.playing) {
       e.preventDefault();
@@ -1138,6 +1143,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
    * Process key up.
    */
   private onKeyUp(e: Event) {
+    if (this.externallyLocked) return;
     assert(this.tRex);
     const keyCode = ('keyCode' in e) ? e.keyCode as number : 0;
     const isjumpKey = runnerKeycodes.jump.includes(keyCode) ||
@@ -1422,6 +1428,27 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
     this.raqId = 0;
     if (this.hasAudioCuesInternal) {
       this.getGeneratedSoundFx().stopAll();
+    }
+  }
+
+  /**
+   * 외부(React) lock 설정 — true면 키 이벤트 무시 + 게임 정지.
+   * macOS-web 다른 앱/탭으로 포커스 이동 시 호출.
+   * lock 해제 시 이전에 플레이 중이었다면 자동 재개.
+   */
+  setExternallyLocked(locked: boolean) {
+    if (locked === this.externallyLocked) return;
+
+    if (locked) {
+      this.wasPlayingBeforeLock = this.playing && !this.crashed;
+      this.externallyLocked = true;
+      this.stop();
+    } else {
+      this.externallyLocked = false;
+      if (this.wasPlayingBeforeLock && !this.crashed && this.tRex) {
+        this.play();
+      }
+      this.wasPlayingBeforeLock = false;
     }
   }
 

@@ -51,7 +51,7 @@ export function DinoGame({ isActive }: DinoGameProps) {
     }
   }, []);
 
-  // 활성/비활성 상태에 따라 pause/resume
+  // Safari 창 활성/비활성 상태에 따라 키 입력 lock
   useEffect(() => {
     let runner: Runner;
     try {
@@ -59,11 +59,7 @@ export function DinoGame({ isActive }: DinoGameProps) {
     } catch {
       return;
     }
-    if (isActive) {
-      runner.play();
-    } else {
-      runner.stop();
-    }
+    runner.setExternallyLocked(!isActive);
   }, [isActive]);
 
   return (
