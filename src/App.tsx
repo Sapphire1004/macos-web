@@ -223,9 +223,12 @@ interface AppWindow {
   isMinimized: boolean;
 }
 
-const APP_CONFIG: Record<AppId, { title: string; w: number; h: number; x: number; y: number }> = {
+const APP_CONFIG: Record<
+  AppId,
+  { title: string; w: number; h: number; x: number; y: number; minW?: number; minH?: number }
+> = {
   finder: { title: "Finder", w: 720, h: 480, x: 80, y: 60 },
-  safari: { title: "Safari", w: 740, h: 540, x: 120, y: 80 },
+  safari: { title: "Safari", w: 740, h: 540, x: 120, y: 80, minW: 700, minH: 500 },
   notes: { title: "메모", w: 620, h: 460, x: 160, y: 70 },
   terminal: { title: "터미널", w: 600, h: 420, x: 200, y: 90 },
   appstore: { title: "App Store", w: 700, h: 500, x: 140, y: 80 },
@@ -501,8 +504,8 @@ export default function App() {
               initialY={mv ? 28 : cfg.y}
               initialW={mv ? window.innerWidth : cfg.w}
               initialH={mv ? window.innerHeight - 108 : cfg.h}
-              minW={win.id === "safari" ? 700 : undefined}
-              minH={win.id === "safari" ? 500 : undefined}
+              minW={cfg.minW}
+              minH={cfg.minH}
               isActive={topWin?.id === win.id}
               isMinimized={win.isMinimized}
               zIndex={win.zIndex}

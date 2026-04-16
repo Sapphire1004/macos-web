@@ -51,7 +51,7 @@ interface SafariWindowProps {
   activeApp?: string;
 }
 
-export function SafariWindow({ activeApp }: SafariWindowProps = {}) {
+export function SafariWindow({ activeApp }: SafariWindowProps) {
   const [inputUrl, setInputUrl] = useState("apple.com");
   const [isEditing, setIsEditing] = useState(false);
   const [tabs, setTabs] = useState([

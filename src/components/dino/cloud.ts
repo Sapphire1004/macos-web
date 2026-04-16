@@ -4,7 +4,7 @@
 
 import { assert } from "./chrome-shims";
 
-import { IS_HIDPI } from "./constants.js";
+import { HIDPI_SCALE, IS_HIDPI } from "./constants.js";
 import type { ImageSpriteProvider } from "./image_sprite_provider.js";
 import type { SpritePosition } from "./sprite_position.js";
 import { getRandomNum } from "./utils.js";
@@ -59,8 +59,8 @@ export class Cloud {
     const outputWidth = sourceWidth;
     const outputHeight = sourceHeight;
     if (IS_HIDPI) {
-      sourceWidth = sourceWidth * 2;
-      sourceHeight = sourceHeight * 2;
+      sourceWidth = sourceWidth * HIDPI_SCALE;
+      sourceHeight = sourceHeight * HIDPI_SCALE;
     }
 
     this.canvasCtx.drawImage(
@@ -104,11 +104,11 @@ export class Cloud {
 /**
  * Cloud object config.
  */
-enum Config {
-  HEIGHT = 14,
-  MAX_CLOUD_GAP = 400,
-  MAX_SKY_LEVEL = 30,
-  MIN_CLOUD_GAP = 100,
-  MIN_SKY_LEVEL = 71,
-  WIDTH = 46,
-}
+const Config = {
+  HEIGHT: 14,
+  MAX_CLOUD_GAP: 400,
+  MAX_SKY_LEVEL: 30,
+  MIN_CLOUD_GAP: 100,
+  MIN_SKY_LEVEL: 71,
+  WIDTH: 46,
+} as const;

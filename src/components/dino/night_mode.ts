@@ -4,7 +4,7 @@
 
 import { assert } from "./chrome-shims";
 
-import { IS_HIDPI } from "./constants.js";
+import { HIDPI_SCALE, IS_HIDPI } from "./constants.js";
 import type { ImageSpriteProvider } from "./image_sprite_provider.js";
 import { spriteDefinitionByType } from "./offline_sprite_definitions.js";
 import type { SpritePosition } from "./sprite_position.js";
@@ -18,16 +18,16 @@ interface StarPosition {
   sourceY: number;
 }
 
-enum Config {
-  FADE_SPEED = 0.035,
-  HEIGHT = 40,
-  MOON_SPEED = 0.25,
-  NUM_STARS = 2,
-  STAR_SIZE = 9,
-  STAR_SPEED = 0.3,
-  STAR_MAX_Y = 70,
-  WIDTH = 20,
-}
+const Config = {
+  FADE_SPEED: 0.035,
+  HEIGHT: 40,
+  MOON_SPEED: 0.25,
+  NUM_STARS: 2,
+  STAR_SIZE: 9,
+  STAR_SPEED: 0.3,
+  STAR_MAX_Y: 70,
+  WIDTH: 20,
+} as const;
 
 export class NightMode {
   private spritePos: SpritePosition;
@@ -121,10 +121,10 @@ export class NightMode {
     assert(runnerOrigImageSprite);
 
     if (IS_HIDPI) {
-      moonSourceWidth *= 2;
-      moonSourceHeight *= 2;
-      moonSourceX = this.spritePos.x + currentPhaseSpritePosition * 2;
-      starSize *= 2;
+      moonSourceWidth *= HIDPI_SCALE;
+      moonSourceHeight *= HIDPI_SCALE;
+      moonSourceX = this.spritePos.x + currentPhaseSpritePosition * HIDPI_SCALE;
+      starSize *= HIDPI_SCALE;
       starSourceX = spriteDefinitionByType.original.hdpi.star.x;
     }
 
@@ -178,7 +178,7 @@ export class NightMode {
 
       if (IS_HIDPI) {
         starPosition.sourceY =
-          spriteDefinitionByType.original.hdpi.star.y + Config.STAR_SIZE * 2 * i;
+          spriteDefinitionByType.original.hdpi.star.y + Config.STAR_SIZE * HIDPI_SCALE * i;
       } else {
         starPosition.sourceY = spriteDefinitionByType.original.ldpi.star.y + Config.STAR_SIZE * i;
       }

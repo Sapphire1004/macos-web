@@ -4,7 +4,7 @@
 
 import { assert } from "./chrome-shims";
 
-import { FPS, IS_HIDPI, IS_MOBILE } from "./constants.js";
+import { FPS, HIDPI_SCALE, IS_HIDPI, IS_MOBILE } from "./constants.js";
 import type { Dimensions } from "./dimensions.js";
 import type { GameStateProvider } from "./game_state_provider.js";
 import type { ImageSpriteProvider } from "./image_sprite_provider.js";
@@ -151,8 +151,8 @@ export class Obstacle {
     let sourceHeight = this.typeConfig.height;
 
     if (IS_HIDPI) {
-      sourceWidth = sourceWidth * 2;
-      sourceHeight = sourceHeight * 2;
+      sourceWidth = sourceWidth * HIDPI_SCALE;
+      sourceHeight = sourceHeight * HIDPI_SCALE;
     }
 
     // X position in sprite.

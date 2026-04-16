@@ -4,7 +4,7 @@
 
 import { assert } from "./chrome-shims";
 
-import { IS_HIDPI, IS_RTL } from "./constants.js";
+import { HIDPI_SCALE, IS_HIDPI, IS_RTL } from "./constants.js";
 import type { ImageSpriteProvider } from "./image_sprite_provider.js";
 import type { CollisionBox } from "./offline_sprite_definitions.js";
 import type { SpritePosition } from "./sprite_position.js";
@@ -13,34 +13,34 @@ import { getTimeStamp } from "./utils.js";
 /**
  * Dimensions of each individual character in pixels.
  */
-enum Dimensions {
-  WIDTH = 10,
-  HEIGHT = 13,
-  DEST_WIDTH = 11,
-}
+const Dimensions = {
+  WIDTH: 10,
+  HEIGHT: 13,
+  DEST_WIDTH: 11,
+} as const;
 
 /**
  * Distance meter config.
  */
-enum Config {
+const Config = {
   // Number of digits.
-  MAX_DISTANCE_UNITS = 5,
+  MAX_DISTANCE_UNITS: 5,
 
   // Distance that causes achievement animation.
-  ACHIEVEMENT_DISTANCE = 100,
+  ACHIEVEMENT_DISTANCE: 100,
 
   // Used for conversion from pixel distance to a scaled unit.
-  COEFFICIENT = 0.025,
+  COEFFICIENT: 0.025,
 
   // Flash duration in milliseconds.
-  FLASH_DURATION = 1000 / 4,
+  FLASH_DURATION: 1000 / 4,
 
   // Flash iterations for achievement animation.
-  FLASH_ITERATIONS = 3,
+  FLASH_ITERATIONS: 3,
 
   // Padding around the high score hit area.
-  HIGH_SCORE_HIT_AREA_PADDING = 4,
-}
+  HIGH_SCORE_HIT_AREA_PADDING: 4,
+} as const;
 
 export class DistanceMeter {
   achievement: boolean = false;
@@ -128,9 +128,9 @@ export class DistanceMeter {
 
     // For high DPI we 2x source values.
     if (IS_HIDPI) {
-      sourceWidth *= 2;
-      sourceHeight *= 2;
-      sourceX *= 2;
+      sourceWidth *= HIDPI_SCALE;
+      sourceHeight *= HIDPI_SCALE;
+      sourceX *= HIDPI_SCALE;
     }
 
     sourceX += this.spritePos.x;

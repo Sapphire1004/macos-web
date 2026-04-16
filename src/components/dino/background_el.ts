@@ -4,7 +4,7 @@
 
 import { assert } from "./chrome-shims";
 
-import { IS_HIDPI } from "./constants.js";
+import { HIDPI_SCALE, IS_HIDPI } from "./constants.js";
 import type { ImageSpriteProvider } from "./image_sprite_provider.js";
 import type { SpritePosition } from "./sprite_position.js";
 import { getRandomNum } from "./utils.js";
@@ -123,9 +123,9 @@ export class BackgroundEl {
     assert(imageSprite);
 
     if (IS_HIDPI) {
-      sourceWidth *= 2;
-      sourceHeight *= 2;
-      sourceX *= 2;
+      sourceWidth *= HIDPI_SCALE;
+      sourceHeight *= HIDPI_SCALE;
+      sourceX *= HIDPI_SCALE;
     }
 
     this.canvasCtx.drawImage(
@@ -145,13 +145,16 @@ export class BackgroundEl {
 
   /**
    * Update the background element position.
+   * @param deltaTime - Time elapsed since last frame, drives animTimer for
+   *   fixed elements. Non-fixed elements move at the global config speed
+   *   regardless of frame time.
    */
-  update(speed: number) {
+  update(deltaTime: number) {
     if (!this.remove) {
       if (this.spriteConfig.fixed) {
         const cfg = getGlobalConfig();
         assert(cfg.msPerFrame);
-        this.animTimer += speed;
+        this.animTimer += deltaTime;
         if (this.animTimer > cfg.msPerFrame) {
           this.animTimer = 0;
           this.switchFrames = !this.switchFrames;

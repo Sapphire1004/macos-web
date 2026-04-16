@@ -4,7 +4,7 @@
 
 import { assert } from "./chrome-shims";
 
-import { DEFAULT_DIMENSIONS, FPS, IS_HIDPI } from "./constants.js";
+import { DEFAULT_DIMENSIONS, FPS, HIDPI_SCALE, IS_HIDPI } from "./constants.js";
 import type { ConfigProvider } from "./game_config.js";
 import type { GameStateProvider } from "./game_state_provider.js";
 import type { GeneratedSoundFxProvider } from "./generated_sound_fx.js";
@@ -104,13 +104,14 @@ const collisionBoxes: { ducking: CollisionBox[]; running: CollisionBox[] } = {
   ],
 };
 
-export enum Status {
-  CRASHED,
-  DUCKING,
-  JUMPING,
-  RUNNING,
-  WAITING,
-}
+export const Status = {
+  CRASHED: 0,
+  DUCKING: 1,
+  JUMPING: 2,
+  RUNNING: 3,
+  WAITING: 4,
+} as const;
+export type Status = (typeof Status)[keyof typeof Status];
 
 /**
  * Blinking coefficient.
@@ -381,10 +382,10 @@ export class Trex {
     }
 
     if (IS_HIDPI) {
-      sourceX *= 2;
-      sourceY *= 2;
-      sourceWidth *= 2;
-      sourceHeight *= 2;
+      sourceX *= HIDPI_SCALE;
+      sourceY *= HIDPI_SCALE;
+      sourceWidth *= HIDPI_SCALE;
+      sourceHeight *= HIDPI_SCALE;
     }
 
     // Adjustments for sprite sheet position.
@@ -418,7 +419,7 @@ export class Trex {
       const spriteDefinition = this.resourceProvider.getSpriteDefinition();
       assert(spriteDefinition);
       assert(spriteDefinition.tRex);
-      const jumpOffset = spriteDefinition.tRex.jumping.xOffset * (IS_HIDPI ? 2 : 1);
+      const jumpOffset = spriteDefinition.tRex.jumping.xOffset * (IS_HIDPI ? HIDPI_SCALE : 1);
       // Jumping with adjustments.
       this.canvasCtx.drawImage(
         runnerImageSprite,

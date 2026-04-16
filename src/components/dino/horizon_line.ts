@@ -4,7 +4,7 @@
 
 import { assert } from "./chrome-shims";
 
-import { FPS, IS_HIDPI } from "./constants.js";
+import { FPS, HIDPI_SCALE, IS_HIDPI } from "./constants.js";
 import type { Dimensions } from "./dimensions.js";
 import type { ImageSpriteProvider } from "./image_sprite_provider.js";
 import type { SpritePosition } from "./sprite_position.js";
@@ -41,8 +41,8 @@ export class HorizonLine {
     let sourceY = lineConfig.sourceY;
 
     if (IS_HIDPI) {
-      sourceX *= 2;
-      sourceY *= 2;
+      sourceX *= HIDPI_SCALE;
+      sourceY *= HIDPI_SCALE;
     }
 
     this.spritePos = { x: sourceX, y: sourceY };
@@ -61,8 +61,8 @@ export class HorizonLine {
       width: lineConfig.width,
     };
     if (IS_HIDPI) {
-      this.sourceDimensions.width = lineConfig.width * 2;
-      this.sourceDimensions.height = lineConfig.height * 2;
+      this.sourceDimensions.width = lineConfig.width * HIDPI_SCALE;
+      this.sourceDimensions.height = lineConfig.height * HIDPI_SCALE;
     }
 
     this.draw();

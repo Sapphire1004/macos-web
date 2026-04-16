@@ -9,6 +9,9 @@ export const IS_IOS: boolean = /CriOS/.test(window.navigator.userAgent);
 
 export const IS_HIDPI: boolean = window.devicePixelRatio > 1;
 
+/** Sprite scale used in HIDPI mode — 2x sprites paired with `IS_HIDPI`. */
+export const HIDPI_SCALE = 2;
+
 export const IS_MOBILE: boolean = /Android/.test(window.navigator.userAgent) || IS_IOS;
 
 export const IS_RTL: boolean = document.documentElement.dir === "rtl";

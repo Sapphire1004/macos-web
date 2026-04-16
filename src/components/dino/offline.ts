@@ -83,27 +83,27 @@ type TrexDebugConfigSetting =
 /**
  * CSS class names.
  */
-enum RunnerClasses {
-  ARCADE_MODE = "arcade-mode",
-  CANVAS = "runner-canvas",
-  CONTAINER = "runner-container",
-  CRASHED = "crashed",
-  ICON = "icon-offline",
-  ICON_DISABLED = "icon-disabled",
-  INVERTED = "inverted",
-  SNACKBAR = "snackbar",
-  SNACKBAR_SHOW = "snackbar-show",
-  TOUCH_CONTROLLER = "controller",
-}
+const RunnerClasses = {
+  ARCADE_MODE: "arcade-mode",
+  CANVAS: "runner-canvas",
+  CONTAINER: "runner-container",
+  CRASHED: "crashed",
+  ICON: "icon-offline",
+  ICON_DISABLED: "icon-disabled",
+  INVERTED: "inverted",
+  SNACKBAR: "snackbar",
+  SNACKBAR_SHOW: "snackbar-show",
+  TOUCH_CONTROLLER: "controller",
+} as const;
 
 /**
  * Sound FX. Reference to the ID of the audio tag on interstitial page.
  */
-enum RunnerSounds {
-  BUTTON_PRESS = "offline-sound-press",
-  HIT = "offline-sound-hit",
-  SCORE = "offline-sound-reached",
-}
+const RunnerSounds = {
+  BUTTON_PRESS: "offline-sound-press",
+  HIT: "offline-sound-hit",
+  SCORE: "offline-sound-reached",
+} as const;
 
 /**
  * Key code mapping.
@@ -114,22 +114,22 @@ const runnerKeycodes: { jump: number[]; duck: number[]; restart: number[] } = {
   restart: [13], // Enter
 };
 
-enum RunnerEvents {
-  ANIM_END = "webkitAnimationEnd",
-  CLICK = "click",
-  KEYDOWN = "keydown",
-  KEYUP = "keyup",
-  POINTERDOWN = "pointerdown",
-  POINTERUP = "pointerup",
-  RESIZE = "resize",
-  TOUCHEND = "touchend",
-  TOUCHSTART = "touchstart",
-  VISIBILITY = "visibilitychange",
-  BLUR = "blur",
-  FOCUS = "focus",
-  LOAD = "load",
-  GAMEPADCONNECTED = "gamepadconnected",
-}
+const RunnerEvents = {
+  ANIM_END: "webkitAnimationEnd",
+  CLICK: "click",
+  KEYDOWN: "keydown",
+  KEYUP: "keyup",
+  POINTERDOWN: "pointerdown",
+  POINTERUP: "pointerup",
+  RESIZE: "resize",
+  TOUCHEND: "touchend",
+  TOUCHSTART: "touchstart",
+  VISIBILITY: "visibilitychange",
+  BLUR: "blur",
+  FOCUS: "focus",
+  LOAD: "load",
+  GAMEPADCONNECTED: "gamepadconnected",
+} as const;
 
 const ARCADE_MODE_URL: string = "chrome://dino/";
 
@@ -466,8 +466,7 @@ export class Runner
       );
       assert(audioElement);
       let soundSrc = audioElement.src;
-      soundSrc = soundSrc.substr(soundSrc.indexOf(",") + 1);
-      const buffer = decodeBase64ToArrayBuffer(soundSrc);
+      soundSrc = soundSrc.slice(soundSrc.indexOf(",") + 1);      const buffer = decodeBase64ToArrayBuffer(soundSrc);
 
       // Async, so no guarantee of order in array.
       this.audioContext.decodeAudioData(buffer, (audioBuffer) => {

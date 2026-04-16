@@ -4,7 +4,7 @@
 
 import { assert } from "./chrome-shims";
 
-import { IS_HIDPI, IS_RTL } from "./constants.js";
+import { HIDPI_SCALE, IS_HIDPI, IS_RTL } from "./constants.js";
 import type { Dimensions } from "./dimensions.js";
 import type { ImageSpriteProvider } from "./image_sprite_provider.js";
 import { spriteDefinitionByType } from "./offline_sprite_definitions.js";
@@ -127,10 +127,10 @@ export class GameOverPanel {
     const textTargetHeight = dimensions.textHeight;
 
     if (IS_HIDPI) {
-      textSourceY *= 2;
-      textSourceX *= 2;
-      textSourceWidth *= 2;
-      textSourceHeight *= 2;
+      textSourceY *= HIDPI_SCALE;
+      textSourceX *= HIDPI_SCALE;
+      textSourceWidth *= HIDPI_SCALE;
+      textSourceHeight *= HIDPI_SCALE;
     }
 
     if (!useAltText) {
@@ -183,8 +183,8 @@ export class GameOverPanel {
       const altGameEndTargetY = tRex.yPos + altGameEndConfig.yOffset;
 
       if (IS_HIDPI) {
-        altGameEndSourceWidth *= 2;
-        altGameEndSourceHeight *= 2;
+        altGameEndSourceWidth *= HIDPI_SCALE;
+        altGameEndSourceHeight *= HIDPI_SCALE;
       }
 
       const altCommonImageSprite = this.imageSpriteProvider.getAltCommonImageSprite();
@@ -216,9 +216,9 @@ export class GameOverPanel {
     const restartTargetY = this.canvasDimensions.height / 2;
 
     if (IS_HIDPI) {
-      restartSourceWidth *= 2;
-      restartSourceHeight *= 2;
-      framePosX *= 2;
+      restartSourceWidth *= HIDPI_SCALE;
+      restartSourceHeight *= HIDPI_SCALE;
+      framePosX *= HIDPI_SCALE;
     }
 
     this.canvasCtx.save();
