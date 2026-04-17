@@ -1,20 +1,21 @@
 import { Plus } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AppStoreWindow } from "./components/AppStoreWindow";
 import { ControlCenter } from "./components/ControlCenter";
 import { Dock } from "./components/Dock";
-import { FinderWindow } from "./components/FinderWindow";
-import { MailWindow } from "./components/MailWindow";
 import { MenuBar } from "./components/MenuBar";
-import { NotesWindow } from "./components/NotesWindow";
-import { SafariWindow } from "./components/SafariWindow";
 import { Spotlight } from "./components/Spotlight";
-import { TerminalWindow } from "./components/TerminalWindow";
 import { WidgetPicker, Widgets, type WidgetInstance } from "./components/Widgets";
 import { Window } from "./components/Window";
 import { StickyNote } from "./components/stickies/StickyNote";
 import { useStickies } from "./hooks/useStickies";
+
+const FinderWindow = lazy(() => import("./components/FinderWindow").then((m) => ({ default: m.FinderWindow })));
+const SafariWindow = lazy(() => import("./components/SafariWindow").then((m) => ({ default: m.SafariWindow })));
+const NotesWindow = lazy(() => import("./components/NotesWindow").then((m) => ({ default: m.NotesWindow })));
+const TerminalWindow = lazy(() => import("./components/TerminalWindow").then((m) => ({ default: m.TerminalWindow })));
+const AppStoreWindow = lazy(() => import("./components/AppStoreWindow").then((m) => ({ default: m.AppStoreWindow })));
+const MailWindow = lazy(() => import("./components/MailWindow").then((m) => ({ default: m.MailWindow })));
 
 // ── Dock icon components ────────────────────────────────────────────────────
 function FinderIcon() {
@@ -373,20 +374,23 @@ export default function App() {
   };
 
   const renderContent = (id: AppId) => {
-    switch (id) {
-      case "finder":
-        return <FinderWindow />;
-      case "safari":
-        return <SafariWindow activeApp={activeApp} />;
-      case "notes":
-        return <NotesWindow />;
-      case "terminal":
-        return <TerminalWindow />;
-      case "appstore":
-        return <AppStoreWindow />;
-      case "mail":
-        return <MailWindow />;
-    }
+    const content = (() => {
+      switch (id) {
+        case "finder":
+          return <FinderWindow />;
+        case "safari":
+          return <SafariWindow activeApp={activeApp} />;
+        case "notes":
+          return <NotesWindow />;
+        case "terminal":
+          return <TerminalWindow />;
+        case "appstore":
+          return <AppStoreWindow />;
+        case "mail":
+          return <MailWindow />;
+      }
+    })();
+    return <Suspense fallback={null}>{content}</Suspense>;
   };
 
   // Widget management
