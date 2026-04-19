@@ -10,12 +10,24 @@ import { Window } from "./components/Window";
 import { StickyNote } from "./components/stickies/StickyNote";
 import { useStickies } from "./hooks/useStickies";
 
-const FinderWindow = lazy(() => import("./components/FinderWindow").then((m) => ({ default: m.FinderWindow })));
-const SafariWindow = lazy(() => import("./components/SafariWindow").then((m) => ({ default: m.SafariWindow })));
-const NotesWindow = lazy(() => import("./components/NotesWindow").then((m) => ({ default: m.NotesWindow })));
-const TerminalWindow = lazy(() => import("./components/TerminalWindow").then((m) => ({ default: m.TerminalWindow })));
-const AppStoreWindow = lazy(() => import("./components/AppStoreWindow").then((m) => ({ default: m.AppStoreWindow })));
-const MailWindow = lazy(() => import("./components/MailWindow").then((m) => ({ default: m.MailWindow })));
+const FinderWindow = lazy(() =>
+  import("./components/FinderWindow").then((m) => ({ default: m.FinderWindow }))
+);
+const SafariWindow = lazy(() =>
+  import("./components/SafariWindow").then((m) => ({ default: m.SafariWindow }))
+);
+const NotesWindow = lazy(() =>
+  import("./components/NotesWindow").then((m) => ({ default: m.NotesWindow }))
+);
+const TerminalWindow = lazy(() =>
+  import("./components/TerminalWindow").then((m) => ({ default: m.TerminalWindow }))
+);
+const AppStoreWindow = lazy(() =>
+  import("./components/AppStoreWindow").then((m) => ({ default: m.AppStoreWindow }))
+);
+const MailWindow = lazy(() =>
+  import("./components/MailWindow").then((m) => ({ default: m.MailWindow }))
+);
 
 // ── Dock icon components ────────────────────────────────────────────────────
 function FinderIcon() {
