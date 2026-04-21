@@ -241,14 +241,14 @@ const BASE_Z = 100;
 
 const APP_CONFIG: Record<
   AppId,
-  { title: string; w: number; h: number; x: number; y: number; minW?: number; minH?: number }
+  { titleKey: string; w: number; h: number; x: number; y: number; minW?: number; minH?: number }
 > = {
-  finder: { title: "Finder", w: 720, h: 480, x: 80, y: 60 },
-  safari: { title: "Safari", w: 740, h: 540, x: 120, y: 80, minW: 700, minH: 500 },
-  notes: { title: "메모", w: 620, h: 460, x: 160, y: 70 },
-  terminal: { title: "터미널", w: 600, h: 420, x: 200, y: 90 },
-  appstore: { title: "App Store", w: 700, h: 500, x: 140, y: 80 },
-  mail: { title: "Mail", w: 720, h: 520, x: 100, y: 70 },
+  finder: { titleKey: "dock.finder", w: 720, h: 480, x: 80, y: 60 },
+  safari: { titleKey: "dock.safari", w: 740, h: 540, x: 120, y: 80, minW: 700, minH: 500 },
+  notes: { titleKey: "dock.notes", w: 620, h: 460, x: 160, y: 70 },
+  terminal: { titleKey: "dock.terminal", w: 600, h: 420, x: 200, y: 90 },
+  appstore: { titleKey: "dock.appStore", w: 700, h: 500, x: 140, y: 80 },
+  mail: { titleKey: "dock.mail", w: 720, h: 520, x: 100, y: 70 },
 };
 
 const WIDGET_POSITIONS: Record<string, { x: number; y: number }> = {
@@ -315,9 +315,9 @@ export default function App() {
           return prev.map((w) => (w.id === id ? { ...w, isOpen: true, isMinimized: false } : w));
         return [...prev, { id, isOpen: true, isMinimized: false }];
       });
-      setActiveApp(APP_CONFIG[id].title);
+      setActiveApp(t(APP_CONFIG[id].titleKey));
     },
-    [bringToFront]
+    [bringToFront, t]
   );
 
   const closeApp = (id: AppId) => {
@@ -328,7 +328,7 @@ export default function App() {
     setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, isMinimized: true } : w)));
   const focusApp = (id: AppId) => {
     bringToFront(id);
-    setActiveApp(APP_CONFIG[id].title);
+    setActiveApp(t(APP_CONFIG[id].titleKey));
   };
 
   const isDockOpen = (id: AppId) => windows.some((w) => w.id === id && w.isOpen);
@@ -525,7 +525,7 @@ export default function App() {
                     className="text-[10px] font-medium text-white"
                     style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}
                   >
-                    {APP_CONFIG[id].title}
+                    {t(APP_CONFIG[id].titleKey)}
                   </span>
                 </button>
               )
@@ -550,7 +550,7 @@ export default function App() {
             <Window
               key={win.id}
               id={win.id}
-              title={cfg.title}
+              title={t(cfg.titleKey)}
               initialX={mv ? 0 : cfg.x}
               initialY={mv ? 28 : cfg.y}
               initialW={mv ? window.innerWidth : cfg.w}
