@@ -109,6 +109,17 @@ export function MenuBar({ onSpotlight, onControlCenter, activeApp }: MenuBarProp
     <>
       {(openMenu || showAppleMenu) && <div className="fixed inset-0 z-[999]" onClick={closeAll} />}
 
+      {/* Notch (MacBook Pro style) */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed top-0 left-1/2 z-[1001] h-[26px] w-[180px] -translate-x-1/2"
+        style={{
+          background: "#000",
+          borderBottomLeftRadius: 14,
+          borderBottomRightRadius: 14,
+        }}
+      />
+
       <div
         data-keep-focus
         className="fixed top-0 right-0 left-0 z-[1000] flex h-7 items-center justify-between px-2"
