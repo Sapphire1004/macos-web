@@ -16,7 +16,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNetwork } from "../contexts/network";
 
-const DEMO_SSID = "HomeNetwork_5G";
+const DEMO_SSID = "Network_5G";
 
 interface ControlCenterProps {
   isOpen: boolean;
@@ -63,9 +63,10 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[80]" onClick={onClose} />
+      <div className="fixed inset-0 z-[900]" onClick={onClose} />
       <div
-        className="fixed top-8 right-2 z-[90] w-80 rounded-2xl p-3"
+        data-keep-focus
+        className="fixed top-8 right-2 z-[901] w-80 rounded-2xl p-3"
         style={{
           background: "rgba(245,245,245,0.88)",
           backdropFilter: "blur(40px) saturate(180%)",

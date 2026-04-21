@@ -267,10 +267,12 @@ export default function App() {
   const { t } = useTranslation();
   const [windows, setWindows] = useState<AppWindow[]>([]);
   const [focusOrder, setFocusOrder] = useState<string[]>([]);
-  const [spotlightOpen, setSpotlightOpen] = useState(false);
-  const [controlCenterOpen, setControlCenterOpen] = useState(false);
-  const [widgetPickerOpen, setWidgetPickerOpen] = useState(false);
-  const [activeApp, setActiveApp] = useState("Finder");
+  const [overlay, setOverlay] = useState<"spotlight" | "control" | "picker" | null>(null);
+  const spotlightOpen = overlay === "spotlight";
+  const controlCenterOpen = overlay === "control";
+  const widgetPickerOpen = overlay === "picker";
+  const toggleOverlay = (target: "spotlight" | "control" | "picker") =>
+    setOverlay((cur) => (cur === target ? null : target));
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
@@ -294,12 +296,26 @@ export default function App() {
     return idx === -1 ? BASE_Z : BASE_Z + idx;
   };
 
+  // Topmost open (non-minimized) window — derived from focusOrder.
+  // Returns null if desktop is the most recent focus, or if no open window.
+  const topWindowId = (() => {
+    const openIds = new Set(windows.filter((w) => w.isOpen && !w.isMinimized).map((w) => w.id));
+    for (let i = focusOrder.length - 1; i >= 0; i--) {
+      const id = focusOrder[i];
+      if (id === "desktop") return null;
+      if (openIds.has(id as AppId)) return id as AppId;
+    }
+    return null;
+  })();
+
+  const activeApp = topWindowId ? t(APP_CONFIG[topWindowId].titleKey) : "Finder";
+
   // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === " ") {
         e.preventDefault();
-        setSpotlightOpen((v) => !v);
+        toggleOverlay("spotlight");
       }
     };
     window.addEventListener("keydown", handler);
@@ -315,9 +331,8 @@ export default function App() {
           return prev.map((w) => (w.id === id ? { ...w, isOpen: true, isMinimized: false } : w));
         return [...prev, { id, isOpen: true, isMinimized: false }];
       });
-      setActiveApp(t(APP_CONFIG[id].titleKey));
     },
-    [bringToFront, t]
+    [bringToFront]
   );
 
   const closeApp = (id: AppId) => {
@@ -328,7 +343,6 @@ export default function App() {
     setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, isMinimized: true } : w)));
   const focusApp = (id: AppId) => {
     bringToFront(id);
-    setActiveApp(t(APP_CONFIG[id].titleKey));
   };
 
   const isDockOpen = (id: AppId) => windows.some((w) => w.id === id && w.isOpen);
@@ -390,9 +404,10 @@ export default function App() {
   const handleDockClick = (id: string) => {
     if (["sep1", "sep2", "trash"].includes(id)) return;
     const win = windows.find((w) => w.id === id);
-    if (win?.isMinimized)
+    if (win?.isMinimized) {
       setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, isMinimized: false } : w)));
-    else if (win?.isOpen) focusApp(id as AppId);
+      bringToFront(id);
+    } else if (win?.isOpen) focusApp(id as AppId);
     else openApp(id as AppId);
   };
 
@@ -439,9 +454,14 @@ export default function App() {
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
+      onMouseDown={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest("[data-keep-focus]")) return;
+        bringToFront("desktop");
+      }}
       onClick={() => {
         setContextMenu(null);
-        setControlCenterOpen(false);
+        setOverlay(null);
       }}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -456,13 +476,13 @@ export default function App() {
 
       {/* Menu Bar */}
       <MenuBar
-        onSpotlight={() => setSpotlightOpen(true)}
-        onControlCenter={() => setControlCenterOpen((v) => !v)}
+        onSpotlight={() => setOverlay("spotlight")}
+        onControlCenter={() => toggleOverlay("control")}
         activeApp={activeApp}
       />
 
       {/* Control Center */}
-      <ControlCenter isOpen={controlCenterOpen} onClose={() => setControlCenterOpen(false)} />
+      <ControlCenter isOpen={controlCenterOpen} onClose={() => setOverlay(null)} />
 
       {/* Desktop Widgets */}
       <Widgets widgets={widgets} onRemove={removeWidget} />
@@ -486,7 +506,7 @@ export default function App() {
       <button
         onClick={(e) => {
           e.stopPropagation();
-          setWidgetPickerOpen((v) => !v);
+          toggleOverlay("picker");
         }}
         className="fixed right-4 bottom-24 z-20 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
         style={{
@@ -502,7 +522,7 @@ export default function App() {
       {/* Widget Picker */}
       <WidgetPicker
         isOpen={widgetPickerOpen}
-        onClose={() => setWidgetPickerOpen(false)}
+        onClose={() => setOverlay(null)}
         onAdd={addWidget}
         active={activeWidgetTypes}
       />
@@ -537,12 +557,6 @@ export default function App() {
       {/* Windows */}
       {(() => {
         const openWins = windows.filter((w) => w.isOpen && !w.isMinimized);
-        const topWindowId = (() => {
-          for (let i = focusOrder.length - 1; i >= 0; i--) {
-            if (openWins.some((w) => w.id === focusOrder[i])) return focusOrder[i];
-          }
-          return null;
-        })();
         return openWins.map((win) => {
           const cfg = APP_CONFIG[win.id];
           const mv = typeof window !== "undefined" && window.innerWidth < 640;
@@ -573,7 +587,7 @@ export default function App() {
       {/* Spotlight */}
       <Spotlight
         isOpen={spotlightOpen}
-        onClose={() => setSpotlightOpen(false)}
+        onClose={() => setOverlay(null)}
         onOpenApp={(id) => openApp(id as AppId)}
       />
 
@@ -598,7 +612,7 @@ export default function App() {
               [t("contextMenu.getInfo"), () => {}],
               [t("contextMenu.changeWallpaper"), () => {}],
               null,
-              [t("contextMenu.addWidget"), () => setWidgetPickerOpen(true)],
+              [t("contextMenu.addWidget"), () => setOverlay("picker")],
               [
                 t("contextMenu.newSticky"),
                 () => {
@@ -606,7 +620,7 @@ export default function App() {
                   bringToFront(id);
                 },
               ],
-              [t("contextMenu.spotlightSearch"), () => setSpotlightOpen(true)],
+              [t("contextMenu.spotlightSearch"), () => setOverlay("spotlight")],
               null,
               [t("contextMenu.preferences"), () => {}],
             ] as ([string, () => void] | null)[]
