@@ -63,9 +63,9 @@ export function ControlCenter({ isOpen, onClose }: ControlCenterProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[80]" onClick={onClose} />
+      <div className="fixed inset-0 z-[900]" onClick={onClose} />
       <div
-        className="fixed top-8 right-2 z-[90] w-80 rounded-2xl p-3"
+        className="fixed top-8 right-2 z-[901] w-80 rounded-2xl p-3"
         style={{
           background: "rgba(245,245,245,0.88)",
           backdropFilter: "blur(40px) saturate(180%)",

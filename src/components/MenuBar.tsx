@@ -107,11 +107,11 @@ export function MenuBar({ onSpotlight, onControlCenter, activeApp }: MenuBarProp
 
   return (
     <>
-      {(openMenu || showAppleMenu) && <div className="fixed inset-0 z-40" onClick={closeAll} />}
+      {(openMenu || showAppleMenu) && <div className="fixed inset-0 z-[999]" onClick={closeAll} />}
 
       <div
         data-keep-focus
-        className="fixed top-0 right-0 left-0 z-50 flex h-7 items-center justify-between px-3"
+        className="fixed top-0 right-0 left-0 z-[1000] flex h-7 items-center justify-between px-2"
         onMouseDown={(e) => e.stopPropagation()}
         style={{
           background: "rgba(0,0,0,0.22)",
@@ -176,7 +176,7 @@ export function MenuBar({ onSpotlight, onControlCenter, activeApp }: MenuBarProp
             {currentMenus.map((menu) => (
               <div key={menu} className="relative">
                 <button
-                  className="flex h-7 items-center rounded px-2.5 text-[13px] text-white transition-colors"
+                  className="flex h-7 items-center rounded text-[13px] text-white transition-colors"
                   style={{
                     background: openMenu === menu ? "rgba(255,255,255,0.22)" : "transparent",
                   }}

@@ -586,9 +586,9 @@ export function WidgetPicker({ isOpen, onClose, onAdd, active }: WidgetPickerPro
 
   return (
     <>
-      <div className="fixed inset-0 z-[60]" onClick={onClose} />
+      <div className="fixed inset-0 z-[910]" onClick={onClose} />
       <div
-        className="fixed bottom-24 left-1/2 z-[70] w-80 -translate-x-1/2 rounded-2xl p-4"
+        className="fixed bottom-24 left-1/2 z-[911] w-80 -translate-x-1/2 rounded-2xl p-4"
         style={{
           background: "rgba(40,40,40,0.92)",
           backdropFilter: "blur(40px)",

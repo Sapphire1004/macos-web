@@ -84,7 +84,7 @@ export function Spotlight({ isOpen, onClose, onOpenApp }: SpotlightProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh]"
+      className="fixed inset-0 z-[920] flex items-start justify-center pt-[20vh]"
       onClick={onClose}
       style={{ animation: "fadeIn 0.15s ease-out" }}
     >
