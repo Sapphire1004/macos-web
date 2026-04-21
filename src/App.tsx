@@ -1,18 +1,33 @@
 import { Plus } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AppStoreWindow } from "./components/AppStoreWindow";
 import { ControlCenter } from "./components/ControlCenter";
 import { Dock } from "./components/Dock";
-import { FinderWindow } from "./components/FinderWindow";
-import { MailWindow } from "./components/MailWindow";
 import { MenuBar } from "./components/MenuBar";
-import { NotesWindow } from "./components/NotesWindow";
-import { SafariWindow } from "./components/SafariWindow";
 import { Spotlight } from "./components/Spotlight";
-import { TerminalWindow } from "./components/TerminalWindow";
 import { WidgetPicker, Widgets, type WidgetInstance } from "./components/Widgets";
 import { Window } from "./components/Window";
+import { StickyNote } from "./components/stickies/StickyNote";
+import { useStickies } from "./hooks/useStickies";
+
+const FinderWindow = lazy(() =>
+  import("./components/FinderWindow").then((m) => ({ default: m.FinderWindow }))
+);
+const SafariWindow = lazy(() =>
+  import("./components/SafariWindow").then((m) => ({ default: m.SafariWindow }))
+);
+const NotesWindow = lazy(() =>
+  import("./components/NotesWindow").then((m) => ({ default: m.NotesWindow }))
+);
+const TerminalWindow = lazy(() =>
+  import("./components/TerminalWindow").then((m) => ({ default: m.TerminalWindow }))
+);
+const AppStoreWindow = lazy(() =>
+  import("./components/AppStoreWindow").then((m) => ({ default: m.AppStoreWindow }))
+);
+const MailWindow = lazy(() =>
+  import("./components/MailWindow").then((m) => ({ default: m.MailWindow }))
+);
 
 // ── Dock icon components ────────────────────────────────────────────────────
 function FinderIcon() {
@@ -218,21 +233,22 @@ type AppId = "finder" | "safari" | "notes" | "terminal" | "appstore" | "mail";
 
 interface AppWindow {
   id: AppId;
-  zIndex: number;
   isOpen: boolean;
   isMinimized: boolean;
 }
 
+const BASE_Z = 100;
+
 const APP_CONFIG: Record<
   AppId,
-  { title: string; w: number; h: number; x: number; y: number; minW?: number; minH?: number }
+  { titleKey: string; w: number; h: number; x: number; y: number; minW?: number; minH?: number }
 > = {
-  finder: { title: "Finder", w: 720, h: 480, x: 80, y: 60 },
-  safari: { title: "Safari", w: 740, h: 540, x: 120, y: 80, minW: 700, minH: 500 },
-  notes: { title: "메모", w: 620, h: 460, x: 160, y: 70 },
-  terminal: { title: "터미널", w: 600, h: 420, x: 200, y: 90 },
-  appstore: { title: "App Store", w: 700, h: 500, x: 140, y: 80 },
-  mail: { title: "Mail", w: 720, h: 520, x: 100, y: 70 },
+  finder: { titleKey: "dock.finder", w: 720, h: 480, x: 80, y: 60 },
+  safari: { titleKey: "dock.safari", w: 740, h: 540, x: 120, y: 80, minW: 700, minH: 500 },
+  notes: { titleKey: "dock.notes", w: 620, h: 460, x: 160, y: 70 },
+  terminal: { titleKey: "dock.terminal", w: 600, h: 420, x: 200, y: 90 },
+  appstore: { titleKey: "dock.appStore", w: 700, h: 500, x: 140, y: 80 },
+  mail: { titleKey: "dock.mail", w: 720, h: 520, x: 100, y: 70 },
 };
 
 const WIDGET_POSITIONS: Record<string, { x: number; y: number }> = {
@@ -250,7 +266,7 @@ const WALLPAPER =
 export default function App() {
   const { t } = useTranslation();
   const [windows, setWindows] = useState<AppWindow[]>([]);
-  const zCounter = useRef(100);
+  const [focusOrder, setFocusOrder] = useState<string[]>([]);
   const [spotlightOpen, setSpotlightOpen] = useState(false);
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   const [widgetPickerOpen, setWidgetPickerOpen] = useState(false);
@@ -263,6 +279,20 @@ export default function App() {
     { id: "clock-1", type: "clock", ...WIDGET_POSITIONS.clock },
     { id: "weather-1", type: "weather", ...WIDGET_POSITIONS.weather },
   ]);
+  const { stickies, addSticky, updateSticky, deleteSticky } = useStickies();
+
+  const bringToFront = useCallback((id: string) => {
+    setFocusOrder((prev) => [...prev.filter((x) => x !== id), id]);
+  }, []);
+
+  const removeFromFocus = useCallback((id: string) => {
+    setFocusOrder((prev) => prev.filter((x) => x !== id));
+  }, []);
+
+  const getZ = (id: string) => {
+    const idx = focusOrder.indexOf(id);
+    return idx === -1 ? BASE_Z : BASE_Z + idx;
+  };
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -276,31 +306,29 @@ export default function App() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const getTopZ = () => {
-    zCounter.current += 1;
-    return zCounter.current;
+  const openApp = useCallback(
+    (id: AppId) => {
+      bringToFront(id);
+      setWindows((prev) => {
+        const ex = prev.find((w) => w.id === id);
+        if (ex)
+          return prev.map((w) => (w.id === id ? { ...w, isOpen: true, isMinimized: false } : w));
+        return [...prev, { id, isOpen: true, isMinimized: false }];
+      });
+      setActiveApp(t(APP_CONFIG[id].titleKey));
+    },
+    [bringToFront, t]
+  );
+
+  const closeApp = (id: AppId) => {
+    setWindows((prev) => prev.filter((w) => w.id !== id));
+    removeFromFocus(id);
   };
-
-  const openApp = useCallback((id: AppId) => {
-    const z = getTopZ();
-    setWindows((prev) => {
-      const ex = prev.find((w) => w.id === id);
-      if (ex)
-        return prev.map((w) =>
-          w.id === id ? { ...w, isOpen: true, isMinimized: false, zIndex: z } : w
-        );
-      return [...prev, { id, zIndex: z, isOpen: true, isMinimized: false }];
-    });
-    setActiveApp(APP_CONFIG[id].title);
-  }, []);
-
-  const closeApp = (id: AppId) => setWindows((prev) => prev.filter((w) => w.id !== id));
   const minimizeApp = (id: AppId) =>
     setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, isMinimized: true } : w)));
   const focusApp = (id: AppId) => {
-    const z = getTopZ();
-    setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, zIndex: z } : w)));
-    setActiveApp(APP_CONFIG[id].title);
+    bringToFront(id);
+    setActiveApp(t(APP_CONFIG[id].titleKey));
   };
 
   const isDockOpen = (id: AppId) => windows.some((w) => w.id === id && w.isOpen);
@@ -369,20 +397,23 @@ export default function App() {
   };
 
   const renderContent = (id: AppId) => {
-    switch (id) {
-      case "finder":
-        return <FinderWindow />;
-      case "safari":
-        return <SafariWindow activeApp={activeApp} />;
-      case "notes":
-        return <NotesWindow />;
-      case "terminal":
-        return <TerminalWindow />;
-      case "appstore":
-        return <AppStoreWindow />;
-      case "mail":
-        return <MailWindow />;
-    }
+    const content = (() => {
+      switch (id) {
+        case "finder":
+          return <FinderWindow />;
+        case "safari":
+          return <SafariWindow activeApp={activeApp} />;
+        case "notes":
+          return <NotesWindow />;
+        case "terminal":
+          return <TerminalWindow />;
+        case "appstore":
+          return <AppStoreWindow />;
+        case "mail":
+          return <MailWindow />;
+      }
+    })();
+    return <Suspense fallback={null}>{content}</Suspense>;
   };
 
   // Widget management
@@ -436,6 +467,21 @@ export default function App() {
       {/* Desktop Widgets */}
       <Widgets widgets={widgets} onRemove={removeWidget} />
 
+      {/* Stickies */}
+      {stickies.map((s) => (
+        <StickyNote
+          key={s.id}
+          sticky={s}
+          onUpdate={updateSticky}
+          onDelete={(id) => {
+            deleteSticky(id);
+            removeFromFocus(id);
+          }}
+          onFocus={bringToFront}
+          zIndex={getZ(s.id)}
+        />
+      ))}
+
       {/* Add Widget Button */}
       <button
         onClick={(e) => {
@@ -479,7 +525,7 @@ export default function App() {
                     className="text-[10px] font-medium text-white"
                     style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}
                   >
-                    {APP_CONFIG[id].title}
+                    {t(APP_CONFIG[id].titleKey)}
                   </span>
                 </button>
               )
@@ -489,26 +535,31 @@ export default function App() {
       )}
 
       {/* Windows */}
-      {windows
-        .filter((w) => w.isOpen && !w.isMinimized)
-        .map((win) => {
+      {(() => {
+        const openWins = windows.filter((w) => w.isOpen && !w.isMinimized);
+        const topWindowId = (() => {
+          for (let i = focusOrder.length - 1; i >= 0; i--) {
+            if (openWins.some((w) => w.id === focusOrder[i])) return focusOrder[i];
+          }
+          return null;
+        })();
+        return openWins.map((win) => {
           const cfg = APP_CONFIG[win.id];
           const mv = typeof window !== "undefined" && window.innerWidth < 640;
-          const topWin = windows.reduce((max, w) => (w.zIndex > max.zIndex ? w : max), windows[0]);
           return (
             <Window
               key={win.id}
               id={win.id}
-              title={cfg.title}
+              title={t(cfg.titleKey)}
               initialX={mv ? 0 : cfg.x}
               initialY={mv ? 28 : cfg.y}
               initialW={mv ? window.innerWidth : cfg.w}
               initialH={mv ? window.innerHeight - 108 : cfg.h}
               minW={cfg.minW}
               minH={cfg.minH}
-              isActive={topWin?.id === win.id}
+              isActive={topWindowId === win.id}
               isMinimized={win.isMinimized}
-              zIndex={win.zIndex}
+              zIndex={getZ(win.id)}
               onFocus={() => focusApp(win.id)}
               onClose={() => closeApp(win.id)}
               onMinimize={() => minimizeApp(win.id)}
@@ -516,7 +567,8 @@ export default function App() {
               {renderContent(win.id)}
             </Window>
           );
-        })}
+        });
+      })()}
 
       {/* Spotlight */}
       <Spotlight
@@ -547,6 +599,13 @@ export default function App() {
               [t("contextMenu.changeWallpaper"), () => {}],
               null,
               [t("contextMenu.addWidget"), () => setWidgetPickerOpen(true)],
+              [
+                t("contextMenu.newSticky"),
+                () => {
+                  const id = addSticky();
+                  bringToFront(id);
+                },
+              ],
               [t("contextMenu.spotlightSearch"), () => setSpotlightOpen(true)],
               null,
               [t("contextMenu.preferences"), () => {}],
