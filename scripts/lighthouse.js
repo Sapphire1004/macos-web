@@ -8,16 +8,18 @@ const PORT = 4173;
 const BASE = `http://localhost:${PORT}`;
 
 // Auth state injected before each page load so Lighthouse measures the
-// authenticated home screen (not the lock screen).
+// intended screen (not whatever the route guard would redirect to).
 const AUTH_STORAGE_KEY = "macos-web-auth";
-const AUTH_SEED = {
+const AUTH_AUTHENTICATED = {
   status: "authenticated",
   user: { name: "Lighthouse", email: "lighthouse@test", picture: null },
 };
 
-// 테스트할 페이지 목록 - 여기에 추가하면 됨
+// 테스트할 페이지 목록 — 페이지마다 인증 상태를 다르게 주입한다.
+// auth가 null이면 미인증 상태(또는 주입 생략).
 const PAGES = [
-  { name: "Home", path: "/" },
+  { name: "Login", path: "/login", auth: null },
+  { name: "Home", path: "/", auth: AUTH_AUTHENTICATED },
 ];
 
 // 1. Build
@@ -59,13 +61,23 @@ for (const pageInfo of PAGES) {
   console.log(`Testing: ${pageInfo.name} (${url})`);
 
   const page = await browser.newPage();
-  await page.evaluateOnNewDocument(
-    (key, state) => {
-      localStorage.setItem(key, JSON.stringify(state));
-    },
-    AUTH_STORAGE_KEY,
-    AUTH_SEED,
-  );
+  if (pageInfo.auth) {
+    await page.evaluateOnNewDocument(
+      (key, state) => {
+        localStorage.setItem(key, JSON.stringify(state));
+      },
+      AUTH_STORAGE_KEY,
+      pageInfo.auth,
+    );
+  } else {
+    // 미인증 측정: 이전 상태가 남아있을 수 있으니 명시적으로 비움
+    await page.evaluateOnNewDocument(
+      (key) => {
+        localStorage.removeItem(key);
+      },
+      AUTH_STORAGE_KEY,
+    );
+  }
 
   const result = await lighthouse(url, { output: ["html", "json"], logLevel: "error" }, config, page);
   await page.close();

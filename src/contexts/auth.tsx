@@ -80,11 +80,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const lock = useCallback(() => {
-    setState((prev) => (prev.status === "authenticated" ? { status: "locked", user: prev.user } : prev));
+    setState((prev) =>
+      prev.status === "authenticated" ? { status: "locked", user: prev.user } : prev
+    );
   }, []);
 
   const unlock = useCallback(() => {
-    setState((prev) => (prev.status === "locked" ? { status: "authenticated", user: prev.user } : prev));
+    setState((prev) =>
+      prev.status === "locked" ? { status: "authenticated", user: prev.user } : prev
+    );
   }, []);
 
   return (

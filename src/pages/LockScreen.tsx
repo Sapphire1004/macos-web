@@ -1,9 +1,8 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth, type User } from "../contexts/auth";
-
-const WALLPAPER =
-  "https://images.unsplash.com/photo-1729892382697-96b7892e1278?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYWNvcyUyMG1vbnRlcmV5JTIwd2FsbHBhcGVyJTIwbW91bnRhaW5zJTIwZ3JhZGllbnR8ZW58MXx8fHwxNzc1NjI3ODQ4fDA&ixlib=rb-4.1.0&q=80&w=1080";
+import { WALLPAPER } from "../lib/wallpaper";
 
 const DEV_USER: User = {
   name: "Dev User",
@@ -45,11 +44,20 @@ function GoogleIcon() {
 export function LockScreen() {
   const { state, signIn, unlock } = useAuth();
   const { i18n } = useTranslation();
+  const navigate = useNavigate();
   const [now, setNow] = useState(() => Temporal.Now.plainDateTimeISO());
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Temporal.Now.plainDateTimeISO()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Preload the home chunk so login → home feels instant.
+  // Direct dynamic import bypasses the auth redirect in beforeLoad.
+  useEffect(() => {
+    import("./Home").catch(() => {
+      // preload 실패는 조용히 무시 (critical하지 않음)
+    });
   }, []);
 
   const time = now.toLocaleString(i18n.language, {
@@ -73,10 +81,12 @@ export function LockScreen() {
       // Backend team will replace this with real Google OAuth flow
       signIn(MOCK_GOOGLE_USER);
     }
+    navigate({ to: "/" });
   };
 
   const handleDevSkip = () => {
     signIn(DEV_USER);
+    navigate({ to: "/" });
   };
 
   return (
@@ -96,7 +106,10 @@ export function LockScreen() {
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center">
         {/* Clock */}
-        <div className="mb-20 text-center text-white" style={{ textShadow: "0 2px 20px rgba(0,0,0,0.4)" }}>
+        <div
+          className="mb-20 text-center text-white"
+          style={{ textShadow: "0 2px 20px rgba(0,0,0,0.4)" }}
+        >
           <p className="text-[96px] leading-none font-thin tracking-tight">{time}</p>
           <p className="mt-2 text-[18px] font-medium opacity-90">{date}</p>
         </div>
@@ -145,7 +158,7 @@ export function LockScreen() {
           {import.meta.env.DEV && (
             <button
               onClick={handleDevSkip}
-              className="rounded-full px-6 py-2 text-[12px] font-medium text-white/80 transition-all hover:text-white hover:bg-white/10"
+              className="rounded-full px-6 py-2 text-[12px] font-medium text-white/80 transition-all hover:bg-white/10 hover:text-white"
               style={{
                 border: "1px solid rgba(255,255,255,0.3)",
               }}
