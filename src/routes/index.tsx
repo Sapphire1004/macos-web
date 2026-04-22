@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { readAuthState } from "../contexts/auth";
+import { Home } from "../pages/Home";
 
 export const Route = createFileRoute("/")({
   beforeLoad: () => {
@@ -7,4 +8,5 @@ export const Route = createFileRoute("/")({
       throw redirect({ to: "/login" });
     }
   },
+  component: Home,
 });
