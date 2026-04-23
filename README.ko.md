@@ -85,7 +85,3 @@ apps/api/        # Hono 기반 BFF (예정)
 docs/            # 작업 계획 문서
 ```
 
-## 성능
-
-Lighthouse 100점 / 번들 사이즈 최적화를 위해 Dock 앱들은 `React.lazy`로 지연 로드.
-Lighthouse 측정은 CPU 4배 스로틀링(`cpuSlowdownMultiplier: 4`) 환경에서 실행.

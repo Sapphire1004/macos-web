@@ -85,7 +85,11 @@ apps/api/        # Hono ベースの BFF (予定)
 docs/            # 作業計画ドキュメント
 ```
 
-## パフォーマンス
+## ブログ
 
-Lighthouse 100 点 / バンドルサイズ最適化のため、Dock のアプリは `React.lazy` で遅延読み込み。
-Lighthouse の計測は CPU 4 倍スロットリング (`cpuSlowdownMultiplier: 4`) で実施。
+制作過程で得た知見を Zenn に連載中。
+
+- [Lighthouse のスコアを上げようとして、逆に下げてしまった 2 つの失敗](https://zenn.dev/kimsuho/articles/b678c3b084c6d1)
+- [React Query のキャッシュを localStorage で永続化する](https://zenn.dev/kimsuho/articles/8f694e42733fa9)
+- [Date 代わりに Temporal API 使ってみよう — React + i18n プロジェクト適用機](https://zenn.dev/kimsuho/articles/6ff58ea5574208)
+- (認証付き SPA の Lighthouse 計測、autoCodeSplitting の A/B 実験編を順次公開予定)

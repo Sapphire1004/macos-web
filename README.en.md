@@ -85,7 +85,3 @@ apps/api/        # Hono-based BFF (planned)
 docs/            # planning docs
 ```
 
-## Performance
-
-Targeting Lighthouse 100. Dock apps are lazy-loaded via `React.lazy` to reduce bundle size.
-Lighthouse runs with 4x CPU throttling (`cpuSlowdownMultiplier: 4`).
