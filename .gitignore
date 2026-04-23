@@ -42,5 +42,8 @@ lighthouse-*.json
 # Bundle analyzer output
 stats.html
 
+# TanStack Router plugin cache
+.tanstack/
+
 # Experimental sandboxes
 dino-game/
