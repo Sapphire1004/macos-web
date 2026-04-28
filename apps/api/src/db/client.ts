@@ -28,6 +28,7 @@ export async function checkDbConnection(): Promise<{ ok: boolean; reason?: strin
     await pool.query("select 1");
     return { ok: true };
   } catch (error) {
-    return { ok: false, reason: error instanceof Error ? error.message : "Unknown error" };
+    console.error("[checkDbConnection]", error);
+    return { ok: false, reason: "Database connection failed" };
   }
 }

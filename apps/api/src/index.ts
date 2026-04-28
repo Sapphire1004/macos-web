@@ -63,9 +63,11 @@ const GMAIL_OAUTH_SCOPES = (process.env.GMAIL_OAUTH_SCOPES ?? "https://www.googl
   .filter(Boolean);
 const SESSION_COOKIE_NAME = "session";
 const COOKIE_SECURE = process.env.COOKIE_SECURE === "true";
-const _parsedTtl = parseInt(process.env.SESSION_TTL_SECONDS ?? "", 10);
+const _envTtl = (process.env.SESSION_TTL_SECONDS ?? "").trim();
 const SESSION_TTL_SECONDS =
-  Number.isInteger(_parsedTtl) && _parsedTtl > 0 ? _parsedTtl : 60 * 60 * 24 * 7;
+  /^\d+$/.test(_envTtl) && parseInt(_envTtl, 10) > 0
+    ? parseInt(_envTtl, 10)
+    : 60 * 60 * 24 * 7;
 const GMAIL_STATE_TTL_SECONDS = 60 * 10;
 const IS_PROD = process.env.NODE_ENV === "production";
 
